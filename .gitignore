@@ -1,5 +1,20 @@
 Library/
 Logs/
+<<<<<<< HEAD
 UserSettings/
 Temp/
 .vs/
+=======
+Temp/
+obj/
+Build/
+Builds/
+
+UserSettings/
+.vs/
+*.csproj
+*.unityproj
+*.suo
+*.user
+*.userprefs
+>>>>>>> develop-village-design
