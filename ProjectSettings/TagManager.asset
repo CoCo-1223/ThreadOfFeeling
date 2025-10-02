@@ -53,5 +53,8 @@ TagManager:
   - name: Player
     uniqueID: 2327781783
     locked: 0
+  - name: house
+    uniqueID: 1740102083
+    locked: 0
   m_RenderingLayers:
   - Default

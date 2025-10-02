@@ -1,10 +1,5 @@
 Library/
 Logs/
-<<<<<<< HEAD
-UserSettings/
-Temp/
-.vs/
-=======
 Temp/
 obj/
 Build/
@@ -17,4 +12,3 @@ UserSettings/
 *.suo
 *.user
 *.userprefs
->>>>>>> develop-village-design
