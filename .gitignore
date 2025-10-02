@@ -1,5 +1,14 @@
 Library/
 Logs/
-UserSettings/
 Temp/
+obj/
+Build/
+Builds/
+
+UserSettings/
 .vs/
+*.csproj
+*.unityproj
+*.suo
+*.user
+*.userprefs

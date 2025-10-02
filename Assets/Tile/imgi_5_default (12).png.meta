@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: a2b5b7f6a2f96d740891c0a6a0be9198
+guid: 97ac48246d9c1d74ca29c205e9844ab3
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 4548668331354781672
-    second: imgi_100_default_0
+      213: 9216511766048649170
+    second: imgi_5_default (12)_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -49,9 +49,9 @@ TextureImporter:
   spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
-  alignment: 0
-  spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 64
+  alignment: 9
+  spritePivot: {x: 0.5929215, y: 0.30681974}
+  spritePixelsToUnits: 730
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -75,7 +75,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -100,23 +100,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: imgi_100_default_0
+      name: imgi_5_default (12)_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 46
-        height: 40
+        width: 922
+        height: 1120
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 8e7787b5fbd102f30800000000000000
-      internalID: 4548668331354781672
+      spriteID: 2dfa98bbe90a7ef70800000000000000
+      internalID: 9216511766048649170
       vertices: []
       indices: 
       edges: []
@@ -126,7 +126,7 @@ TextureImporter:
     physicsShape: []
     bones: []
     spriteID: 5e97eb03825dee720800000000000000
-    internalID: 0
+    internalID: 1537655665
     vertices: []
     indices: 
     edges: []
@@ -135,7 +135,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      imgi_100_default_0: 4548668331354781672
+      imgi_5_default (12)_0: 9216511766048649170
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
