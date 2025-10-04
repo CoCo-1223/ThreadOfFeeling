@@ -1,9 +1,9 @@
 ## 🧑‍💻 팀원
 | 역할 (Role) | 이름 (Name) | GitHub |
 | :---: | :---: | :---: |
-| Data Layer | coco | [@김채은](https://github.com/CoCo-1223) | 
-| Input&Perception Layer | ohjaesik | [@오재식](https://github.com/ohjaesik) |
-| Application Layer | zxxxv | [@최재웅](https://github.com/zxxxv/) |
+| Data Layer | 김채은 | [@coco](https://github.com/CoCo-1223) | 
+| Input&Perception Layer | 오재식 | [@ohjaesik](https://github.com/ohjaesik) |
+| Application Layer | 최재웅 | [@zxxxv](https://github.com/zxxxv/) |
 
 
 ## 📂 프로젝트 디렉토리 구조
