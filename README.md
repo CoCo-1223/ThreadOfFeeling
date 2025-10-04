@@ -23,5 +23,7 @@
 │   ├── Data/               # SQLite 파일들
 │   ├── Python/             # Mediapipe 파일
 │   └── Settings/           # 프로젝트 기본 세팅
+├── Packages/                 
+├── ProjectSettings/                 
 └── docs/                   # 추가 문서 (설계, 아키텍처, 튜토리얼 등)
 ```
