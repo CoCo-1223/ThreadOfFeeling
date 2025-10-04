@@ -2,7 +2,7 @@
 | 역할 (Role) | 이름 (Name) | GitHub |
 | :---: | :---: | :---: |
 | Data Layer | coco | [@김채은](https://github.com/CoCo-1223) | 
-| Input&Perception Layer | ohjaesik | [@오재](https://github.com/ohjaesik) |
+| Input&Perception Layer | ohjaesik | [@오재식](https://github.com/ohjaesik) |
 | Application Layer | zxxxv | [@최재웅](https://github.com/zxxxv/) |
 
 
