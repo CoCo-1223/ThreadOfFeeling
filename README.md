@@ -1,3 +1,11 @@
+## 🧑‍💻 팀원
+| 역할 (Role) | 이름 (Name) | GitHub |
+| :---: | :---: | :---: |
+| Data Layer | coco | [@김채은](https://github.com/CoCo-1223) | 
+| Input&Perception Layer | ohjaesik | [@오재](https://github.com/ohjaesik) |
+| Application Layer | zxxxv | [@최재웅](https://github.com/zxxxv/) |
+
+
 ## 📂 프로젝트 디렉토리 구조
 
 프로젝트의 주요 파일 및 디렉토리 구조
