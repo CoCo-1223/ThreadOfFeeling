@@ -1,37 +1,46 @@
 using UnityEngine;
 
-
-public class NewMonoBehaviourScript : MonoBehaviour
-{
+public class PlayerController : MonoBehaviour {
+    
     public float speed = 3;
     Vector3 move;
 
-    void Start()
-    {
-        
+    private bool isStopped = false;
+
+    void Start() {
+
     }
 
-    void Update()
-    {
+    void Update() {
+
+        if (isStopped) return;
+
         move = Vector3.zero;
 
         if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A)) {
             move += new Vector3(-1, 0, 0);
+            //Debug.LogError("왼쪽");
         }
         if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D)) {
             move += new Vector3(1, 0, 0);
+            //Debug.LogError("오른쪽");
         }
         if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W)) {
             move += new Vector3(0, 1, 0);
+            //Debug.LogError("위쪽");
         }
         if (Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S)) {
             move += new Vector3(0, -1, 0);
+            //Debug.LogError("아래쪽");
         }
         move = move.normalized;
     }
 
-    private void FixedUpdate()
-    {
+    private void FixedUpdate() {
         transform.Translate(move * speed * Time.deltaTime);
+    }
+
+    public void StopMovement() {
+        isStopped = true;
     }
 }
