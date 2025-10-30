@@ -34,6 +34,18 @@ public class PlayerController : MonoBehaviour {
             //Debug.LogError("¾Æ·¡ÂÊ");
         }
         move = move.normalized;
+        if (move.x < 0) {
+            GetComponent<SpriteRenderer>().flipX = true;
+        }
+        if (move.x > 0) {
+            GetComponent<SpriteRenderer>().flipX = false;
+        }
+
+        if (move.magnitude > 0) {
+            GetComponent<Animator>().SetTrigger("Move");
+        } else {
+            GetComponent<Animator>().SetTrigger("Stop");
+        }
     }
 
     private void FixedUpdate() {

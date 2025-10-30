@@ -1,11 +1,6 @@
 using UnityEngine;
 using UnityEngine.Analytics;
 
-public enum Gender {
-    Male,
-    Female
-}
-
 public class DataManager : MonoBehaviour {
     public static DataManager Instance { get; private set; }
 
@@ -13,18 +8,22 @@ public class DataManager : MonoBehaviour {
         if (Instance == null) {
             Instance = this;
             DontDestroyOnLoad(gameObject);
+
+            // 테스트 프로필
+            ChildProfile testProfile = new ChildProfile();
+            testProfile.NickName = "TestUser";
+            testProfile.AgeBand = 10;
+            testProfile.Gender = Gender.Male;
+            currentProfile = testProfile;
+
         }
         else Destroy(gameObject);
     }
-    public class Profile {
-        public string Name;
-        public int Age;
-        public Gender UserGender;
-    }
+    
 
-    public Profile currentProfile;
+    public ChildProfile currentProfile;
 
-    public void SelectProfile(Profile profile) {
+    public void SelectProfile(ChildProfile profile) {
         currentProfile = profile;
     }
 

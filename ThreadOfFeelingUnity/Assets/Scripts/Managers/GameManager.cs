@@ -4,9 +4,9 @@ public class GameManager : MonoBehaviour {
 
     public GameObject maleCharacterPrefab; // 남성 캐릭터 프리팹
     public GameObject femaleCharacterPrefab; // 여성 캐릭터 프리팹
-    public Transform spawnPoint;
+    public Vector3 spawnPosition = new Vector3(0, 0, 0); // 시작 스폰 지점
 
-    private GameObject playerInstance; // 생성된 플레이어를 저장할 변수
+    private GameObject playerInstance;
 
     private void Awake() {
         if (Instance == null) {
@@ -16,8 +16,18 @@ public class GameManager : MonoBehaviour {
         else Destroy(gameObject);
     }
 
+    private void Start() {
+        string currentSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+        if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "MainGameScene") {
+            StartGame();
+        }
+        else {
+            Debug.Log("현재 씬은 " + currentSceneName + "입니다");
+        }
+    }
+
     public void StartGame() {
-        DataManager.Profile userProfile = DataManager.Instance.currentProfile;
+        ChildProfile userProfile = DataManager.Instance.currentProfile;
 
         if (userProfile == null) {
             Debug.LogError("선택된 프로필이 없습니다");
@@ -26,7 +36,7 @@ public class GameManager : MonoBehaviour {
 
         GameObject prefabToCreate = null;
 
-        if (userProfile.UserGender == Gender.Male) {
+        if (userProfile.Gender == Gender.Male) {
             prefabToCreate = maleCharacterPrefab;
         }
         else {
@@ -34,10 +44,10 @@ public class GameManager : MonoBehaviour {
         }
 
         if (prefabToCreate != null) {
-            playerInstance = Instantiate(prefabToCreate, spawnPoint.position, Quaternion.identity);
+            playerInstance = Instantiate(prefabToCreate, spawnPosition, Quaternion.identity);
         }
         else {
-            Debug.LogError("성별에 맞는 캐릭터 프리팹이 GameManager에 연결되지 않았습니다!");
+            Debug.LogError("성별에 맞는 캐릭터 프리팹이 GameManager에 연결되지 않았습니다");
         }
     }
 
