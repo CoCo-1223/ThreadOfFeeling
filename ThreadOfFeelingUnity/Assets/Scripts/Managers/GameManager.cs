@@ -2,12 +2,10 @@ using UnityEngine;
 public class GameManager : MonoBehaviour {
     public static GameManager Instance { get; private set; }
 
-    public GameObject maleCharacterPrefab; // 남성 캐릭터 프리팹
-    public GameObject femaleCharacterPrefab; // 여성 캐릭터 프리팹
+    public GameObject maleCharacterPrefab;     // 남성 캐릭터 프리팹
+    public GameObject femaleCharacterPrefab;   // 여성 캐릭터 프리팹
     public Vector3 spawnPosition = new Vector3(0, 0, 0); // 시작 스폰 지점
-
-    private GameObject playerInstance;
-
+    private GameObject playerInstance;          // 플레이어 캐릭터
     private void Awake() {
         if (Instance == null) {
             Instance = this;
@@ -26,6 +24,7 @@ public class GameManager : MonoBehaviour {
         }
     }
 
+    // 시작 마을 진입
     public void StartGame() {
         ChildProfile userProfile = DataManager.Instance.currentProfile;
 
@@ -36,7 +35,7 @@ public class GameManager : MonoBehaviour {
 
         GameObject prefabToCreate = null;
 
-        if (userProfile.Gender == Gender.Male) {
+        if (userProfile.gender == Gender.Male) {
             prefabToCreate = maleCharacterPrefab;
         }
         else {
@@ -50,10 +49,15 @@ public class GameManager : MonoBehaviour {
             Debug.LogError("성별에 맞는 캐릭터 프리팹이 GameManager에 연결되지 않았습니다");
         }
     }
-
+    
+    // 게임 멈추기
     public void PauseGame() {
         if (playerInstance != null) {
             playerInstance.GetComponent<PlayerController>().StopMovement();
         }
     }
+
+    // 동화 선택
+    // 동화 진행
+    // 하우징
 }

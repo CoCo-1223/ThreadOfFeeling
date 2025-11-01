@@ -1,24 +1,22 @@
 using System;
-
-public enum Gender {
-    Male,
-    Female
-}
-
-public class ChildProfile{
-    public int ChildId { get; set; }
-    public string NickName { get; set; }
-    public int AgeBand { get; set; }
-    public Gender Gender { get; set; }
-    public int FontScale { get; set; }
-    public bool IsTtsUsed { get; set; }
-    public bool IsDyslexiaFontUsed { get; set; }
-    public int RoomId { get; set; }
-    public DateTime createdAt { get; set; }
-    public ChildProfile() {
-        this.FontScale = 100;
-        this.IsTtsUsed = false;
-        this.IsDyslexiaFontUsed = false;
-        this.createdAt = DateTime.MinValue;
+public class ChildProfile {
+    public int childId { get; }
+    public string nickname { get; set; }
+    public AgeBand ageBand { get; set; }
+    public Gender gender { get; }
+    public int fontScale { get; set; }
+    public bool isTtsUsed { get; set; }
+    public bool isDyslexiaFontUsed { get; set; }
+    public int roomId { get; }
+    public DateTime createdAt { get; }
+    public ChildProfile(string nickName, AgeBand ageBand, Gender gender) {
+        //this.ChildId = numChildId+
+        this.nickname = nickName;
+        this.ageBand = ageBand;
+        this.gender = gender;
+        this.fontScale = 100;
+        this.isTtsUsed = false;
+        this.isDyslexiaFontUsed = false;
+        //this.createdAt = DateTime.MinValue;
     }
 }

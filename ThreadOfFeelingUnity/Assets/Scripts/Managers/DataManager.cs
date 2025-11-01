@@ -10,10 +10,10 @@ public class DataManager : MonoBehaviour {
             DontDestroyOnLoad(gameObject);
 
             // 테스트 프로필
-            ChildProfile testProfile = new ChildProfile();
-            testProfile.NickName = "TestUser";
-            testProfile.AgeBand = 10;
-            testProfile.Gender = Gender.Male;
+            ChildProfile testProfile = new ChildProfile("TestUser", 0, Gender.Male);
+            //testProfile.nickName = "TestUser";
+            //testProfile.ageBand = 0;
+            //testProfile.gender = Gender.Male;
             currentProfile = testProfile;
 
         }

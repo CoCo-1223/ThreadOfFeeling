@@ -1,14 +1,17 @@
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour {
-    
-    public float speed = 3;
-    Vector3 move;
+
+    private SpriteRenderer _spriteRenderer;
+    private Animator _animator;
+    private float speed = 3;
+    private Vector3 move;
 
     private bool isStopped = false;
 
     void Start() {
-
+        _spriteRenderer = GetComponent<SpriteRenderer>();
+        _animator = GetComponent<Animator>();
     }
 
     void Update() {
@@ -35,16 +38,16 @@ public class PlayerController : MonoBehaviour {
         }
         move = move.normalized;
         if (move.x < 0) {
-            GetComponent<SpriteRenderer>().flipX = true;
+            _spriteRenderer.flipX = true;
         }
         if (move.x > 0) {
-            GetComponent<SpriteRenderer>().flipX = false;
+            _spriteRenderer.flipX = false;
         }
 
         if (move.magnitude > 0) {
-            GetComponent<Animator>().SetTrigger("Move");
+            _animator.SetTrigger("Move");
         } else {
-            GetComponent<Animator>().SetTrigger("Stop");
+            _animator.SetTrigger("Stop");
         }
     }
 
