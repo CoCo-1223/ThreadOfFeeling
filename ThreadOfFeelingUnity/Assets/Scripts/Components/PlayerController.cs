@@ -6,6 +6,8 @@ public class PlayerController : MonoBehaviour {
     private Animator _animator;
     private float speed = 3;
     private Vector3 move;
+    public NpcDialog dialog;
+    GameObject scanObject;
 
     private bool isStopped = false;
 
@@ -49,6 +51,9 @@ public class PlayerController : MonoBehaviour {
         } else {
             _animator.SetTrigger("Stop");
         }
+
+        if (Input.GetButtonDown("Jump") && scanObject != null)
+            dialog.Action(scanObject);
     }
 
     private void FixedUpdate() {
