@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 9083435073809551772}
   - component: {fileID: 5955332612083328632}
   - component: {fileID: 3538810755503476638}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: PlayerCat
   m_TagString: PlayerCat
   m_Icon: {fileID: 0}
@@ -103,7 +103,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21174e40868da04428730cc76f982c6b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 3
 --- !u!50 &9083435073809551772
 Rigidbody2D:
   serializedVersion: 5
@@ -129,7 +128,7 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!70 &5955332612083328632
 CapsuleCollider2D:

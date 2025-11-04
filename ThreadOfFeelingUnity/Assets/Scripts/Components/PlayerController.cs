@@ -1,66 +1,79 @@
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour {
-
+public class PlayerController : MonoBehaviour
+{
     private SpriteRenderer _spriteRenderer;
     private Animator _animator;
+    private Rigidbody2D _rigidbody;
     private float speed = 3;
     private Vector3 move;
-    public NpcDialog dialog;
+    //public NPC dialog;
     GameObject scanObject;
 
     private bool isStopped = false;
+    private Vector2 lastMoveDir = Vector2.down;
 
     void Start() {
         _spriteRenderer = GetComponent<SpriteRenderer>();
         _animator = GetComponent<Animator>();
+        _rigidbody = GetComponent<Rigidbody2D>();
     }
 
     void Update() {
+        if (isStopped) move = Vector3.zero;
+        // 이동 입력 가져오기 8방향 정규화된 벡터
+        else move = InputManager.Instance.GetMoveInput(); 
 
-        if (isStopped) return;
+        if (move.magnitude > 0) lastMoveDir = move.normalized;
 
-        move = Vector3.zero;
+        // 마지막 바라보는 방향 기준으로 좌우 반전
+        if (move.x < 0) _spriteRenderer.flipX = true;
+        else if (move.x > 0) _spriteRenderer.flipX = false;
 
-        if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A)) {
-            move += new Vector3(-1, 0, 0);
-            //Debug.LogError("왼쪽");
-        }
-        if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D)) {
-            move += new Vector3(1, 0, 0);
-            //Debug.LogError("오른쪽");
-        }
-        if (Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W)) {
-            move += new Vector3(0, 1, 0);
-            //Debug.LogError("위쪽");
-        }
-        if (Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S)) {
-            move += new Vector3(0, -1, 0);
-            //Debug.LogError("아래쪽");
-        }
-        move = move.normalized;
-        if (move.x < 0) {
-            _spriteRenderer.flipX = true;
-        }
-        if (move.x > 0) {
-            _spriteRenderer.flipX = false;
-        }
+        // 플레이어 애니메이션
+        if (move.magnitude > 0) _animator.SetTrigger("Move");
+        else _animator.SetTrigger("Stop");
 
-        if (move.magnitude > 0) {
-            _animator.SetTrigger("Move");
-        } else {
-            _animator.SetTrigger("Stop");
+        // NPC 상호작용 Scan Object
+        if (InputManager.Instance.GetInteractionKeyDown() && scanObject != null) {
+            NPC targetNPC = scanObject.GetComponent<NPC>();
+            if (targetNPC != null) {
+                targetNPC.Action(scanObject);
+                if (targetNPC.getIsAction()) {
+                    StopMovement();
+                }
+                else {
+                    ResumeMovement();
+                }
+            }
         }
-
-        if (Input.GetButtonDown("Jump") && scanObject != null)
-            dialog.Action(scanObject);
     }
 
     private void FixedUpdate() {
-        transform.Translate(move * speed * Time.deltaTime);
+        // 이동
+        if (!isStopped) {
+            Vector3 nextPosition = _rigidbody.position + (Vector2)(move * speed * Time.deltaTime);
+            _rigidbody.MovePosition(nextPosition);
+        }
+
+        // Ray 시각화
+        //Vector3 facingDir = InputManager.Instance.GetFacingDirection();
+        Vector3 facingDir = lastMoveDir;
+        Debug.DrawRay(transform.position, facingDir * 0.7f, Color.green);
+        RaycastHit2D rayHit = Physics2D.Raycast(transform.position, facingDir, 0.7f, LayerMask.GetMask("Object"));
+
+        if (rayHit.collider != null) {
+            scanObject = rayHit.collider.gameObject;
+        }
+        else scanObject = null;
     }
 
     public void StopMovement() {
         isStopped = true;
+        _animator.SetTrigger("Stop"); // 멈출 때 애니메이션도 정지
+    }
+
+    public void ResumeMovement() { // 이동 재개 함수 추가
+        isStopped = false;
     }
 }

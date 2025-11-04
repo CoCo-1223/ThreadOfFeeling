@@ -10,10 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 2174226426765074415}
   - component: {fileID: 1191867992892797589}
-  - component: {fileID: 1324708349797338301}
   - component: {fileID: 9083435073809551772}
   - component: {fileID: 5955332612083328632}
-  - component: {fileID: -3171729057683331839}
   m_Layer: 0
   m_Name: NPC
   m_TagString: Untagged
@@ -91,19 +89,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &1324708349797338301
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 661951125057935451}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 21174e40868da04428730cc76f982c6b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  speed: 3
 --- !u!50 &9083435073809551772
 Rigidbody2D:
   serializedVersion: 5
@@ -112,7 +97,7 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 661951125057935451}
-  m_BodyType: 0
+  m_BodyType: 2
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
@@ -168,25 +153,3 @@ CapsuleCollider2D:
   m_Offset: {x: -0.0066004097, y: -0.006766513}
   m_Size: {x: 0.2832008, y: 0.336467}
   m_Direction: 0
---- !u!95 &-3171729057683331839
-Animator:
-  serializedVersion: 7
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 661951125057935451}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 5955d35a153f5c449a82708f7bd1d255, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
