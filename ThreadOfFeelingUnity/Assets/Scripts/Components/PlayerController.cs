@@ -7,7 +7,6 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D _rigidbody;
     private float speed = 3;
     private Vector3 move;
-    //public NPC dialog;
     GameObject scanObject;
 
     private bool isStopped = false;
@@ -21,9 +20,10 @@ public class PlayerController : MonoBehaviour
 
     void Update() {
         if (isStopped) move = Vector3.zero;
-        // 이동 입력 가져오기 8방향 정규화된 벡터
+        // 이동 입력 가져오기 8방향 정규화 벡터
         else move = InputManager.Instance.GetMoveInput(); 
 
+        // 바라본 마지막 방향 저장
         if (move.magnitude > 0) lastMoveDir = move.normalized;
 
         // 마지막 바라보는 방향 기준으로 좌우 반전
@@ -36,14 +36,14 @@ public class PlayerController : MonoBehaviour
 
         // NPC 상호작용 Scan Object
         if (InputManager.Instance.GetInteractionKeyDown() && scanObject != null) {
-            NPC targetNPC = scanObject.GetComponent<NPC>();
+            Object targetNPC = scanObject.GetComponent<Object>();
             if (targetNPC != null) {
                 targetNPC.Action(scanObject);
                 if (targetNPC.getIsAction()) {
-                    StopMovement();
+                    GameManager.Instance.PauseGame();
                 }
                 else {
-                    ResumeMovement();
+                    GameManager.Instance.ResumeGame();
                 }
             }
         }
@@ -56,8 +56,7 @@ public class PlayerController : MonoBehaviour
             _rigidbody.MovePosition(nextPosition);
         }
 
-        // Ray 시각화
-        //Vector3 facingDir = InputManager.Instance.GetFacingDirection();
+        // Ray 시각화 - scanObject 용도
         Vector3 facingDir = lastMoveDir;
         Debug.DrawRay(transform.position, facingDir * 0.7f, Color.green);
         RaycastHit2D rayHit = Physics2D.Raycast(transform.position, facingDir, 0.7f, LayerMask.GetMask("Object"));

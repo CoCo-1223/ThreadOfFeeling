@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -6,14 +7,18 @@ public class GameManager : MonoBehaviour {
 
     // 게임 상태 관리
     public GameState CurrentState { get; private set; }
+    private Stack<GameState> stateStack = new Stack<GameState>();
 
-    // 플레이어 스폰 관련
+
+    // 플레이어 관련
     public GameObject maleCharacterPrefab;    // 남성 캐릭터 프리팹
     public GameObject femaleCharacterPrefab;  // 여성 캐릭터 프리팹
     public Vector3 spawnPosition = new Vector3(0, 0, 0); // 시작 스폰 지점
     private GameObject playerInstance;        // 생성된 플레이어 캐릭터의 인스턴스
     private PlayerController playerController; // 플레이어 컨트롤러
-    //public NpcDialog dialogueManager;
+
+    // 메뉴 창
+    public GameObject menuSet;
 
     private void Awake() {
         if (Instance == null) {
@@ -33,21 +38,41 @@ public class GameManager : MonoBehaviour {
         OnSceneLoaded(SceneManager.GetActiveScene(), LoadSceneMode.Single);
     }
 
+    private void Update() {
+        // 메뉴 창 띄우기
+        if (InputManager.Instance.GetEscapeKeyDown()) {
+            if (menuSet != null)
+                MenuSet(!menuSet.activeSelf);
+        }
+    }
+
     // 씬이 로드될 때마다 호출되는 함수
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
         if (scene.name == "MainGameScene") {
             StartGame();
-            SetState(GameState.Playing); // 게임 시작 시 상태를 'Playing'으로 설정
+            SetState(GameState.Village);
+            menuSet = GameObject.Find("MenuSet");
+
+            if (menuSet != null) 
+                menuSet.SetActive(false);
         }
         else {
-            Debug.Log("현재 씬은 " + scene.name + "입니다 (GameManager)");
-            // 다른 씬에서는 플레이어를 스폰 안함
             playerInstance = null;
             playerController = null;
+            if (scene.name == "StoryScene") {
+                SetState(GameState.Story);
+            }
+            else if (scene.name == "HousingScene") {
+                SetState(GameState.Housing);
+            }
+            else {
+                Debug.Log("[GameManager] 현재 씬은 " + scene.name + "입니다");
+                SetState(GameState.Loading);
+            }
         }
     }
 
-    // 메인 게임 씬 시작 시 플레이어 스폰
+    // 마을 씬 시작 시 플레이어 생성
     public void StartGame() {
         // 이미 플레이어가 있다면 중복 스폰 방지
         if (playerInstance != null) return; 
@@ -55,7 +80,8 @@ public class GameManager : MonoBehaviour {
         ChildProfile userProfile = DataManager.Instance.currentProfile;
 
         if (userProfile == null) {
-            Debug.LogError("선택된 프로필이 없습니다 (GameManager)");
+            Debug.LogError("[GameManager] 선택된 프로필이 없습니다");
+            
             // 테스트용 기본 프로필
             userProfile = new ChildProfile("TestUser", 0, Gender.Male);
             return;
@@ -66,81 +92,102 @@ public class GameManager : MonoBehaviour {
         if (prefabToCreate != null) {
             playerInstance = Instantiate(prefabToCreate, spawnPosition, Quaternion.identity);
             playerController = playerInstance.GetComponent<PlayerController>();
-
-            //if (playerController != null && dialogueManager != null) playerController.dialog = dialogueManager;
-            //else Debug.LogError("플레이어 스폰 또는 NpcDialog 연결 실패");
             
         }
         else {
-            Debug.LogError("성별에 맞는 캐릭터 프리팹이 GameManager에 연결되지 않았습니다");
+            Debug.LogError("[GameManager] 성별에 맞는 캐릭터 프리팹이 GameManager에 연결되지 않았습니다");
         }
     }
 
     // 게임 상태 제어
     public void SetState(GameState newState) {
-        if (CurrentState == newState) return; // 이미 같은 상태라면 변경 안 함
-
+        if (CurrentState == newState) return;
         CurrentState = newState;
+        Debug.Log("[GameManager] 게임 상태 변경: " + CurrentState);
 
         if (playerController == null) {
-            // MainGameScene이 아닌 경우 playerController가 null
-            if (CurrentState != GameState.Playing && SceneManager.GetActiveScene().name != "MainGameScene") {
-                // MainGameScene이 아닌데 다른 상태로 변경 시도
+            if (playerInstance != null) {
+                playerController = playerInstance.GetComponent<PlayerController>();
             }
-            else if (CurrentState == GameState.Playing && playerInstance == null && SceneManager.GetActiveScene().name == "MainGameScene") {
-                Debug.LogWarning("플레이어가 아직 스폰되지 않았거나 캐싱에 실패했습니다");
-            }
-            return;
         }
 
-        // 상태에 따라 플레이어의 행동을 제어
-        switch (CurrentState) {
-            case GameState.Playing:
-                playerController.ResumeMovement();
-                break;
-            
-            case GameState.Dialogue:
-                playerController.StopMovement();
-                break;
-            
-            case GameState.Paused:
-                playerController.StopMovement();
-                break;
-            
-            case GameState.Loading:
-                playerController.StopMovement();
-                break;
-            
-            case GameState.GameOver:
-                playerController.StopMovement();
-                break;
+        if (playerController != null) {
+            switch (CurrentState) {
+                case GameState.Village:
+                    playerController.ResumeMovement();
+                    break;
+                case GameState.Story:
+                case GameState.Housing:
+                case GameState.Paused:
+                case GameState.Loading:
+                    playerController.StopMovement();
+                    break;
+            }
         }
+        else {
+            if (CurrentState == GameState.Village || CurrentState == GameState.Story || CurrentState == GameState.Housing) {
+                Debug.LogWarning("[GameManager] " + CurrentState + " 상태로 변경하려 하나, PlayerController가 없습니다. (씬에 플레이어 없음)");
+            }
+        }
+        
     }
 
-    
-    // NPC 대화 시작
-    public void StartDialogue() {
-        SetState(GameState.Dialogue);
-    }
-
-    // NPC 대화 종료
-    public void EndDialogue() {
-        SetState(GameState.Playing);
-    }
-
-    // 게임 일시정지(UI 버튼)
+    // 게임 일시정지
     public void PauseGame() {
+        if (CurrentState == GameState.Paused) return;
+        stateStack.Push(CurrentState);
         SetState(GameState.Paused);
     }
 
-    // 게임 재개(UI 버튼)
+    // 게임 재개
     public void ResumeGame() {
-        SetState(GameState.Playing);
+        if (CurrentState != GameState.Paused) return;
+        if (stateStack.Count > 0) {
+            SetState(stateStack.Pop());
+        }
+        else {
+            SetState(GameState.Village);
+            Debug.LogWarning("[GameManager] 스택에 상태가 비어있습니다");
+        }
     }
 
     // 씬 로드 시 등록된 함수를 해제
     private void OnDestroy() {
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
-}
 
+    // 게임 끝내기 - build시에만 작동
+    public void GameExit() {
+        Application.Quit();
+    }
+    
+    // 게임 저장 - 메뉴
+    public void GameSave() {
+        // 플레이어 위치
+        // 클리어 한 동화
+        // 인벤토리
+        // roomLayout
+        // DataManager 호출해서 저장하기
+        DataManager.Instance.SaveProfileData();
+        MenuSet(false);
+    }
+
+    public void MenuSet(bool isActive) {
+        if (menuSet == null) return;
+        menuSet.SetActive(isActive);
+        if (isActive) PauseGame();
+        else ResumeGame();
+    }
+    public void LoadStoryScene() {
+        SceneManager.LoadScene("StoryScene");
+        stateStack.Clear();
+    }
+    public void LoadHousingScene() {
+        SceneManager.LoadScene("HousingScene");
+        stateStack.Clear();
+    }
+    public void LoadVillageScene() {
+        SceneManager.LoadScene("MainGameScene");
+        stateStack.Clear();
+    }
+}

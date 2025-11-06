@@ -19,9 +19,9 @@ public enum StoryType {
 }
 
 public enum GameState {
-    Playing,    // 플레이 중
-    Dialogue,   // 대화 중
+    Village,    // 마을
+    Story,      // 동화
+    Housing,    // 하우징
     Paused,     // 일시정지 (UI 메뉴 등)
     Loading,    // 로딩 중
-    GameOver    // 게임 오버
 }

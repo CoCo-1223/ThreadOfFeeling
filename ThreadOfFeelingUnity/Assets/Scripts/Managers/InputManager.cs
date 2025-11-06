@@ -31,6 +31,7 @@ public class InputManager : MonoBehaviour {
         else if (rawInput.y < 0) _facingDirection = Vector3.down;
         else if (rawInput.x < 0) _facingDirection = Vector3.left;
         else if (rawInput.x > 0) _facingDirection = Vector3.right;
+
     }
     public Vector3 GetMoveInput() {
         return _moveInput;
@@ -42,5 +43,9 @@ public class InputManager : MonoBehaviour {
 
     public bool GetInteractionKeyDown() {
         return Input.GetButtonDown("Jump");
+    }
+
+    public bool GetEscapeKeyDown() {
+        return Input.GetButtonDown("Cancel");
     }
 }
