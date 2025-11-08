@@ -1,18 +1,27 @@
-using System;
+using UnityEngine;
 using System.Collections.Generic;
 
-public class Story {
-    public int storyId {  get; } // 동화 ID
-    public string storyTitle { get; } // 동화 제목
-    public string storyDescription {  get; } // 간단한 동화 설명
-    public List<Scenario> scenarios { get; } // 연결된 시나리오들
-    public string storyTag { get; } // 태그
-    public Item storyReward { get; } // 스토리 보상 아이템
-    public Story(int storyId, string storyTitle, string storyDescription, List<Scenario> scenarios, Item item) {
-        this.storyId = storyId;
-        this.storyTitle = storyTitle;
-        this.storyDescription = storyDescription;
-        this.scenarios = scenarios;
-        this.storyReward = item;
-    }
+[CreateAssetMenu(fileName = "NewStory", menuName = "GameData/Story")]
+public class Story : ScriptableObject {
+    [Header("스토리 기본 정보")]
+    [Tooltip("동화 제목 (예: 흥부와 놀부)")]
+    public string storyTitle;
+    
+    [Tooltip("동화 선택 씬의 팝업에 표시될 커버 이미지")]
+    public Sprite storyCoverImage;
+
+    [Tooltip("동화 선택 씬의 팝업에 표시될 간단한 설명")]
+    [TextArea(3, 10)]
+    public string storyDescription;
+
+    [Tooltip("동화 선택 씬의 팝업에 표시될 태그 (예: #용기 #권선징악)")]
+    public string storyTag;
+
+    [Header("스토리 보상")]
+    [Tooltip("이 동화를 완료했을 때 지급할 아이템 (선택 사항)")]
+    public Item storyReward;
+
+    [Header("시나리오 목록")]
+    [Tooltip("이 동화를 구성하는 시나리오(페이지) 목록")]
+    public List<Scenario> scenarios;
 }

@@ -7,15 +7,21 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D _rigidbody;
     private float speed = 3;
     private Vector3 move;
-    GameObject scanObject;
-
     private bool isStopped = false;
+
+    GameObject scanObject;
+    public float raycastDistance = 0.7f;
     private Vector2 lastMoveDir = Vector2.down;
+
+    public LayerMask objectLayerMask; 
+
 
     void Start() {
         _spriteRenderer = GetComponent<SpriteRenderer>();
         _animator = GetComponent<Animator>();
         _rigidbody = GetComponent<Rigidbody2D>();
+        if (objectLayerMask == 0)
+            objectLayerMask = LayerMask.GetMask("Object");
     }
 
     void Update() {
@@ -35,16 +41,11 @@ public class PlayerController : MonoBehaviour
         else _animator.SetTrigger("Stop");
 
         // NPC 상호작용 Scan Object
-        if (InputManager.Instance.GetInteractionKeyDown() && scanObject != null) {
-            Object targetNPC = scanObject.GetComponent<Object>();
-            if (targetNPC != null) {
-                targetNPC.Action(scanObject);
-                if (targetNPC.getIsAction()) {
-                    GameManager.Instance.PauseGame();
-                }
-                else {
-                    GameManager.Instance.ResumeGame();
-                }
+        if (InputManager.Instance.GetSpaceKeyDown() && scanObject != null)
+        {
+            InteractableObject targetObject = scanObject.GetComponent<InteractableObject>(); 
+            if (targetObject != null) {
+                targetObject.HandleInteraction();
             }
         }
     }
@@ -58,8 +59,8 @@ public class PlayerController : MonoBehaviour
 
         // Ray 시각화 - scanObject 용도
         Vector3 facingDir = lastMoveDir;
-        Debug.DrawRay(transform.position, facingDir * 0.7f, Color.green);
-        RaycastHit2D rayHit = Physics2D.Raycast(transform.position, facingDir, 0.7f, LayerMask.GetMask("Object"));
+        Debug.DrawRay(transform.position, facingDir * raycastDistance, Color.green);
+        RaycastHit2D rayHit = Physics2D.Raycast(transform.position, facingDir, raycastDistance, objectLayerMask);
 
         if (rayHit.collider != null) {
             scanObject = rayHit.collider.gameObject;

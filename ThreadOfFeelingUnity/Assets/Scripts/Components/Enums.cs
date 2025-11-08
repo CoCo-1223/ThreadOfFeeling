@@ -20,6 +20,7 @@ public enum StoryType {
 
 public enum GameState {
     Village,    // 마을
+    Selection,  // 동화 선택
     Story,      // 동화
     Housing,    // 하우징
     Paused,     // 일시정지 (UI 메뉴 등)

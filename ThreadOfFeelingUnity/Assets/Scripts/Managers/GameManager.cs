@@ -9,16 +9,12 @@ public class GameManager : MonoBehaviour {
     public GameState CurrentState { get; private set; }
     private Stack<GameState> stateStack = new Stack<GameState>();
 
-
     // 플레이어 관련
     public GameObject maleCharacterPrefab;    // 남성 캐릭터 프리팹
     public GameObject femaleCharacterPrefab;  // 여성 캐릭터 프리팹
     public Vector3 spawnPosition = new Vector3(0, 0, 0); // 시작 스폰 지점
     private GameObject playerInstance;        // 생성된 플레이어 캐릭터의 인스턴스
     private PlayerController playerController; // 플레이어 컨트롤러
-
-    // 메뉴 창
-    public GameObject menuSet;
 
     private void Awake() {
         if (Instance == null) {
@@ -38,28 +34,19 @@ public class GameManager : MonoBehaviour {
         OnSceneLoaded(SceneManager.GetActiveScene(), LoadSceneMode.Single);
     }
 
-    private void Update() {
-        // 메뉴 창 띄우기
-        if (InputManager.Instance.GetEscapeKeyDown()) {
-            if (menuSet != null)
-                MenuSet(!menuSet.activeSelf);
-        }
-    }
-
     // 씬이 로드될 때마다 호출되는 함수
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
         if (scene.name == "MainGameScene") {
             StartGame();
             SetState(GameState.Village);
-            menuSet = GameObject.Find("MenuSet");
-
-            if (menuSet != null) 
-                menuSet.SetActive(false);
         }
         else {
             playerInstance = null;
             playerController = null;
-            if (scene.name == "StoryScene") {
+            if (scene.name == "SelectionScene") {
+                SetState(GameState.Selection);
+            }
+            else if (scene.name == "StoryScene") {
                 SetState(GameState.Story);
             }
             else if (scene.name == "HousingScene") {
@@ -118,6 +105,7 @@ public class GameManager : MonoBehaviour {
                     break;
                 case GameState.Story:
                 case GameState.Housing:
+                case GameState.Selection:
                 case GameState.Paused:
                 case GameState.Loading:
                     playerController.StopMovement();
@@ -156,28 +144,7 @@ public class GameManager : MonoBehaviour {
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
-    // 게임 끝내기 - build시에만 작동
-    public void GameExit() {
-        Application.Quit();
-    }
-    
-    // 게임 저장 - 메뉴
-    public void GameSave() {
-        // 플레이어 위치
-        // 클리어 한 동화
-        // 인벤토리
-        // roomLayout
-        // DataManager 호출해서 저장하기
-        DataManager.Instance.SaveProfileData();
-        MenuSet(false);
-    }
-
-    public void MenuSet(bool isActive) {
-        if (menuSet == null) return;
-        menuSet.SetActive(isActive);
-        if (isActive) PauseGame();
-        else ResumeGame();
-    }
+    // -- 씬 이동 함수들 --
     public void LoadStoryScene() {
         SceneManager.LoadScene("StoryScene");
         stateStack.Clear();
@@ -188,6 +155,10 @@ public class GameManager : MonoBehaviour {
     }
     public void LoadVillageScene() {
         SceneManager.LoadScene("MainGameScene");
+        stateStack.Clear();
+    }
+    public void LoadSelectionScene() {
+        SceneManager.LoadScene("SelectionScene");
         stateStack.Clear();
     }
 }

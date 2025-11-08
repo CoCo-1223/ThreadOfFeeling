@@ -25,27 +25,20 @@ public class InputManager : MonoBehaviour {
         else if (Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S)) rawInput.y = -1;
         _moveInput = rawInput.normalized;
 
-
-        // 바라보는 방향 계산
-        if (rawInput.y > 0) _facingDirection = Vector3.up;
-        else if (rawInput.y < 0) _facingDirection = Vector3.down;
-        else if (rawInput.x < 0) _facingDirection = Vector3.left;
-        else if (rawInput.x > 0) _facingDirection = Vector3.right;
-
     }
     public Vector3 GetMoveInput() {
         return _moveInput;
     }
 
-    public Vector3 GetFacingDirection() {
-        return _facingDirection;
-    }
-
-    public bool GetInteractionKeyDown() {
+    public bool GetSpaceKeyDown() {
         return Input.GetButtonDown("Jump");
     }
 
     public bool GetEscapeKeyDown() {
         return Input.GetButtonDown("Cancel");
+    }
+
+    public int GetMotionInput() {
+        return 0;
     }
 }

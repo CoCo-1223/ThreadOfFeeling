@@ -1,7 +1,4 @@
-using NUnit.Framework.Interfaces;
 using System.Collections.Generic;
-using UnityEngine.UI;
-using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -12,21 +9,14 @@ public class DataManager : MonoBehaviour {
     public static DataManager Instance { get; private set; }
 
     // 현재 선택된 사용자 프로필
-    public ChildProfile currentProfile;
+    public ChildProfile currentProfile { get; private set; }
     
-    // Object 상호작용
-    public TextMeshProUGUI ObjectText;
-    public GameObject talkPanel;
+    // 선택한 동화
+    public  Story selectedTale { get; private set; }
+
     Dictionary<int, string[]> talkData;
     Dictionary<int, Sprite> portraitData;
     public Sprite[] portraitArr;
-    public Image portraitImg;
-
-    // 씬 전환 버튼
-    public GameObject choiceBttnStory;
-    public GameObject choiceBttnHousing;
-
-    public TextMeshProUGUI menuUserName;
 
     private void Awake() {
         if (Instance == null) {
@@ -34,10 +24,9 @@ public class DataManager : MonoBehaviour {
             DontDestroyOnLoad(gameObject);
             SceneManager.sceneLoaded += OnSceneLoaded;
 
-            //OnSceneLoaded(SceneManager.GetActiveScene(), LoadSceneMode.Single);
-
             // 테스트용 프로필 생성
-            currentProfile = new ChildProfile("TestUser", 0, Gender.Male);
+            ChildProfile profile = new ChildProfile("TestUser", 0, Gender.Male);
+            SelectProfile(profile);
             
             // 게임 데이터 로드
             LoadViallageData();
@@ -48,47 +37,20 @@ public class DataManager : MonoBehaviour {
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
-        // Village 씬 로드시 연결할 데이터
-        if (scene.name == "MainGameScene") {
-            try {
-                GameObject canvasObj = GameObject.Find("Canvas");
-                if (canvasObj == null) {
-                    Debug.LogError("[DataManager] 'Canvas' 오브젝트를 씬에서 찾을 수 없습니다.");
-                    return;
-                }
-
-                talkPanel = canvasObj.transform.Find("TalkPanel").gameObject;
-                ObjectText = canvasObj.transform.Find("TalkPanel/Text").GetComponent<TextMeshProUGUI>();
-                portraitImg = canvasObj.transform.Find("TalkPanel/Portrait").GetComponent<Image>();
-                choiceBttnStory = canvasObj.transform.Find("TalkPanel/StoryBttn").gameObject;
-                choiceBttnHousing = canvasObj.transform.Find("TalkPanel/HousingBttn").gameObject;
-                menuUserName = canvasObj.transform.Find("MenuSet/User Name/text").GetComponent<TextMeshProUGUI>();
-
-                if (talkPanel != null)
-                    talkPanel.SetActive(false);
-                if (choiceBttnStory != null)
-                    choiceBttnStory.SetActive(false);
-                if (choiceBttnHousing != null)
-                    choiceBttnHousing.SetActive(false);
-                if (menuUserName != null && currentProfile != null)
-                    menuUserName.text = currentProfile.nickname;
-            }
-            catch (System.Exception e) {
-                Debug.LogError("[DataManager] UI 컴포넌트를 찾는 중 예외 발생. 씬의 UI 오브젝트 이름과 Find()의 경로가 일치하는지 확인하세요: " + e.Message);
-            }
-        }
-        else {
-            talkPanel = null;
-            ObjectText = null;
-            portraitImg = null;
-            choiceBttnStory = null;
-            choiceBttnHousing = null;
-            menuUserName = null;
-        }
+        Debug.Log($"[DataManager] Scene Loaded: {scene.name}");
     }
 
     private void OnDestroy() {
         SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    public void SelectProfile(ChildProfile profile) {
+        currentProfile = profile;
+        Debug.Log($"[DataManager] 프로필 선택됨: {profile.nickname}");
+    }
+
+    public void SelectFairyTaleData(Story taleData) {
+        selectedTale = taleData;
     }
 
     private void LoadViallageData() {
@@ -97,7 +59,7 @@ public class DataManager : MonoBehaviour {
         GenerateObjectData();
     }
 
-    public void GenerateObjectData() {
+    private void GenerateObjectData() {
         // NPC별 대화 데이터 "Text:표정"
         talkData.Add(1000, new string[] { 
             "안녕? 난 다비드야:3", 
@@ -133,5 +95,5 @@ public class DataManager : MonoBehaviour {
 
     // 프로필 저장/로드 함수 추가
     public void SaveProfileData() { }
-    public void LoadProfileData() { }
+    void LoadProfileData() { }
 }

@@ -1,11 +1,20 @@
-using System;
+using UnityEngine;
+using System.Collections.Generic;
 
+[System.Serializable]
 public class Question {
-    public int questionId {  get; } // 문제 ID
-    public string first { get; }    // 첫 번째 보기
-    public string second { get; }   // 두 번째 보기
-    public int answer { get; }   // 정답
-    public string feedbackAnswer { get; } // 맞췄을 때 피드백
-    public string feedbackWrong { get; } // 맞췄을 때 피드백
-    public Question() { }
+    [Tooltip("이 칸을 비워두면 퀴즈 없이 넘어갑니다.")]
+    [TextArea(2, 5)]
+    public string questionText;
+
+    public string answer1;
+    public string answer2;
+    [Range(0, 1)]
+    [Tooltip("정답 인덱스 (0=answer1, 1=answer2)")]
+    public int correctAnswerIndex = 0;
+
+    [TextArea(2, 5)]
+    public string correctFeedback;
+    [TextArea(2, 5)]
+    public string wrongFeedback;
 }
