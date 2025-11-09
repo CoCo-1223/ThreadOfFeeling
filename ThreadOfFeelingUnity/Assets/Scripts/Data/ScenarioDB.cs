@@ -5,7 +5,7 @@ using UnityEngine;
 /// 3. Scenario - 감정 퀴즈의 배경이 되는 상황 정보
 /// </summary>
 [Table("Scenario")]
-public class Scenario
+public class ScenarioDB
 {
     // sceneId, INTEGER, 시나리오 ID
     [PrimaryKey] // (AutoIncrement가 없으므로 "s_001"같은 값을 쓰려면 INTEGER 대신 TEXT여야 합니다. 

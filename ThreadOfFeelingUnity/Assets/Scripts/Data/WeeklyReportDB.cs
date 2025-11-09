@@ -6,7 +6,7 @@ using SQLite;
 /// </summary>
 
 [Table("WeeklyReport")]
-public class WeeklyReport {
+public class WeeklyReportDB {
     
     // 리포트 고유 ID
     [PrimaryKey, AutoIncrement]

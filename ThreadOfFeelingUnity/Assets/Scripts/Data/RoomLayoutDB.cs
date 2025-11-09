@@ -7,7 +7,7 @@ using System;
 /// </summary>
 
 [Table("RoomLayout")]
-public class RoomLayout {
+public class RoomLayoutDB {
     
     // room_id, INTEGER, 방 배치 ID
     [PrimaryKey, AutoIncrement]

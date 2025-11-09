@@ -5,7 +5,7 @@ using UnityEngine;
 /// 5. Question - 챌린지 문항 정보
 /// </summary>
 [Table("Question")]
-public class Question {
+public class QuestionDB {
     // question_id, INTEGER, 문제 ID
     [PrimaryKey, AutoIncrement]
     public int question_id { get; set; } // 기본키

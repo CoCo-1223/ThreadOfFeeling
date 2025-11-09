@@ -7,7 +7,7 @@ using System;
 /// </summary>
 [Table("Attempt")]
 
-public class Attempt {
+public class AttemptDB {
     
     // 로그 구분을 위한 고유 ID (자동 증가)
     [PrimaryKey, AutoIncrement]

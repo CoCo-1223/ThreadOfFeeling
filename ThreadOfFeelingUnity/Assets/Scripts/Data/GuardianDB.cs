@@ -5,7 +5,7 @@ using SQLite;
 ///  2. Guardian - 보호자 계정 및 동의 정보 
 /// </summary>
 [Table("Guardian")]
-public class Guardian {
+public class GuardianDB {
 
     // guardian_id, INTEGER, 보호자 ID
     [PrimaryKey, AutoIncrement]

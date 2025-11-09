@@ -5,7 +5,7 @@ using UnityEngine;
 /// 7. RewardItem - 게임 보상 아이템의 정의
 /// </summary>
 [Table("RewardItem")]
-public class RewardItem {
+public class RewardItemDB {
 
     // item_id, INTEGER, 아이템 고유 ID
     [PrimaryKey, AutoIncrement]

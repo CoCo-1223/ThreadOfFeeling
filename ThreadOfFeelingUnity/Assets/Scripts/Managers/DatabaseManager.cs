@@ -33,16 +33,16 @@ public class DatabaseManager : MonoBehaviour
         _connection = new SQLiteConnection(dbPath);
 
         // Data 폴더의 10개 테이블 생성
-        _connection.CreateTable<ChildProfile>();
-        _connection.CreateTable<Guardian>();
-        _connection.CreateTable<Scenario>();
-        _connection.CreateTable<Story>();
-        _connection.CreateTable<Question>();
-        _connection.CreateTable<Attempt>();
-        _connection.CreateTable<RewardItem>();
-        _connection.CreateTable<Inventory>();
-        _connection.CreateTable<RoomLayout>();
-        _connection.CreateTable<WeeklyReport>();
+        _connection.CreateTable<ChildProfileDB>();
+        _connection.CreateTable<GuardianDB>();
+        _connection.CreateTable<ScenarioDB>();
+        _connection.CreateTable<StoryDB>();
+        _connection.CreateTable<QuestionDB>();
+        _connection.CreateTable<AttemptDB>();
+        _connection.CreateTable<RewardItemDB>();
+        _connection.CreateTable<InventoryDB>();
+        _connection.CreateTable<RoomLayoutDB>();
+        _connection.CreateTable<WeeklyReportDB>();
 
         Debug.Log($"[DatabaseManager] DB 연결 성공 및 테이블 10개 준비 완료. 경로: {dbPath}");
     }

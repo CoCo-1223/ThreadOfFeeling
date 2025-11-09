@@ -7,7 +7,7 @@ using UnityEngine;
 /// </summary>
 
 [Table("Inventory")]
-public class Inventory {
+public class InventoryDB {
     
     // 인벤토리 항목 고유 ID
     [PrimaryKey, AutoIncrement]

@@ -6,7 +6,7 @@ using SQLite;
 /// 1. ChildProfile - 아동 사용자 계정 정보를 저장하는 테이블 
 /// </summary>
 [Table("ChildProfile")]
-public class ChildProfile
+public class ChildProfileDB
 {
     // profile_id, INTEGER, 프로필ID, p_001
     // [PrimaryKey]: 이 컬럼을 기본 키로 설정 

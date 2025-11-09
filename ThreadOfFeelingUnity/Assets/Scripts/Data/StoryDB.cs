@@ -5,7 +5,7 @@ using UnityEngine;
 /// 4. Story - 동화 정보
 /// </summary>
 [Table("Story")]
-public class Story {
+public class StoryDB {
 
     // story_id, INTEGER, 동화 ID
     [PrimaryKey, AutoIncrement]
