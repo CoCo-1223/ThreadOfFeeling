@@ -1,1 +1,16 @@
-* text=auto eol=lf
+* text=auto
+*.a text=false
+*.anim text=false
+*.asset text=false
+*.bin text=false
+*.controller text=false
+*.dll text=false
+*.fbx text=false
+*.fontspec text=false
+*.jpg text=false
+*.meta text=false
+*.mixer text=false
+*.png text=false
+*.prefab text=false
+*.unity text=false
+*.mp3 text=false

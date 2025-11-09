@@ -1,0 +1,99 @@
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+
+// 게임의 모든 데이터(프로필, 대화, 퀘스트)를 관리하는 매니저
+
+public class DataManager : MonoBehaviour {
+    public static DataManager Instance { get; private set; }
+
+    // 현재 선택된 사용자 프로필
+    public ChildProfile currentProfile { get; private set; }
+    
+    // 선택한 동화
+    public  Story selectedTale { get; private set; }
+
+    Dictionary<int, string[]> talkData;
+    Dictionary<int, Sprite> portraitData;
+    public Sprite[] portraitArr;
+
+    private void Awake() {
+        if (Instance == null) {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+            SceneManager.sceneLoaded += OnSceneLoaded;
+
+            // 테스트용 프로필 생성
+            ChildProfile profile = new ChildProfile("TestUser", 0, Gender.Male);
+            SelectProfile(profile);
+            
+            // 게임 데이터 로드
+            LoadViallageData();
+        }
+        else {
+            Destroy(gameObject);
+        }
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
+        Debug.Log($"[DataManager] Scene Loaded: {scene.name}");
+    }
+
+    private void OnDestroy() {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    public void SelectProfile(ChildProfile profile) {
+        currentProfile = profile;
+        Debug.Log($"[DataManager] 프로필 선택됨: {profile.nickname}");
+    }
+
+    public void SelectFairyTaleData(Story taleData) {
+        selectedTale = taleData;
+    }
+
+    private void LoadViallageData() {
+        talkData = new Dictionary<int, string[]>();
+        portraitData = new Dictionary<int, Sprite>();
+        GenerateObjectData();
+    }
+
+    private void GenerateObjectData() {
+        // NPC별 대화 데이터 "Text:표정"
+        talkData.Add(1000, new string[] { 
+            "안녕? 난 다비드야:3", 
+            "우리 뭐하고 놀까?:0:CHOICE",
+        });
+        //talkData.Add(2000, new string[] { "안녕?:1", "난 OOO야:2"});
+        //talkData.Add(100, new string[] { "평범한 꽃이다"});
+        //talkData.Add(200, new string[] { "..."});
+        //talkData.Add(300, new string[] { "정체 모를 무언가..."});
+
+        // 초상화 데이터  0: 기본 얼굴, 1: 웃는 얼굴, 2: 화난 얼굴, 3: 놀란 얼굴, 4: 슬픈 얼굴
+        portraitData.Add(1000 + 0, portraitArr[0]);
+        portraitData.Add(1000 + 1, portraitArr[1]);
+        portraitData.Add(1000 + 2, portraitArr[2]);
+        portraitData.Add(1000 + 3, portraitArr[3]);
+        portraitData.Add(1000 + 4, portraitArr[4]);
+        //portraitData.Add(2000 + 0, portraitArr[0]);
+        //portraitData.Add(2000 + 1, portraitArr[1]);
+        //portraitData.Add(2000 + 2, portraitArr[2]);
+        //portraitData.Add(2000 + 3, portraitArr[3]);
+    }
+
+    public string GetTalkData(int id, int talkIndex) {
+        if (talkIndex == talkData[id].Length)
+            return null;
+        else
+            return talkData[id][talkIndex];
+    }
+
+    public Sprite GetPortrait(int id, int portraitIndex) {
+        return portraitData[id +  portraitIndex];
+    }
+
+    // 프로필 저장/로드 함수 추가
+    public void SaveProfileData() { }
+    void LoadProfileData() { }
+}
