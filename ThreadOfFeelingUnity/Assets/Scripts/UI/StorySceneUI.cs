@@ -3,8 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
 
-public class StorySceneUi : SceneUI
-{
+public class StorySceneUi : SceneUI {
     [Header("스토리 UI")]
     [Tooltip("동화 이미지를 표시할 Image UI")]
     [SerializeField] private Image storyDisplayImage;
@@ -22,7 +21,7 @@ public class StorySceneUi : SceneUI
     [Tooltip("퀴즈 정답/오답 피드백 패널")]
     [SerializeField] private GameObject feedbackPanel;
     [SerializeField] private TextMeshProUGUI feedbackText;
-    [SerializeField] private Button feedbackContinueButton; // 다음 또는 다시 시도 버튼
+    [SerializeField] private Button feedbackContinueButton;
 
     private Story currentTale;
     private int currentScenarioIndex = 0;
@@ -56,20 +55,46 @@ public class StorySceneUi : SceneUI
     protected override void Update() {
         base.Update();
 
-        if (isQuizActive) 
-        return;
+        if (isQuizActive) {
+            // 퀴즈 질문이 활성화된 경우 -> 1, 2번 키로 답변
+            if (questionPanel.activeInHierarchy) {
+                if (InputManager.Instance.GetNOneKeyDown()) {
+                    OnAnswerClicked(0);
+                }
+                else if (InputManager.Instance.GetNTwoKeyDown()) {
+                    OnAnswerClicked(1);
+                }
+            }
+            // 오답 피드백 패널이 활성화된 경우 -> 스페이스바로 다시 시도
+            else if (feedbackPanel.activeInHierarchy) {
+                // 오답 시 다시 시도 버튼을 스페이스바로 누름
+                if (InputManager.Instance.GetSpaceKeyDown()) {
+                    RetryQuiz();
+                }
+            }
+            return;
+        }
 
         if (InputManager.Instance.GetSpaceKeyDown()) {
             if (isShowingStory) {
+                // 스토리 진행 중 스페이스바 -> 퀴즈 또는 다음 시나리오
                 bool hasQuiz = currentScenario.quiz != null && !string.IsNullOrEmpty(currentScenario.quiz.questionText);
-                if (hasQuiz) ShowQuiz();
-                else ShowNextScenario();
+                if (hasQuiz) {
+                    ShowQuiz();
+                }
+                else {
+                    ShowNextScenario();
+                }
             }
-            else ShowNextScenario();
+            else {
+                // 정답 피드백 확인 중 스페이스바 -> 다음 시나리오
+                // (정답 시 OnAnswerClicked에서 isQuizActive = false, isShowingStory = false가 됨)
+                ShowNextScenario();
+            }
         }
     }
 
-    void ShowCurrentScenario() {
+    public void ShowCurrentScenario() {
         isQuizActive = false;
         isShowingStory = true;
         
@@ -85,7 +110,7 @@ public class StorySceneUi : SceneUI
             dialogueText.text = currentScenario.dialogueText;
     }
 
-    void ShowQuiz() {
+    public void ShowQuiz() {
         isQuizActive = true;
         isShowingStory = false;
 
@@ -107,7 +132,7 @@ public class StorySceneUi : SceneUI
         questionPanel.SetActive(true);
     }
 
-    void OnAnswerClicked(int clickedButtonIndex) {
+    public void OnAnswerClicked(int clickedButtonIndex) {
         questionPanel.SetActive(false);
         feedbackPanel.SetActive(true);
         
@@ -145,14 +170,14 @@ public class StorySceneUi : SceneUI
         }
     }
 
-    void RetryQuiz() {
+    public void RetryQuiz() {
         feedbackPanel.SetActive(false); 
         questionPanel.SetActive(true); 
         isQuizActive = true;
         isShowingStory = false; 
     }
 
-    void ShowNextScenario() {
+    public void ShowNextScenario() {
         currentScenarioIndex++;
         if (currentScenarioIndex < currentTale.scenarios.Count) {
             ShowCurrentScenario();
@@ -164,7 +189,7 @@ public class StorySceneUi : SceneUI
         }
     }
 
-    void GiveReward() {
+    public void GiveReward() {
         if (currentTale.storyReward != null) {
             Debug.Log($"[StorySceneUi] 보상 획득: {currentTale.storyReward.itemName}");
             // 인벤토리 시스템에 아이템 추가 구현하기

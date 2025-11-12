@@ -34,6 +34,14 @@ public class InputManager : MonoBehaviour {
         return Input.GetButtonDown("Jump");
     }
 
+    public bool GetNOneKeyDown() {
+        return Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Keypad1);
+    }
+
+    public bool GetNTwoKeyDown() {
+        return Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.Keypad2);
+    }
+    
     public bool GetEscapeKeyDown() {
         return Input.GetButtonDown("Cancel");
     }

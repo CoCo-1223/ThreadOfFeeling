@@ -47,7 +47,6 @@ public class DatabaseManager : MonoBehaviour
         Debug.Log($"[DatabaseManager] DB 연결 성공 및 테이블 10개 준비 완료. 경로: {dbPath}");
     }
 
-
     /// <summary>
     /// 아래에 데이터 사용 함수 구현 
     /// </summary>

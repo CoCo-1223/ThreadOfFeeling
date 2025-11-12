@@ -64,6 +64,8 @@ public class SceneUI : MonoBehaviour {
         MenuSet(false);
     }
 
+    protected virtual void OnclickGoToBack() { }
+
     public void OnClickGoToStory() {
         GameManager.Instance.LoadStoryScene();
     }
