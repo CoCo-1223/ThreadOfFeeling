@@ -1,0 +1,64 @@
+using System;
+using System.Diagonstics;
+using System.Threding;
+using UnityEngine;
+
+
+public class EmotionManager : MonoBehaviour
+{
+    public static EmotionManager Instance {get; private set; }
+
+    private Process _proc;
+    private int _currentEmotion = 0;
+
+    private void Awake()
+    {
+        if(Instance != null) { Destroy(gameObject); return; }
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+
+        StartPython();
+
+    }
+
+    private void StartPython()
+    {
+        var psi = new ProcessStartInfo()
+        {
+            FileName = "python3",
+            Arguments = "../python/main_demo.py",
+            RedirectStandardOutput = true,
+            UseShellExecute = false,
+            CreateNoWindow = true
+        };
+
+        _proc = new Process();
+        _proc.StartInfo = psi;
+        _proc.OutputDataRecived += OnPythonOutput;
+        _proc.Start();
+        _proc.BeginOutputReadLine();
+    }
+
+    private void OnPythonOutput(object sender, DataRecivedEventArgs e)
+    {
+        if (string.IsNullOrEmpty(e.Data)) return;
+
+        _currentEmotion = EmotionStringToNumber(e.Data.Trim());
+    }
+
+    private int EmotionStringToNumber(string s)
+    {
+        return s switch
+        {
+            "JOY" => 1,
+            "SAD" => 2,
+            "ANGER" => 3,
+            "DISLIKE" => 4
+        };
+    }
+
+    public int GetEomtion()
+    {
+        return _currentEmotion;
+    }
+}
