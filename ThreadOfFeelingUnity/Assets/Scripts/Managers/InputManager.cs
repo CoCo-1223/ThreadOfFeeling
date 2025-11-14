@@ -1,6 +1,6 @@
 using Unity.VisualScripting;
 using UnityEngine;
-
+using EmotionManager;
 public class InputManager : MonoBehaviour {
     public static InputManager Instance { get; private set; }
 
@@ -17,7 +17,7 @@ public class InputManager : MonoBehaviour {
     }
 
     private void Update() {
-        // �̵� �Է� ���
+        // ÀÌµ¿ ÀÔ·Â °è»ê
         Vector3 rawInput = Vector3.zero;
         if (Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A)) rawInput.x = -1;
         else if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D)) rawInput.x = 1;
@@ -47,6 +47,6 @@ public class InputManager : MonoBehaviour {
     }
 
     public int GetMotionInput() {
-        return 0;
+        return EmotionManager.Instance.GetEmotion();
     }
 }
