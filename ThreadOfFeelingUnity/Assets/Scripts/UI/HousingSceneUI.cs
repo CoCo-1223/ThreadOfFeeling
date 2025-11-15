@@ -1,11 +1,12 @@
-using UnityEngine;
+namespace UI
+{
+    public class HousingSceneUi : SceneUI {
+        protected override void Start() {
+            base.Start();
+        }
 
-public class HousingSceneUi : SceneUI {
-    protected override void Start() {
-        base.Start();
-    }
-
-    protected override void Update() {
-        base.Update();
+        protected override void Update() {
+            base.Update();
+        }
     }
 }

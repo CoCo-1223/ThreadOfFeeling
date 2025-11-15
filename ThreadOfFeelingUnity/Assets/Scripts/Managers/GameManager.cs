@@ -1,20 +1,23 @@
 using System.Collections.Generic;
+using Components;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class GameManager : MonoBehaviour {
+namespace Managers
+{
+    public class GameManager : MonoBehaviour {
     public static GameManager Instance { get; private set; }
 
-    // °ÔÀÓ »óÅÂ °ü¸®
+    // ê²Œì„ ìƒíƒœ ê´€ë¦¬
     public GameState CurrentState { get; private set; }
     private Stack<GameState> stateStack = new Stack<GameState>();
 
-    // ÇÃ·¹ÀÌ¾î °ü·Ã
-    public GameObject maleCharacterPrefab;    // ³²¼º Ä³¸¯ÅÍ ÇÁ¸®ÆÕ
-    public GameObject femaleCharacterPrefab;  // ¿©¼º Ä³¸¯ÅÍ ÇÁ¸®ÆÕ
-    public Vector3 spawnPosition = new Vector3(0, 0, 0); // ½ÃÀÛ ½ºÆù ÁöÁ¡
-    private GameObject playerInstance;        // »ı¼ºµÈ ÇÃ·¹ÀÌ¾î Ä³¸¯ÅÍÀÇ ÀÎ½ºÅÏ½º
-    private PlayerController playerController; // ÇÃ·¹ÀÌ¾î ÄÁÆ®·Ñ·¯
+    // í”Œë ˆì´ì–´ ê´€ë ¨
+    [SerializeField] private GameObject maleCharacterPrefab;    // ë‚¨ì„± ìºë¦­í„° í”„ë¦¬íŒ¹
+    [SerializeField] private GameObject femaleCharacterPrefab;  // ì—¬ì„± ìºë¦­í„° í”„ë¦¬íŒ¹
+    [SerializeField] private Vector3 spawnPosition = new Vector3(0, 0, 0); // ì‹œì‘ ìŠ¤í° ì§€ì 
+    private GameObject playerInstance;        // ìƒì„±ëœ í”Œë ˆì´ì–´ ìºë¦­í„°ì˜ ì¸ìŠ¤í„´ìŠ¤
+    private PlayerController playerController; // í”Œë ˆì´ì–´ ì»¨íŠ¸ë¡¤ëŸ¬
 
     private void Awake() {
         if (Instance == null) {
@@ -27,14 +30,14 @@ public class GameManager : MonoBehaviour {
     }
 
     private void Start() {
-        // ¾ÀÀÌ ·ÎµåµÉ ¶§¸¶´Ù È£ÃâµÉ ÇÔ¼ö¸¦ µî·Ï
+        // ì”¬ì´ ë¡œë“œë  ë•Œë§ˆë‹¤ í˜¸ì¶œë  í•¨ìˆ˜ë¥¼ ë“±ë¡
         SceneManager.sceneLoaded += OnSceneLoaded;
 
-        // ÇöÀç ·ÎµåµÈ ¾À¿¡¼­µµ Áï½Ã 1È¸ ½ÇÇà
+        // í˜„ì¬ ë¡œë“œëœ ì”¬ì—ì„œë„ ì¦‰ì‹œ 1íšŒ ì‹¤í–‰
         OnSceneLoaded(SceneManager.GetActiveScene(), LoadSceneMode.Single);
     }
 
-    // ¾ÀÀÌ ·ÎµåµÉ ¶§¸¶´Ù È£ÃâµÇ´Â ÇÔ¼ö
+    // ì”¬ì´ ë¡œë“œë  ë•Œë§ˆë‹¤ í˜¸ì¶œë˜ëŠ” í•¨ìˆ˜
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
         if (scene.name == "MainGameScene") {
             StartGame();
@@ -53,24 +56,21 @@ public class GameManager : MonoBehaviour {
                 SetState(GameState.Housing);
             }
             else {
-                Debug.Log("[GameManager] ÇöÀç ¾ÀÀº " + scene.name + "ÀÔ´Ï´Ù");
+                Debug.Log("[GameManager] í˜„ì¬ ì”¬ì€ " + scene.name + "ì…ë‹ˆë‹¤");
                 SetState(GameState.Loading);
             }
         }
     }
-
-    // ¸¶À» ¾À ½ÃÀÛ ½Ã ÇÃ·¹ÀÌ¾î »ı¼º
+    
+    // ë§ˆì„ ì”¬ ì‹œì‘ ì‹œ í”Œë ˆì´ì–´ ìƒì„±
     public void StartGame() {
-        // ÀÌ¹Ì ÇÃ·¹ÀÌ¾î°¡ ÀÖ´Ù¸é Áßº¹ ½ºÆù ¹æÁö
+        // ì´ë¯¸ í”Œë ˆì´ì–´ê°€ ìˆë‹¤ë©´ ì¤‘ë³µ ìŠ¤í° ë°©ì§€
         if (playerInstance != null) return; 
 
         ChildProfile userProfile = DataManager.Instance.currentProfile;
 
         if (userProfile == null) {
-            Debug.LogError("[GameManager] ¼±ÅÃµÈ ÇÁ·ÎÇÊÀÌ ¾ø½À´Ï´Ù");
-            
-            // Å×½ºÆ®¿ë ±âº» ÇÁ·ÎÇÊ
-            userProfile = new ChildProfile("TestUser", 0, Gender.Male);
+            Debug.LogError("[GameManager] ì„ íƒëœ í”„ë¡œí•„ì´ ì—†ìŠµë‹ˆë‹¤");
             return;
         }
 
@@ -79,18 +79,17 @@ public class GameManager : MonoBehaviour {
         if (prefabToCreate != null) {
             playerInstance = Instantiate(prefabToCreate, spawnPosition, Quaternion.identity);
             playerController = playerInstance.GetComponent<PlayerController>();
-            
         }
         else {
-            Debug.LogError("[GameManager] ¼ºº°¿¡ ¸Â´Â Ä³¸¯ÅÍ ÇÁ¸®ÆÕÀÌ GameManager¿¡ ¿¬°áµÇÁö ¾Ê¾Ò½À´Ï´Ù");
+            Debug.LogError("[GameManager] ì„±ë³„ì— ë§ëŠ” ìºë¦­í„° í”„ë¦¬íŒ¹ì´ GameManagerì— ì—°ê²°ë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤");
         }
     }
 
-    // °ÔÀÓ »óÅÂ Á¦¾î
+    // ê²Œì„ ìƒíƒœ ì œì–´
     public void SetState(GameState newState) {
         if (CurrentState == newState) return;
         CurrentState = newState;
-        Debug.Log("[GameManager] °ÔÀÓ »óÅÂ º¯°æ: " + CurrentState);
+        Debug.Log("[GameManager] ê²Œì„ ìƒíƒœ ë³€ê²½: " + CurrentState);
 
         if (playerController == null) {
             if (playerInstance != null) {
@@ -114,20 +113,20 @@ public class GameManager : MonoBehaviour {
         }
         else {
             if (CurrentState == GameState.Village || CurrentState == GameState.Story || CurrentState == GameState.Housing) {
-                Debug.LogWarning("[GameManager] " + CurrentState + " »óÅÂ·Î º¯°æÇÏ·Á ÇÏ³ª, PlayerController°¡ ¾ø½À´Ï´Ù. (¾À¿¡ ÇÃ·¹ÀÌ¾î ¾øÀ½)");
+                Debug.LogWarning("[GameManager] " + CurrentState + " ìƒíƒœë¡œ ë³€ê²½í•˜ë ¤ í•˜ë‚˜, PlayerControllerê°€ ì—†ìŠµë‹ˆë‹¤. (ì”¬ì— í”Œë ˆì´ì–´ ì—†ìŒ)");
             }
         }
         
     }
 
-    // °ÔÀÓ ÀÏ½ÃÁ¤Áö
+    // ê²Œì„ ì¼ì‹œì •ì§€
     public void PauseGame() {
         if (CurrentState == GameState.Paused) return;
         stateStack.Push(CurrentState);
         SetState(GameState.Paused);
     }
 
-    // °ÔÀÓ Àç°³
+    // ê²Œì„ ì¬ê°œ
     public void ResumeGame() {
         if (CurrentState != GameState.Paused) return;
         if (stateStack.Count > 0) {
@@ -135,16 +134,16 @@ public class GameManager : MonoBehaviour {
         }
         else {
             SetState(GameState.Village);
-            Debug.LogWarning("[GameManager] ½ºÅÃ¿¡ »óÅÂ°¡ ºñ¾îÀÖ½À´Ï´Ù");
+            Debug.LogWarning("[GameManager] ìŠ¤íƒì— ìƒíƒœê°€ ë¹„ì–´ìˆìŠµë‹ˆë‹¤");
         }
     }
 
-    // ¾À ·Îµå ½Ã µî·ÏµÈ ÇÔ¼ö¸¦ ÇØÁ¦
+    // ì”¬ ë¡œë“œ ì‹œ ë“±ë¡ëœ í•¨ìˆ˜ë¥¼ í•´ì œ
     private void OnDestroy() {
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
-    // -- ¾À ÀÌµ¿ ÇÔ¼öµé --
+    // -- ì”¬ ì´ë™ í•¨ìˆ˜ë“¤ --
     public void LoadStoryScene() {
         SceneManager.LoadScene("StoryScene");
         stateStack.Clear();
@@ -161,4 +160,5 @@ public class GameManager : MonoBehaviour {
         SceneManager.LoadScene("SelectionScene");
         stateStack.Clear();
     }
+}
 }

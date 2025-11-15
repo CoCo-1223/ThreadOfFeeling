@@ -1,84 +1,88 @@
+using Managers;
 using TMPro;
 using UnityEngine;
 
-public class SceneUI : MonoBehaviour {
+namespace UI
+{
+    public class SceneUI : MonoBehaviour {
 
-    [Header("Menu UI (From SceneUI)")]
-    [Tooltip("¸ğµç ¾À¿¡¼­ °øÅëÀ¸·Î »ç¿ëÇÒ ¸Ş´º UI °ÔÀÓ ¿ÀºêÁ§Æ®")]
-    [SerializeField] private GameObject menuSet;
-    [Tooltip("¸Ş´º Ã¢¿¡ Ç¥½ÃµÉ À¯Àú ´Ğ³×ÀÓ Text")]
-    [SerializeField] private TextMeshProUGUI menuUserName;
+        [Header("Menu UI (From SceneUI)")]
+        [Tooltip("ëª¨ë“  ì”¬ì—ì„œ ê³µí†µìœ¼ë¡œ ì‚¬ìš©í•  ë©”ë‰´ UI ê²Œì„ ì˜¤ë¸Œì íŠ¸")]
+        [SerializeField] private GameObject menuSet;
+        [Tooltip("ë©”ë‰´ ì°½ì— í‘œì‹œë  ìœ ì € ë‹‰ë„¤ì„ Text")]
+        [SerializeField] private TextMeshProUGUI menuUserName;
 
-    protected virtual void Start() {
-        FindUserName();
-        if (menuSet != null) {
-            menuSet.SetActive(false);
-        }
-        else {
-            Debug.LogError("[SceneUI] 'MenuSet' °ÔÀÓ ¿ÀºêÁ§Æ®°¡ ÀÎ½ºÆåÅÍ¿¡ ¿¬°áµÇÁö ¾Ê¾Ò½À´Ï´Ù");
-        }
-    }
-
-    protected virtual void Update() {
-        if (InputManager.Instance.GetEscapeKeyDown()) {
+        protected virtual void Start() {
+            FindUserName();
             if (menuSet != null) {
-                MenuSet(!menuSet.activeSelf);
+                menuSet.SetActive(false);
+            }
+            else {
+                Debug.LogError("[SceneUI] 'MenuSet' ê²Œì„ ì˜¤ë¸Œì íŠ¸ê°€ ì¸ìŠ¤í™í„°ì— ì—°ê²°ë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤");
             }
         }
-    }
 
-    public void FindUserName() {
-        if (DataManager.Instance != null && DataManager.Instance.currentProfile != null) {
-            menuUserName.text = DataManager.Instance.currentProfile.nickname;
+        protected virtual void Update() {
+            if (InputManager.Instance.GetEscapeKeyDown()) {
+                if (menuSet != null) {
+                    MenuSet(!menuSet.activeSelf);
+                }
+            }
         }
-        else {
-            Debug.LogError("[SceneUI] DataManager ¶Ç´Â ÇÁ·ÎÇÊÀ» Ã£À» ¼ö ¾ø½À´Ï´Ù");
+
+        public void FindUserName() {
+            if (DataManager.Instance != null && DataManager.Instance.currentProfile != null) {
+                menuUserName.text = DataManager.Instance.currentProfile.nickname;
+            }
+            else {
+                Debug.LogError("[SceneUI] DataManager ë˜ëŠ” í”„ë¡œí•„ì„ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤");
+            }
         }
-    }
 
-    private void MenuSet(bool isActive) {
-        if (menuSet == null) return;
-        menuSet.SetActive(isActive);
-        if (isActive) GameManager.Instance.PauseGame();
-        else GameManager.Instance.ResumeGame();
-    }
+        private void MenuSet(bool isActive) {
+            if (menuSet == null) return;
+            menuSet.SetActive(isActive);
+            if (isActive) GameManager.Instance.PauseGame();
+            else GameManager.Instance.ResumeGame();
+        }
 
-    // °ÔÀÓ ÀúÀå - ¸Ş´º
-    public void OnClickSave() {
-        // ÇÃ·¹ÀÌ¾î À§Ä¡
-        // Å¬¸®¾î ÇÑ µ¿È­
-        // ÀÎº¥Åä¸®
-        // roomLayout
-        // DataManager È£ÃâÇØ¼­ ÀúÀåÇÏ±â
-        DataManager.Instance.SaveProfileData();
-        MenuSet(false);
-    }
+        // ê²Œì„ ì €ì¥ - ë©”ë‰´
+        public void OnClickSave() {
+            // í”Œë ˆì´ì–´ ìœ„ì¹˜
+            // í´ë¦¬ì–´ í•œ ë™í™”
+            // ì¸ë²¤í† ë¦¬
+            // roomLayout
+            // DataManager í˜¸ì¶œí•´ì„œ ì €ì¥í•˜ê¸°
+            DataManager.Instance.SaveProfileData();
+            MenuSet(false);
+        }
 
-    // °ÔÀÓ ³¡³»±â - build½Ã¿¡¸¸ ÀÛµ¿
-    public void OnClickExit() {
-        Application.Quit();
-    }
+        // ê²Œì„ ëë‚´ê¸° - buildì‹œì—ë§Œ ì‘ë™
+        public void OnClickExit() {
+            Application.Quit();
+        }
 
-    // ÀÌ¾îÇÏ±â - ¸Ş´º
-    public void OnClickResume() {
-        MenuSet(false);
-    }
+        // ì´ì–´í•˜ê¸° - ë©”ë‰´
+        public void OnClickResume() {
+            MenuSet(false);
+        }
 
-    protected virtual void OnclickGoToBack() { }
+        protected virtual void OnclickGoToBack() { }
 
-    public void OnClickGoToStory() {
-        GameManager.Instance.LoadStoryScene();
-    }
+        public void OnClickGoToStory() {
+            GameManager.Instance.LoadStoryScene();
+        }
 
-    public void OnClickGoToHousing() {
-        GameManager.Instance.LoadHousingScene();
-    }
+        public void OnClickGoToHousing() {
+            GameManager.Instance.LoadHousingScene();
+        }
 
-    public void OnClickGoToVillage() {
-        GameManager.Instance.LoadVillageScene();
-    }
+        public void OnClickGoToVillage() {
+            GameManager.Instance.LoadVillageScene();
+        }
 
-    public void OnClickGoToSelection() {
-        GameManager.Instance.LoadSelectionScene();
+        public void OnClickGoToSelection() {
+            GameManager.Instance.LoadSelectionScene();
+        }
     }
 }

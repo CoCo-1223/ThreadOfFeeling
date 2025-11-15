@@ -1,20 +1,22 @@
 using UnityEngine;
-using System.Collections.Generic;
 
-[System.Serializable]
-public class Question {
-    [Tooltip("ÀÌ Ä­À» ºñ¿öµÎ¸é ÄûÁî ¾øÀÌ ³Ñ¾î°©´Ï´Ù.")]
-    [TextArea(2, 5)]
-    public string questionText;
+namespace Components
+{
+    [System.Serializable]
+    public class Question {
+        [Tooltip("ì´ ì¹¸ì„ ë¹„ì›Œë‘ë©´ í€´ì¦ˆ ì—†ì´ ë„˜ì–´ê°‘ë‹ˆë‹¤.")]
+        [TextArea(2, 5)]
+        public string questionText;
 
-    public string answer1;
-    public string answer2;
-    [Range(0, 1)]
-    [Tooltip("Á¤´ä ÀÎµ¦½º (0=answer1, 1=answer2)")]
-    public int correctAnswerIndex = 0;
+        public string answer1;
+        public string answer2;
+        [Range(0, 1)]
+        [Tooltip("ì •ë‹µ ì¸ë±ìŠ¤ (0=answer1, 1=answer2)")]
+        public int correctAnswerIndex = 0;
 
-    [TextArea(2, 5)]
-    public string correctFeedback;
-    [TextArea(2, 5)]
-    public string wrongFeedback;
+        [TextArea(2, 5)]
+        public string correctFeedback;
+        [TextArea(2, 5)]
+        public string wrongFeedback;
+    }
 }

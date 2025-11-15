@@ -1,69 +1,74 @@
+using Components;
+using Managers;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class SelectionSceneUi : SceneUI {
-    [Header("Story Details Popup")]
-    [Tooltip("»ó¼¼ Á¤º¸ ÆË¾÷ÀÇ ºÎ¸ğ Panel ¿ÀºêÁ§Æ®")]
-    [SerializeField] private GameObject storyDetailsPanel;
-    [Tooltip("ÆË¾÷¿¡ Ç¥½ÃÇÒ µ¿È­ Á¦¸ñ Text")]
-    [SerializeField] private TextMeshProUGUI detailTitle;
+namespace UI
+{
+    public class SelectionSceneUi : SceneUI {
+        [Header("Story Details Popup")]
+        [Tooltip("ìƒì„¸ ì •ë³´ íŒì—…ì˜ ë¶€ëª¨ Panel ì˜¤ë¸Œì íŠ¸")]
+        [SerializeField] private GameObject storyDetailsPanel;
+        [Tooltip("íŒì—…ì— í‘œì‹œí•  ë™í™” ì œëª© Text")]
+        [SerializeField] private TextMeshProUGUI detailTitle;
     
-    [Tooltip("ÆË¾÷¿¡ Ç¥½ÃÇÒ µ¿È­ Ä¿¹ö Image")]
-    [SerializeField] private Image detailCoverImage; 
+        [Tooltip("íŒì—…ì— í‘œì‹œí•  ë™í™” ì»¤ë²„ Image")]
+        [SerializeField] private Image detailCoverImage; 
 
-    [Tooltip("ÆË¾÷¿¡ Ç¥½ÃÇÒ µ¿È­ ¼³¸í Text")]
-    [SerializeField] private TextMeshProUGUI detailDescription;
-    [Tooltip("ÆË¾÷¿¡ Ç¥½ÃÇÒ µ¿È­ ÅÂ±× Text")]
-    [SerializeField] private TextMeshProUGUI detailTag;
-    [Tooltip("ÆË¾÷ÀÇ '½ÃÀÛÇÏ±â' ¹öÆ°")]
-    [SerializeField] private Button startButton;
+        [Tooltip("íŒì—…ì— í‘œì‹œí•  ë™í™” ì„¤ëª… Text")]
+        [SerializeField] private TextMeshProUGUI detailDescription;
+        [Tooltip("íŒì—…ì— í‘œì‹œí•  ë™í™” íƒœê·¸ Text")]
+        [SerializeField] private TextMeshProUGUI detailTag;
+        [Tooltip("íŒì—…ì˜ 'ì‹œì‘í•˜ê¸°' ë²„íŠ¼")]
+        [SerializeField] private Button startButton;
 
-    private Story pendingStory;
+        private Story pendingStory;
 
-    protected override void Start(){
-        base.Start();
-        storyDetailsPanel.SetActive(false);
-    }
-
-    protected override void Update() {
-        base.Update();
-    }
-
-    public void ShowStoryDetails(Story data) {
-        if (data == null) return;
-
-        pendingStory = data;
-
-        if (detailTitle != null)
-            detailTitle.text = data.storyTitle;
-
-        if (detailCoverImage != null) {
-            detailCoverImage.sprite = data.storyCoverImage;
-            detailCoverImage.gameObject.SetActive(data.storyCoverImage != null);
+        protected override void Start(){
+            base.Start();
+            storyDetailsPanel.SetActive(false);
         }
 
-        if (detailDescription != null)
-            detailDescription.text = data.storyDescription;
+        protected override void Update() {
+            base.Update();
+        }
+
+        public void ShowStoryDetails(Story data) {
+            if (data == null) return;
+
+            pendingStory = data;
+
+            if (detailTitle != null)
+                detailTitle.text = data.storyTitle;
+
+            if (detailCoverImage != null) {
+                detailCoverImage.sprite = data.storyCoverImage;
+                detailCoverImage.gameObject.SetActive(data.storyCoverImage != null);
+            }
+
+            if (detailDescription != null)
+                detailDescription.text = data.storyDescription;
         
-        if (detailTag != null)
-            detailTag.text = data.storyTag;
+            if (detailTag != null)
+                detailTag.text = data.storyTag;
 
-        storyDetailsPanel.SetActive(true);
-    }
-
-    public void OnClickStartStory() {
-        if (pendingStory == null) {
-            Debug.LogError("[SelectionSceneUi] ½ÃÀÛÇÒ µ¿È­°¡ ¼±ÅÃµÇÁö ¾Ê¾Ò½À´Ï´Ù.");
-            return;
+            storyDetailsPanel.SetActive(true);
         }
-        DataManager.Instance.SelectFairyTaleData(pendingStory);
-        storyDetailsPanel.SetActive(false);
-        GameManager.Instance.LoadStoryScene();
-    }
 
-    public void OnClickClosePopup() {
-        storyDetailsPanel.SetActive(false);
-        pendingStory = null;
+        public void OnClickStartStory() {
+            if (pendingStory == null) {
+                Debug.LogError("[SelectionSceneUi] ì‹œì‘í•  ë™í™”ê°€ ì„ íƒë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤.");
+                return;
+            }
+            DataManager.Instance.SelectFairyTaleData(pendingStory);
+            storyDetailsPanel.SetActive(false);
+            GameManager.Instance.LoadStoryScene();
+        }
+
+        public void OnClickClosePopup() {
+            storyDetailsPanel.SetActive(false);
+            pendingStory = null;
+        }
     }
 }

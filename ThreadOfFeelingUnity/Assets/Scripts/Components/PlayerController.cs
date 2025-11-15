@@ -1,79 +1,83 @@
+using Managers;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour
+namespace Components
 {
-    private SpriteRenderer _spriteRenderer;
-    private Animator _animator;
-    private Rigidbody2D _rigidbody;
-    private float speed = 3;
-    private Vector3 move;
-    private bool isStopped = false;
+    public class PlayerController : MonoBehaviour {
 
-    GameObject scanObject;
-    public float raycastDistance = 0.7f;
-    private Vector2 lastMoveDir = Vector2.down;
+        private SpriteRenderer _spriteRenderer;
+        private Animator _animator;
+        private Rigidbody2D _rigidbody;
+        private float speed = 3;
+        private Vector3 move;
+        private bool isStopped = false;
 
-    public LayerMask objectLayerMask; 
+        GameObject scanObject;
+        public float raycastDistance = 0.7f;
+        private Vector2 lastMoveDir = Vector2.down;
+
+        public LayerMask objectLayerMask; 
 
 
-    void Start() {
-        _spriteRenderer = GetComponent<SpriteRenderer>();
-        _animator = GetComponent<Animator>();
-        _rigidbody = GetComponent<Rigidbody2D>();
-        if (objectLayerMask == 0)
-            objectLayerMask = LayerMask.GetMask("Object");
-    }
+        void Start() {
+            _spriteRenderer = GetComponent<SpriteRenderer>();
+            _animator = GetComponent<Animator>();
+            _rigidbody = GetComponent<Rigidbody2D>();
+            if (objectLayerMask == 0)
+                objectLayerMask = LayerMask.GetMask("Object");
+        }
 
-    void Update() {
-        if (isStopped) move = Vector3.zero;
-        // ÀÌµ¿ ÀÔ·Â °¡Á®¿À±â 8¹æÇâ Á¤±ÔÈ­ º¤ÅÍ
-        else move = InputManager.Instance.GetMoveInput(); 
+        void Update() {
+            if (isStopped) move = Vector3.zero;
+            // ì´ë™ ì…ë ¥ ê°€ì ¸ì˜¤ê¸° 8ë°©í–¥ ì •ê·œí™” ë²¡í„°
+            else move = InputManager.Instance.GetMoveInput(); 
 
-        // ¹Ù¶óº» ¸¶Áö¸· ¹æÇâ ÀúÀå
-        if (move.magnitude > 0) lastMoveDir = move.normalized;
+            // ë°”ë¼ë³¸ ë§ˆì§€ë§‰ ë°©í–¥ ì €ì¥
+            if (move.magnitude > 0) lastMoveDir = move.normalized;
 
-        // ¸¶Áö¸· ¹Ù¶óº¸´Â ¹æÇâ ±âÁØÀ¸·Î ÁÂ¿ì ¹İÀü
-        if (move.x < 0) _spriteRenderer.flipX = true;
-        else if (move.x > 0) _spriteRenderer.flipX = false;
+            // ë§ˆì§€ë§‰ ë°”ë¼ë³´ëŠ” ë°©í–¥ ê¸°ì¤€ìœ¼ë¡œ ì¢Œìš° ë°˜ì „
+            if (move.x < 0) _spriteRenderer.flipX = true;
+            else if (move.x > 0) _spriteRenderer.flipX = false;
 
-        // ÇÃ·¹ÀÌ¾î ¾Ö´Ï¸ŞÀÌ¼Ç
-        if (move.magnitude > 0) _animator.SetTrigger("Move");
-        else _animator.SetTrigger("Stop");
+            // í”Œë ˆì´ì–´ ì• ë‹ˆë©”ì´ì…˜
+            if (move.magnitude > 0) _animator.SetTrigger("Move");
+            else _animator.SetTrigger("Stop");
 
-        // NPC »óÈ£ÀÛ¿ë Scan Object
-        if (InputManager.Instance.GetSpaceKeyDown() && scanObject != null)
-        {
-            InteractableObject targetObject = scanObject.GetComponent<InteractableObject>(); 
-            if (targetObject != null) {
-                targetObject.HandleInteraction();
+            // NPC ìƒí˜¸ì‘ìš© Scan Object
+            if (InputManager.Instance.GetSpaceKeyDown() && scanObject != null)
+            {
+                InteractableObject targetObject = scanObject.GetComponent<InteractableObject>(); 
+                if (targetObject != null) {
+                    targetObject.HandleInteraction();
+                }
             }
         }
-    }
 
-    private void FixedUpdate() {
-        // ÀÌµ¿
-        if (!isStopped) {
-            Vector3 nextPosition = _rigidbody.position + (Vector2)(move * speed * Time.deltaTime);
-            _rigidbody.MovePosition(nextPosition);
+        private void FixedUpdate() {
+            // ì´ë™
+            if (!isStopped) {
+                Vector3 nextPosition = _rigidbody.position + (Vector2)(move * speed * Time.deltaTime);
+                _rigidbody.MovePosition(nextPosition);
+            }
+
+            // Ray ì‹œê°í™” - scanObject ìš©ë„
+            Vector3 facingDir = lastMoveDir;
+            Debug.DrawRay(transform.position, facingDir * raycastDistance, Color.green);
+            RaycastHit2D rayHit = Physics2D.Raycast(transform.position, facingDir, raycastDistance, objectLayerMask);
+
+            if (rayHit.collider != null) {
+                scanObject = rayHit.collider.gameObject;
+            }
+            else scanObject = null;
         }
 
-        // Ray ½Ã°¢È­ - scanObject ¿ëµµ
-        Vector3 facingDir = lastMoveDir;
-        Debug.DrawRay(transform.position, facingDir * raycastDistance, Color.green);
-        RaycastHit2D rayHit = Physics2D.Raycast(transform.position, facingDir, raycastDistance, objectLayerMask);
-
-        if (rayHit.collider != null) {
-            scanObject = rayHit.collider.gameObject;
+        public void StopMovement() {
+            isStopped = true;
+            _animator.SetTrigger("Stop"); // ë©ˆì¶œ ë•Œ ì• ë‹ˆë©”ì´ì…˜ë„ ì •ì§€
         }
-        else scanObject = null;
-    }
 
-    public void StopMovement() {
-        isStopped = true;
-        _animator.SetTrigger("Stop"); // ¸ØÃâ ¶§ ¾Ö´Ï¸ŞÀÌ¼Çµµ Á¤Áö
-    }
-
-    public void ResumeMovement() { // ÀÌµ¿ Àç°³ ÇÔ¼ö Ãß°¡
-        isStopped = false;
+        public void ResumeMovement() { // ì´ë™ ì¬ê°œ í•¨ìˆ˜ ì¶”ê°€
+            isStopped = false;
+        }
     }
 }

@@ -1,55 +1,58 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 
-public class MainSceneUI : SceneUI {
+namespace UI
+{
+    public class MainSceneUI : SceneUI {
 
-    [Header("Talk UI (From MainSceneUI)")]
-    [Tooltip("´ëÈ­Ã¢ ÆĞ³Î °ÔÀÓ ¿ÀºêÁ§Æ®")]
-    [SerializeField] private GameObject talkPanel;
-    [Tooltip("´ëÈ­ ³»¿ëÀÌ Ç¥½ÃµÉ Text")]
-    [SerializeField] private TextMeshProUGUI objectText;
-    [Tooltip("NPC ÃÊ»óÈ­°¡ Ç¥½ÃµÉ Image")]
-    [SerializeField] private Image portraitImg;
+        [Header("Talk UI (From MainSceneUI)")]
+        [Tooltip("ëŒ€í™”ì°½ íŒ¨ë„ ê²Œì„ ì˜¤ë¸Œì íŠ¸")]
+        [SerializeField] private GameObject talkPanel;
+        [Tooltip("ëŒ€í™” ë‚´ìš©ì´ í‘œì‹œë  Text")]
+        [SerializeField] private TextMeshProUGUI objectText;
+        [Tooltip("NPC ì´ˆìƒí™”ê°€ í‘œì‹œë  Image")]
+        [SerializeField] private Image portraitImg;
 
-    [Header("Choice Buttons (From MainSceneUI)")]
-    [Tooltip("µ¿È­ ¼±ÅÃ ¹öÆ°")]
-    [SerializeField] private GameObject choiceBttnStory;
-    [Tooltip("ÇÏ¿ìÂ¡ ¼±ÅÃ ¹öÆ°")]
-    [SerializeField] private GameObject choiceBttnHousing;
+        [Header("Choice Buttons (From MainSceneUI)")]
+        [Tooltip("ë™í™” ì„ íƒ ë²„íŠ¼")]
+        [SerializeField] private GameObject choiceBttnStory;
+        [Tooltip("í•˜ìš°ì§• ì„ íƒ ë²„íŠ¼")]
+        [SerializeField] private GameObject choiceBttnHousing;
 
-    protected override void Start() {
-        base.Start();
-        HideTalkPanel();
-        ShowChoiceButtons(false);
-    }
-
-    protected override void Update() {
-        base.Update();
-    }
-
-    public void ShowTalkPanel(string text, Sprite portrait, bool isNPC) {
-        talkPanel.SetActive(true);
-        objectText.text = text;
-
-        if (isNPC && portrait != null) {
-            // NPCÀÌ°í ÃÊ»óÈ­°¡ ÀÖÀ¸¸é Ç¥½Ã
-            portraitImg.sprite = portrait;
-            portraitImg.color = new Color(1, 1, 1, 1); // ¿ÏÀü ºÒÅõ¸í
+        protected override void Start() {
+            base.Start();
+            HideTalkPanel();
+            ShowChoiceButtons(false);
         }
-        else {
-            // NPC°¡ ¾Æ´Ï°Å³ª ÃÊ»óÈ­°¡ ¾øÀ¸¸é ¼û±è
-            portraitImg.sprite = null;
-            portraitImg.color = new Color(1, 1, 1, 0); // ¿ÏÀü Åõ¸í
+
+        protected override void Update() {
+            base.Update();
         }
-    }
 
-    public void HideTalkPanel() {
-        talkPanel.SetActive(false);
-    }
+        public void ShowTalkPanel(string text, Sprite portrait, bool isNPC) {
+            talkPanel.SetActive(true);
+            objectText.text = text;
 
-    public void ShowChoiceButtons(bool show) {
-        choiceBttnStory.SetActive(show);
-        choiceBttnHousing.SetActive(show);
+            if (isNPC && portrait != null) {
+                // NPCì´ê³  ì´ˆìƒí™”ê°€ ìˆìœ¼ë©´ í‘œì‹œ
+                portraitImg.sprite = portrait;
+                portraitImg.color = new Color(1, 1, 1, 1); // ì™„ì „ ë¶ˆíˆ¬ëª…
+            }
+            else {
+                // NPCê°€ ì•„ë‹ˆê±°ë‚˜ ì´ˆìƒí™”ê°€ ì—†ìœ¼ë©´ ìˆ¨ê¹€
+                portraitImg.sprite = null;
+                portraitImg.color = new Color(1, 1, 1, 0); // ì™„ì „ íˆ¬ëª…
+            }
+        }
+
+        public void HideTalkPanel() {
+            talkPanel.SetActive(false);
+        }
+
+        public void ShowChoiceButtons(bool show) {
+            choiceBttnStory.SetActive(show);
+            choiceBttnHousing.SetActive(show);
+        }
     }
 }

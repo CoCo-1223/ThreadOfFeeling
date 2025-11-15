@@ -1,27 +1,30 @@
-using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine;
 
-[CreateAssetMenu(fileName = "NewStory", menuName = "GameData/Story")]
-public class Story : ScriptableObject {
-    [Header("½ºÅä¸® ±âº» Á¤º¸")]
-    [Tooltip("µ¿È­ Á¦¸ñ (¿¹: ÈïºÎ¿Í ³îºÎ)")]
-    public string storyTitle;
+namespace Components
+{
+    [CreateAssetMenu(fileName = "NewStory", menuName = "GameData/Story")]
+    public class Story : ScriptableObject {
+        [Header("ìŠ¤í† ë¦¬ ê¸°ë³¸ ì •ë³´")]
+        [Tooltip("ë™í™” ì œëª© (ì˜ˆ: í¥ë¶€ì™€ ë†€ë¶€)")]
+        public string storyTitle;
     
-    [Tooltip("µ¿È­ ¼±ÅÃ ¾ÀÀÇ ÆË¾÷¿¡ Ç¥½ÃµÉ Ä¿¹ö ÀÌ¹ÌÁö")]
-    public Sprite storyCoverImage;
+        [Tooltip("ë™í™” ì„ íƒ ì”¬ì˜ íŒì—…ì— í‘œì‹œë  ì»¤ë²„ ì´ë¯¸ì§€")]
+        public Sprite storyCoverImage;
 
-    [Tooltip("µ¿È­ ¼±ÅÃ ¾ÀÀÇ ÆË¾÷¿¡ Ç¥½ÃµÉ °£´ÜÇÑ ¼³¸í")]
-    [TextArea(3, 10)]
-    public string storyDescription;
+        [Tooltip("ë™í™” ì„ íƒ ì”¬ì˜ íŒì—…ì— í‘œì‹œë  ê°„ë‹¨í•œ ì„¤ëª…")]
+        [TextArea(3, 10)]
+        public string storyDescription;
 
-    [Tooltip("µ¿È­ ¼±ÅÃ ¾ÀÀÇ ÆË¾÷¿¡ Ç¥½ÃµÉ ÅÂ±× (¿¹: #¿ë±â #±Ç¼±Â¡¾Ç)")]
-    public string storyTag;
+        [Tooltip("ë™í™” ì„ íƒ ì”¬ì˜ íŒì—…ì— í‘œì‹œë  íƒœê·¸ (ì˜ˆ: #ìš©ê¸° #ê¶Œì„ ì§•ì•…)")]
+        public string storyTag;
 
-    [Header("½ºÅä¸® º¸»ó")]
-    [Tooltip("ÀÌ µ¿È­¸¦ ¿Ï·áÇßÀ» ¶§ Áö±ŞÇÒ ¾ÆÀÌÅÛ (¼±ÅÃ »çÇ×)")]
-    public Item storyReward;
+        [Header("ìŠ¤í† ë¦¬ ë³´ìƒ")]
+        [Tooltip("ì´ ë™í™”ë¥¼ ì™„ë£Œí–ˆì„ ë•Œ ì§€ê¸‰í•  ì•„ì´í…œ (ì„ íƒ ì‚¬í•­)")]
+        public Item storyReward;
 
-    [Header("½Ã³ª¸®¿À ¸ñ·Ï")]
-    [Tooltip("ÀÌ µ¿È­¸¦ ±¸¼ºÇÏ´Â ½Ã³ª¸®¿À(ÆäÀÌÁö) ¸ñ·Ï")]
-    public List<Scenario> scenarios;
+        [Header("ì‹œë‚˜ë¦¬ì˜¤ ëª©ë¡")]
+        [Tooltip("ì´ ë™í™”ë¥¼ êµ¬ì„±í•˜ëŠ” ì‹œë‚˜ë¦¬ì˜¤(í˜ì´ì§€) ëª©ë¡")]
+        public List<Scenario> scenarios;
+    }
 }

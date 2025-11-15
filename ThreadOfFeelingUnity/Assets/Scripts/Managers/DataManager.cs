@@ -1,99 +1,101 @@
 using System.Collections.Generic;
+using Components;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 
-// °ÔÀÓÀÇ ¸ğµç µ¥ÀÌÅÍ(ÇÁ·ÎÇÊ, ´ëÈ­, Äù½ºÆ®)¸¦ °ü¸®ÇÏ´Â ¸Å´ÏÀú
+namespace Managers
+{
+    public class DataManager : MonoBehaviour {
+        public static DataManager Instance { get; private set; }
 
-public class DataManager : MonoBehaviour {
-    public static DataManager Instance { get; private set; }
-
-    // ÇöÀç ¼±ÅÃµÈ »ç¿ëÀÚ ÇÁ·ÎÇÊ
-    public ChildProfile currentProfile { get; private set; }
+        // í˜„ì¬ ì„ íƒëœ ì‚¬ìš©ì í”„ë¡œí•„
+        public ChildProfile currentProfile { get; private set; }
     
-    // ¼±ÅÃÇÑ µ¿È­
-    public  Story selectedTale { get; private set; }
+        // ì„ íƒí•œ ë™í™”
+        public  Story selectedTale { get; private set; }
 
-    Dictionary<int, string[]> talkData;
-    Dictionary<int, Sprite> portraitData;
-    public Sprite[] portraitArr;
+        Dictionary<int, string[]> talkData;
+        Dictionary<int, Sprite> portraitData;
+        public Sprite[] portraitArr;
 
-    private void Awake() {
-        if (Instance == null) {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-            SceneManager.sceneLoaded += OnSceneLoaded;
+        private void Awake() {
+            if (Instance == null) {
+                Instance = this;
+                DontDestroyOnLoad(gameObject);
+                SceneManager.sceneLoaded += OnSceneLoaded;
 
-            // Å×½ºÆ®¿ë ÇÁ·ÎÇÊ »ı¼º
-            ChildProfile profile = new ChildProfile("TestUser", 0, Gender.Male);
-            SelectProfile(profile);
+                // í…ŒìŠ¤íŠ¸ìš© í”„ë¡œí•„ ìƒì„±
+                ChildProfile profile = new ChildProfile("TestUser", 0, Gender.Female);
+                SelectProfile(profile);
             
-            // °ÔÀÓ µ¥ÀÌÅÍ ·Îµå
-            LoadViallageData();
+                // ê²Œì„ ë°ì´í„° ë¡œë“œ
+                LoadViallageData();
+            }
+            else {
+                Destroy(gameObject);
+            }
         }
-        else {
-            Destroy(gameObject);
+
+        private void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
+            Debug.Log($"[DataManager] Scene Loaded: {scene.name}");
         }
+
+        private void OnDestroy() {
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+        }
+
+        public void SelectProfile(ChildProfile profile) {
+            currentProfile = profile;
+            Debug.Log($"[DataManager] í”„ë¡œí•„ ì„ íƒë¨: {profile.nickname}");
+        }
+
+        public void SelectFairyTaleData(Story taleData) {
+            selectedTale = taleData;
+        }
+
+        private void LoadViallageData() {
+            talkData = new Dictionary<int, string[]>();
+            portraitData = new Dictionary<int, Sprite>();
+            GenerateObjectData();
+        }
+
+        private void GenerateObjectData() {
+            // NPCë³„ ëŒ€í™” ë°ì´í„° "Text:í‘œì •"
+            talkData.Add(1000, new string[] { 
+                "ì•ˆë…•? ë‚œ ë‹¤ë¹„ë“œì•¼:3", 
+                "ìš°ë¦¬ ë­í•˜ê³  ë†€ê¹Œ?:0:CHOICE",
+            });
+            //talkData.Add(2000, new string[] { "ì•ˆë…•?:1", "ë‚œ OOOì•¼:2"});
+            //talkData.Add(100, new string[] { "í‰ë²”í•œ ê½ƒì´ë‹¤"});
+            //talkData.Add(200, new string[] { "..."});
+            //talkData.Add(300, new string[] { "ì •ì²´ ëª¨ë¥¼ ë¬´ì–¸ê°€..."});
+
+            // ì´ˆìƒí™” ë°ì´í„°  0: ê¸°ë³¸ ì–¼êµ´, 1: ì›ƒëŠ” ì–¼êµ´, 2: í™”ë‚œ ì–¼êµ´, 3: ë†€ë€ ì–¼êµ´, 4: ìŠ¬í”ˆ ì–¼êµ´
+            portraitData.Add(1000 + 0, portraitArr[0]);
+            portraitData.Add(1000 + 1, portraitArr[1]);
+            portraitData.Add(1000 + 2, portraitArr[2]);
+            portraitData.Add(1000 + 3, portraitArr[3]);
+            portraitData.Add(1000 + 4, portraitArr[4]);
+            //portraitData.Add(2000 + 0, portraitArr[0]);
+            //portraitData.Add(2000 + 1, portraitArr[1]);
+            //portraitData.Add(2000 + 2, portraitArr[2]);
+            //portraitData.Add(2000 + 3, portraitArr[3]);
+        }
+
+        public string GetTalkData(int id, int talkIndex) {
+            if (talkIndex == talkData[id].Length)
+                return null;
+            else
+                return talkData[id][talkIndex];
+        }
+
+        public Sprite GetPortrait(int id, int portraitIndex) {
+            return portraitData[id +  portraitIndex];
+        }
+
+        // í”„ë¡œí•„ ì €ì¥/ë¡œë“œ í•¨ìˆ˜ ì¶”ê°€
+        public void SaveProfileData() { }
+        void LoadProfileData() { }
     }
-
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
-        Debug.Log($"[DataManager] Scene Loaded: {scene.name}");
-    }
-
-    private void OnDestroy() {
-        SceneManager.sceneLoaded -= OnSceneLoaded;
-    }
-
-    public void SelectProfile(ChildProfile profile) {
-        currentProfile = profile;
-        Debug.Log($"[DataManager] ÇÁ·ÎÇÊ ¼±ÅÃµÊ: {profile.nickname}");
-    }
-
-    public void SelectFairyTaleData(Story taleData) {
-        selectedTale = taleData;
-    }
-
-    private void LoadViallageData() {
-        talkData = new Dictionary<int, string[]>();
-        portraitData = new Dictionary<int, Sprite>();
-        GenerateObjectData();
-    }
-
-    private void GenerateObjectData() {
-        // NPCº° ´ëÈ­ µ¥ÀÌÅÍ "Text:Ç¥Á¤"
-        talkData.Add(1000, new string[] { 
-            "¾È³ç? ³­ ´Ùºñµå¾ß:3", 
-            "¿ì¸® ¹¹ÇÏ°í ³î±î?:0:CHOICE",
-        });
-        //talkData.Add(2000, new string[] { "¾È³ç?:1", "³­ OOO¾ß:2"});
-        //talkData.Add(100, new string[] { "Æò¹üÇÑ ²ÉÀÌ´Ù"});
-        //talkData.Add(200, new string[] { "..."});
-        //talkData.Add(300, new string[] { "Á¤Ã¼ ¸ğ¸¦ ¹«¾ğ°¡..."});
-
-        // ÃÊ»óÈ­ µ¥ÀÌÅÍ  0: ±âº» ¾ó±¼, 1: ¿ô´Â ¾ó±¼, 2: È­³­ ¾ó±¼, 3: ³î¶õ ¾ó±¼, 4: ½½ÇÂ ¾ó±¼
-        portraitData.Add(1000 + 0, portraitArr[0]);
-        portraitData.Add(1000 + 1, portraitArr[1]);
-        portraitData.Add(1000 + 2, portraitArr[2]);
-        portraitData.Add(1000 + 3, portraitArr[3]);
-        portraitData.Add(1000 + 4, portraitArr[4]);
-        //portraitData.Add(2000 + 0, portraitArr[0]);
-        //portraitData.Add(2000 + 1, portraitArr[1]);
-        //portraitData.Add(2000 + 2, portraitArr[2]);
-        //portraitData.Add(2000 + 3, portraitArr[3]);
-    }
-
-    public string GetTalkData(int id, int talkIndex) {
-        if (talkIndex == talkData[id].Length)
-            return null;
-        else
-            return talkData[id][talkIndex];
-    }
-
-    public Sprite GetPortrait(int id, int portraitIndex) {
-        return portraitData[id +  portraitIndex];
-    }
-
-    // ÇÁ·ÎÇÊ ÀúÀå/·Îµå ÇÔ¼ö Ãß°¡
-    public void SaveProfileData() { }
-    void LoadProfileData() { }
 }

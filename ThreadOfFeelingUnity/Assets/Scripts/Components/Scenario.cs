@@ -1,14 +1,16 @@
-using System;
 using UnityEngine;
 
-[System.Serializable]
-public class Scenario {
-    [Header("±âº» ³»¿ë")]
-    public Sprite image;
-    [TextArea(3, 10)]
-    public string dialogueText;
+namespace Components
+{
+    [System.Serializable]
+    public class Scenario {
+        [Header("ê¸°ë³¸ ë‚´ìš©")]
+        public Sprite image;
+        [TextArea(3, 10)]
+        public string dialogueText;
 
-    [Header("ÄûÁî (¼±ÅÃ »çÇ×)")]
-    [Tooltip("ÀÌ ½Ã³ª¸®¿ÀÀÇ ÄûÁî µ¥ÀÌÅÍ. ¾øÀ¸¸é null·Î µÎ°Å³ª ÄûÁîÀÇ Question Text¸¦ ºñ¿öµÎ¼¼¿ä.")]
-    public Question quiz;
+        [Header("í€´ì¦ˆ (ì„ íƒ ì‚¬í•­)")]
+        [Tooltip("ì´ ì‹œë‚˜ë¦¬ì˜¤ì˜ í€´ì¦ˆ ë°ì´í„°. ì—†ìœ¼ë©´ nullë¡œ ë‘ê±°ë‚˜ í€´ì¦ˆì˜ Question Textë¥¼ ë¹„ì›Œë‘ì„¸ìš”.")]
+        public Question quiz;
+    }
 }

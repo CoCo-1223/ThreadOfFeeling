@@ -1,101 +1,106 @@
+using Managers;
+using UI;
 using UnityEngine;
 
-public class InteractableObject : MonoBehaviour {
-    [Header("Object Info")]
-    [Tooltip("DataManager¿¡¼­ µ¥ÀÌÅÍ¸¦ Ã£±â À§ÇÑ °íÀ¯ ID")]
-    public int id;
-    [Tooltip("NPCÀÏ °æ¿ì Ã¼Å© (ÃÊ»óÈ­ Ç¥½Ã)")]
-    public bool isNPC;
+namespace Components
+{
+    public class InteractableObject : MonoBehaviour {
+        [Header("Object Info")]
+        [Tooltip("DataManagerì—ì„œ ë°ì´í„°ë¥¼ ì°¾ê¸° ìœ„í•œ ê³ ìœ  ID")]
+        public int id;
+        [Tooltip("NPCì¼ ê²½ìš° ì²´í¬ (ì´ˆìƒí™” í‘œì‹œ)")]
+        public bool isNPC;
 
-    [Header("State")]
-    [Tooltip("ÇöÀç »óÈ£ÀÛ¿ë(´ëÈ­) ÁßÀÎÁö ¿©ºÎ")]
-    public bool isAction = false;
-    [Tooltip("ÇöÀç ´ëÈ­ÀÇ ÀÎµ¦½º")]
-    public int talkIndex = 0;
+        [Header("State")]
+        [Tooltip("í˜„ì¬ ìƒí˜¸ì‘ìš©(ëŒ€í™”) ì¤‘ì¸ì§€ ì—¬ë¶€")]
+        public bool isAction = false;
+        [Tooltip("í˜„ì¬ ëŒ€í™”ì˜ ì¸ë±ìŠ¤")]
+        public int talkIndex = 0;
 
-    private MainSceneUI uiManager; 
+        private MainSceneUI uiManager; 
 
-    private static MainSceneUI _cachedUIManager;
+        private static MainSceneUI _cachedUIManager;
 
-    void Start() {
-        if (_cachedUIManager == null) {
-            _cachedUIManager = GameObject.FindFirstObjectByType<MainSceneUI>();
+        void Start() {
             if (_cachedUIManager == null) {
-                Debug.LogError($"[InteractableObject: {id}] ¾À¿¡¼­ MainSceneUI¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù! MainSceneUI ½ºÅ©¸³Æ®°¡ ¾ÀÀÇ Canvas µî¿¡ ºÙ¾îÀÖ´ÂÁö È®ÀÎÇÏ¼¼¿ä.");
+                _cachedUIManager = GameObject.FindFirstObjectByType<MainSceneUI>();
+                if (_cachedUIManager == null) {
+                    Debug.LogError($"[InteractableObject: {id}] ì”¬ì—ì„œ MainSceneUIë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤! MainSceneUI ìŠ¤í¬ë¦½íŠ¸ê°€ ì”¬ì˜ Canvas ë“±ì— ë¶™ì–´ìˆëŠ”ì§€ í™•ì¸í•˜ì„¸ìš”.");
+                    return;
+                }
+            }
+            uiManager = _cachedUIManager;
+        }
+
+        public void HandleInteraction() {
+            if (!isAction) {
+                GameManager.Instance.PauseGame();
+                isAction = true;
+                ProceedTalk();
+            }
+            else {
+                ProceedTalk();
+            }
+        }
+
+        private void ProceedTalk() {
+            if (uiManager == null) {
+                Debug.LogError($"[InteractableObject: {id}] uiManagerê°€ í• ë‹¹ë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤. Start()ì—ì„œ MainSceneUIë¥¼ ì°¾ì§€ ëª»í–ˆìŠµë‹ˆë‹¤.");
+                EndInteraction();
                 return;
             }
-        }
-        uiManager = _cachedUIManager;
-    }
 
-    public void HandleInteraction() {
-        if (!isAction) {
-            GameManager.Instance.PauseGame();
-            isAction = true;
-            ProceedTalk();
-        }
-        else {
-            ProceedTalk();
-        }
-    }
+            // 1. DataManagerë¡œë¶€í„° ëŒ€í™” ë°ì´í„°ë¥¼ ê°€ì ¸ì˜´
+            string talkData = DataManager.Instance.GetTalkData(id, talkIndex);
 
-    private void ProceedTalk() {
-        if (uiManager == null) {
-            Debug.LogError($"[InteractableObject: {id}] uiManager°¡ ÇÒ´çµÇÁö ¾Ê¾Ò½À´Ï´Ù. Start()¿¡¼­ MainSceneUI¸¦ Ã£Áö ¸øÇß½À´Ï´Ù.");
-            EndInteraction();
-            return;
-        }
-
-        // 1. DataManager·ÎºÎÅÍ ´ëÈ­ µ¥ÀÌÅÍ¸¦ °¡Á®¿È
-        string talkData = DataManager.Instance.GetTalkData(id, talkIndex);
-
-        // 2. ´ëÈ­ µ¥ÀÌÅÍ°¡ nullÀÌ¸é (´ëÈ­ ³¡)
-        if (talkData == null) {
-            EndInteraction();
-            return;
-        }
+            // 2. ëŒ€í™” ë°ì´í„°ê°€ nullì´ë©´ (ëŒ€í™” ë)
+            if (talkData == null) {
+                EndInteraction();
+                return;
+            }
         
-        talkIndex++;
+            talkIndex++;
 
-        string[] parts = talkData.Split(':');
-        string textToShow = parts[0];
-        Sprite portraitToShow = null;
-        bool showChoices = false;
+            string[] parts = talkData.Split(':');
+            string textToShow = parts[0];
+            Sprite portraitToShow = null;
+            bool showChoices = false;
 
-        // NPC Àü¿ë ·ÎÁ÷
-        if (isNPC) {
-            // parts[1] Ç¥Á¤
-            if (parts.Length > 1 && int.TryParse(parts[1], out int portraitIndex)) {
-                portraitToShow = DataManager.Instance.GetPortrait(id, portraitIndex);
-            }
+            // NPC ì „ìš© ë¡œì§
+            if (isNPC) {
+                // parts[1] í‘œì •
+                if (parts.Length > 1 && int.TryParse(parts[1], out int portraitIndex)) {
+                    portraitToShow = DataManager.Instance.GetPortrait(id, portraitIndex);
+                }
             
-            // parts[2] ¼±ÅÃÁö - µ¿È­, ÇÏ¿ìÂ¡
-            if (parts.Length > 2 && parts[2] == "CHOICE") {
-                showChoices = true;
+                // parts[2] ì„ íƒì§€ - ë™í™”, í•˜ìš°ì§•
+                if (parts.Length > 2 && parts[2] == "CHOICE") {
+                    showChoices = true;
+                }
             }
+            uiManager.ShowTalkPanel(textToShow, portraitToShow, isNPC);
+            uiManager.ShowChoiceButtons(showChoices);
         }
-        uiManager.ShowTalkPanel(textToShow, portraitToShow, isNPC);
-        uiManager.ShowChoiceButtons(showChoices);
-    }
 
-    private void EndInteraction() {
-        isAction = false;
-        talkIndex = 0;
-        if (uiManager != null) {
-            uiManager.HideTalkPanel();
-            uiManager.ShowChoiceButtons(false);
+        private void EndInteraction() {
+            isAction = false;
+            talkIndex = 0;
+            if (uiManager != null) {
+                uiManager.HideTalkPanel();
+                uiManager.ShowChoiceButtons(false);
+            }
+            GameManager.Instance.ResumeGame();
         }
-        GameManager.Instance.ResumeGame();
-    }
 
-    public bool getIsAction() {
-        return isAction;
-    }
+        public bool getIsAction() {
+            return isAction;
+        }
 
-    public void Action(GameObject scanObj) 
-    {
-        // PlayerControllerÀÇ ¿øº» ÄÚµå°¡ Action()À» È£ÃâÇÏ¸é,
-        // »õ ¹æ½ÄÀÎ HandleInteraction()À» ´ë½Å È£ÃâÇÏµµ·Ï ¿¬°á
-        HandleInteraction();
+        public void Action(GameObject scanObj) 
+        {
+            // PlayerControllerì˜ ì›ë³¸ ì½”ë“œê°€ Action()ì„ í˜¸ì¶œí•˜ë©´,
+            // ìƒˆ ë°©ì‹ì¸ HandleInteraction()ì„ ëŒ€ì‹  í˜¸ì¶œí•˜ë„ë¡ ì—°ê²°
+            HandleInteraction();
+        }
     }
 }
