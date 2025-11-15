@@ -1,17 +1,20 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "NewItem", menuName = "GameData/Item Data")]
-public class Item : ScriptableObject
+namespace Components
 {
-    [Header("±âº» Á¤º¸")]
-    public int itemId;
-    public string itemName;
-    [TextArea(3, 10)]
-    public string itemDescription;
+    [CreateAssetMenu(fileName = "NewItem", menuName = "GameData/Item Data")]
+    public class Item : ScriptableObject
+    {
+        [Header("ê¸°ë³¸ ì •ë³´")]
+        public int itemId;
+        public string itemName;
+        [TextArea(3, 10)]
+        public string itemDescription;
 
-    [Header("°ÔÀÓ ³» Ç¥Çö")]
-    public Sprite itemIcon; // ÀÎº¥Åä¸®³ª UI¿¡ Ç¥½ÃµÉ ¾ÆÀÌÅÛ
-    public GameObject prefab; // ÇÏ¿ìÂ¡ ¾À¿¡¼­ ½ÇÁ¦·Î ¹èÄ¡µÉ ÇÁ¸®ÆÕ
+        [Header("ê²Œì„ ë‚´ í‘œí˜„")]
+        public Sprite itemIcon; // ì¸ë²¤í† ë¦¬ë‚˜ UIì— í‘œì‹œë  ì•„ì´í…œ
+        public GameObject prefab; // í•˜ìš°ì§• ì”¬ì—ì„œ ì‹¤ì œë¡œ ë°°ì¹˜ë  í”„ë¦¬íŒ¹
    
-    // positionÀº ÀÌ ¾ÆÀÌÅÛÀÌ ÇÏ¿ìÂ¡ ¾À¿¡ ¹èÄ¡µÉ ¶§ÀÇ »óÅÂ °ª(Runtime Data) ³ªÁß¿¡ ÀúÀå ÆÄÀÏ(Save File)¿¡ ÀúÀå
+        // positionì€ ì´ ì•„ì´í…œì´ í•˜ìš°ì§• ì”¬ì— ë°°ì¹˜ë  ë•Œì˜ ìƒíƒœ ê°’(Runtime Data) ë‚˜ì¤‘ì— ì €ì¥ íŒŒì¼(Save File)ì— ì €ì¥
+    }
 }

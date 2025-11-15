@@ -1,64 +1,66 @@
 using System;
-using System.Diagonstics;
-using System.Threding;
+//using System.Diagonstics;
+using System.Diagnostics;
+using System.Threading;
 using UnityEngine;
 
+namespace Managers {
+    public class EmotionManager : MonoBehaviour {
+        public static EmotionManager Instance {get; private set; }
 
-public class EmotionManager : MonoBehaviour
-{
-    public static EmotionManager Instance {get; private set; }
+        private Process _proc;
+        private int _currentEmotion = 0;
 
-    private Process _proc;
-    private int _currentEmotion = 0;
-
-    private void Awake()
-    {
-        if(Instance != null) { Destroy(gameObject); return; }
-        Instance = this;
-        DontDestroyOnLoad(gameObject);
-
-        StartPython();
-
-    }
-
-    private void StartPython()
-    {
-        var psi = new ProcessStartInfo()
+        private void Awake()
         {
-            FileName = "python3",
-            Arguments = "../python/main_demo.py",
-            RedirectStandardOutput = true,
-            UseShellExecute = false,
-            CreateNoWindow = true
-        };
+            if(Instance != null) { Destroy(gameObject); return; }
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
 
-        _proc = new Process();
-        _proc.StartInfo = psi;
-        _proc.OutputDataRecived += OnPythonOutput;
-        _proc.Start();
-        _proc.BeginOutputReadLine();
-    }
+            StartPython();
 
-    private void OnPythonOutput(object sender, DataRecivedEventArgs e)
-    {
-        if (string.IsNullOrEmpty(e.Data)) return;
+        }
 
-        _currentEmotion = EmotionStringToNumber(e.Data.Trim());
-    }
-
-    private int EmotionStringToNumber(string s)
-    {
-        return s switch
+        private void StartPython()
         {
-            "JOY" => 1,
-            "SAD" => 2,
-            "ANGER" => 3,
-            "DISLIKE" => 4
-        };
-    }
+            var psi = new ProcessStartInfo()
+            {
+                FileName = "python3",
+                Arguments = "../python/main_demo.py",
+                RedirectStandardOutput = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
 
-    public int GetEomtion()
-    {
-        return _currentEmotion;
+            _proc = new Process();
+            _proc.StartInfo = psi;
+            _proc.OutputDataReceived += OnPythonOutput;
+            _proc.Start();
+            _proc.BeginOutputReadLine();
+        }
+
+        private void OnPythonOutput(object sender, DataReceivedEventArgs e)
+        {
+            if (string.IsNullOrEmpty(e.Data)) return;
+
+            _currentEmotion = EmotionStringToNumber(e.Data.Trim());
+        }
+
+        private int EmotionStringToNumber(string s)
+        {
+            return s switch
+            {
+                "JOY" => 1,
+                "SAD" => 2,
+                "ANGER" => 3,
+                "DISLIKE" => 4
+            };
+        }
+
+        public int GetEmotion()
+        {
+            return _currentEmotion;
+        }
     }
 }
+

@@ -1,27 +1,29 @@
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 
-[Serializable]
-public class Guardian {
-    public int GuardianId { get; set; }
-    private string _consentAt;
-    public List<ChildProfile> ChildProfiles { get; set; }
-    //public StoryType SelectedStory { get; set; }
-    //public Hash hash { get; set; } // PIN ¹øÈ£ ÀúÀå
-    public Guardian() {
-        this.ChildProfiles = new List<ChildProfile>();
-        //this.SelectedStory = StoryType.NotSelected;
-    }
-
-    public void SetConsentNow() {
-        this._consentAt = DateTime.UtcNow.ToString("o"); // UTC Ç¥ÁØ
-    }
-
-    public DateTime GetConsentAsDateTime() {
-        if (DateTime.TryParse(this._consentAt, out DateTime result)) {
-            return result;
+namespace Components
+{
+    [Serializable]
+    public class Guardian {
+        public int GuardianId { get; set; }
+        private string _consentAt;
+        public List<ChildProfile> ChildProfiles { get; set; }
+        //public StoryType SelectedStory { get; set; }
+        //public Hash hash { get; set; } // PIN ë²ˆí˜¸ ì €ìž¥
+        public Guardian() {
+            this.ChildProfiles = new List<ChildProfile>();
+            //this.SelectedStory = StoryType.NotSelected;
         }
-        return DateTime.MinValue; // ½ÇÆÐ ½Ã ±âº»°ª ¹ÝÈ¯
+
+        public void SetConsentNow() {
+            this._consentAt = DateTime.UtcNow.ToString("o"); // UTC í‘œì¤€
+        }
+
+        public DateTime GetConsentAsDateTime() {
+            if (DateTime.TryParse(this._consentAt, out DateTime result)) {
+                return result;
+            }
+            return DateTime.MinValue; // ì‹¤íŒ¨ ì‹œ ê¸°ë³¸ê°’ ë°˜í™˜
+        }
     }
 }

@@ -1,199 +1,204 @@
-using UnityEngine;
-using UnityEngine.UI;
+using Components;
+using Managers;
 using TMPro;
+using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
-public class StorySceneUi : SceneUI {
-    [Header("Ω∫≈‰∏Æ UI")]
-    [Tooltip("µø»≠ ¿ÃπÃ¡ˆ∏¶ «•Ω√«“ Image UI")]
-    [SerializeField] private Image storyDisplayImage;
-    [Tooltip("Ω√≥™∏Æø¿¿« ≈ÿΩ∫∆Æ(¥ÎªÁ)∏¶ «•Ω√«“ Text UI")]
-    [SerializeField] private TextMeshProUGUI dialogueText;
+namespace UI
+{
+    public class StorySceneUi : SceneUI {
+        [Header("Ïä§ÌÜ†Î¶¨ UI")]
+        [Tooltip("ÎèôÌôî Ïù¥ÎØ∏ÏßÄÎ•º ÌëúÏãúÌï† Image UI")]
+        [SerializeField] private Image storyDisplayImage;
+        [Tooltip("ÏãúÎÇòÎ¶¨Ïò§Ïùò ÌÖçÏä§Ìä∏(ÎåÄÏÇ¨)Î•º ÌëúÏãúÌï† Text UI")]
+        [SerializeField] private TextMeshProUGUI dialogueText;
 
-    [Header("ƒ˚¡Ó UI")]
-    [Tooltip("ƒ˚¡Ó UI¿« ∫Œ∏ ∆–≥Œ (¿¸√º ƒ—∞Ì ≤Ù±‚ øÎµµ)")]
-    [SerializeField] private GameObject questionPanel;
-    [SerializeField] private TextMeshProUGUI questionText;
-    [SerializeField] private Button answerButton1;
-    [SerializeField] private Button answerButton2;
+        [Header("ÌÄ¥Ï¶à UI")]
+        [Tooltip("ÌÄ¥Ï¶à UIÏùò Î∂ÄÎ™® Ìå®ÎÑê (Ï†ÑÏ≤¥ ÏºúÍ≥† ÎÅÑÍ∏∞ Ïö©ÎèÑ)")]
+        [SerializeField] private GameObject questionPanel;
+        [SerializeField] private TextMeshProUGUI questionText;
+        [SerializeField] private Button answerButton1;
+        [SerializeField] private Button answerButton2;
 
-    [Header("««µÂπÈ UI")]
-    [Tooltip("ƒ˚¡Ó ¡§¥‰/ø¿¥‰ ««µÂπÈ ∆–≥Œ")]
-    [SerializeField] private GameObject feedbackPanel;
-    [SerializeField] private TextMeshProUGUI feedbackText;
-    [SerializeField] private Button feedbackContinueButton;
+        [Header("ÌîºÎìúÎ∞± UI")]
+        [Tooltip("ÌÄ¥Ï¶à Ï†ïÎãµ/Ïò§Îãµ ÌîºÎìúÎ∞± Ìå®ÎÑê")]
+        [SerializeField] private GameObject feedbackPanel;
+        [SerializeField] private TextMeshProUGUI feedbackText;
+        [SerializeField] private Button feedbackContinueButton;
 
-    private Story currentTale;
-    private int currentScenarioIndex = 0;
-    private Scenario currentScenario; 
+        private Story currentTale;
+        private int currentScenarioIndex = 0;
+        private Scenario currentScenario; 
     
-    private bool isQuizActive = false;
-    private bool isShowingStory = true;
+        private bool isQuizActive = false;
+        private bool isShowingStory = true;
 
-    private bool isAnswer1OnButton1; 
+        private bool isAnswer1OnButton1; 
 
-    protected override void Start() {
-        base.Start();
+        protected override void Start() {
+            base.Start();
 
-        currentTale = DataManager.Instance.selectedTale;
+            currentTale = DataManager.Instance.selectedTale;
 
-        if (currentTale == null || currentTale.scenarios.Count == 0) {
-            Debug.LogError("[StorySceneUi] º±≈√µ» µø»≠ µ•¿Ã≈Õ(StoryData)∞° æ¯∞≈≥™ Ω√≥™∏Æø¿∞° ∫ÒæÓ¿÷Ω¿¥œ¥Ÿ. º±≈√ æ¿¿∏∑Œ µπæ∆∞©¥œ¥Ÿ.");
-            GameManager.Instance.LoadSelectionScene();
-            return;
-        }
+            if (currentTale == null || currentTale.scenarios.Count == 0) {
+                Debug.LogError("[StorySceneUi] ÏÑ†ÌÉùÎêú ÎèôÌôî Îç∞Ïù¥ÌÑ∞(StoryData)Í∞Ä ÏóÜÍ±∞ÎÇò ÏãúÎÇòÎ¶¨Ïò§Í∞Ä ÎπÑÏñ¥ÏûàÏäµÎãàÎã§. ÏÑ†ÌÉù Ïî¨ÏúºÎ°ú ÎèåÏïÑÍ∞ëÎãàÎã§.");
+                GameManager.Instance.LoadSelectionScene();
+                return;
+            }
 
-        answerButton1.onClick.AddListener(() => OnAnswerClicked(0));
-        answerButton2.onClick.AddListener(() => OnAnswerClicked(1));
+            answerButton1.onClick.AddListener(() => OnAnswerClicked(0));
+            answerButton2.onClick.AddListener(() => OnAnswerClicked(1));
         
-        questionPanel.SetActive(false);
-        feedbackPanel.SetActive(false);
+            questionPanel.SetActive(false);
+            feedbackPanel.SetActive(false);
 
-        ShowCurrentScenario();
-    }
-
-    protected override void Update() {
-        base.Update();
-
-        if (isQuizActive) {
-            // ƒ˚¡Ó ¡˙πÆ¿Ã »∞º∫»≠µ» ∞ÊøÏ -> 1, 2π¯ ≈∞∑Œ ¥‰∫Ø
-            if (questionPanel.activeInHierarchy) {
-                if (InputManager.Instance.GetNOneKeyDown()) {
-                    OnAnswerClicked(0);
-                }
-                else if (InputManager.Instance.GetNTwoKeyDown()) {
-                    OnAnswerClicked(1);
-                }
-            }
-            // ø¿¥‰ ««µÂπÈ ∆–≥Œ¿Ã »∞º∫»≠µ» ∞ÊøÏ -> Ω∫∆‰¿ÃΩ∫πŸ∑Œ ¥ŸΩ√ Ω√µµ
-            else if (feedbackPanel.activeInHierarchy) {
-                // ø¿¥‰ Ω√ ¥ŸΩ√ Ω√µµ πˆ∆∞¿ª Ω∫∆‰¿ÃΩ∫πŸ∑Œ ¥©∏ß
-                if (InputManager.Instance.GetSpaceKeyDown()) {
-                    RetryQuiz();
-                }
-            }
-            return;
+            ShowCurrentScenario();
         }
 
-        if (InputManager.Instance.GetSpaceKeyDown()) {
-            if (isShowingStory) {
-                // Ω∫≈‰∏Æ ¡¯«‡ ¡ﬂ Ω∫∆‰¿ÃΩ∫πŸ -> ƒ˚¡Ó ∂«¥¬ ¥Ÿ¿Ω Ω√≥™∏Æø¿
-                bool hasQuiz = currentScenario.quiz != null && !string.IsNullOrEmpty(currentScenario.quiz.questionText);
-                if (hasQuiz) {
-                    ShowQuiz();
+        protected override void Update() {
+            base.Update();
+
+            if (isQuizActive) {
+                // ÌÄ¥Ï¶à ÏßàÎ¨∏Ïù¥ ÌôúÏÑ±ÌôîÎêú Í≤ΩÏö∞ -> 1, 2Î≤à ÌÇ§Î°ú ÎãµÎ≥Ä
+                if (questionPanel.activeInHierarchy) {
+                    if (InputManager.Instance.GetNOneKeyDown()) {
+                        OnAnswerClicked(0);
+                    }
+                    else if (InputManager.Instance.GetNTwoKeyDown()) {
+                        OnAnswerClicked(1);
+                    }
+                }
+                // Ïò§Îãµ ÌîºÎìúÎ∞± Ìå®ÎÑêÏù¥ ÌôúÏÑ±ÌôîÎêú Í≤ΩÏö∞ -> Ïä§ÌéòÏù¥Ïä§Î∞îÎ°ú Îã§Ïãú ÏãúÎèÑ
+                else if (feedbackPanel.activeInHierarchy) {
+                    // Ïò§Îãµ Ïãú Îã§Ïãú ÏãúÎèÑ Î≤ÑÌäºÏùÑ Ïä§ÌéòÏù¥Ïä§Î∞îÎ°ú ÎàÑÎ¶Ñ
+                    if (InputManager.Instance.GetSpaceKeyDown()) {
+                        RetryQuiz();
+                    }
+                }
+                return;
+            }
+
+            if (InputManager.Instance.GetSpaceKeyDown()) {
+                if (isShowingStory) {
+                    // Ïä§ÌÜ†Î¶¨ ÏßÑÌñâ Ï§ë Ïä§ÌéòÏù¥Ïä§Î∞î -> ÌÄ¥Ï¶à ÎòêÎäî Îã§Ïùå ÏãúÎÇòÎ¶¨Ïò§
+                    bool hasQuiz = currentScenario.quiz != null && !string.IsNullOrEmpty(currentScenario.quiz.questionText);
+                    if (hasQuiz) {
+                        ShowQuiz();
+                    }
+                    else {
+                        ShowNextScenario();
+                    }
                 }
                 else {
+                    // Ï†ïÎãµ ÌîºÎìúÎ∞± ÌôïÏù∏ Ï§ë Ïä§ÌéòÏù¥Ïä§Î∞î -> Îã§Ïùå ÏãúÎÇòÎ¶¨Ïò§
+                    // (Ï†ïÎãµ Ïãú OnAnswerClickedÏóêÏÑú isQuizActive = false, isShowingStory = falseÍ∞Ä Îê®)
                     ShowNextScenario();
                 }
             }
+        }
+
+        public void ShowCurrentScenario() {
+            isQuizActive = false;
+            isShowingStory = true;
+        
+            questionPanel.SetActive(false);
+            feedbackPanel.SetActive(false);
+        
+            currentScenario = currentTale.scenarios[currentScenarioIndex];
+
+            if (storyDisplayImage != null)
+                storyDisplayImage.sprite = currentScenario.image;
+        
+            if (dialogueText != null)
+                dialogueText.text = currentScenario.dialogueText;
+        }
+
+        public void ShowQuiz() {
+            isQuizActive = true;
+            isShowingStory = false;
+
+            // ÌÄ¥Ï¶à UI ÏÑ§Ï†ï Î∞è ÌëúÏãú
+            questionText.text = currentScenario.quiz.questionText;
+
+            // ÌÄ¥Ï¶à ÏÑ†ÌÉùÏßÄ ÎûúÎç§ Î∞∞Ïπò
+            if (Random.value < 0.5f) {
+                answerButton1.GetComponentInChildren<TextMeshProUGUI>().text = currentScenario.quiz.answer1;
+                answerButton2.GetComponentInChildren<TextMeshProUGUI>().text = currentScenario.quiz.answer2;
+                isAnswer1OnButton1 = true;
+            }
             else {
-                // ¡§¥‰ ««µÂπÈ »Æ¿Œ ¡ﬂ Ω∫∆‰¿ÃΩ∫πŸ -> ¥Ÿ¿Ω Ω√≥™∏Æø¿
-                // (¡§¥‰ Ω√ OnAnswerClickedø°º≠ isQuizActive = false, isShowingStory = false∞° µ )
-                ShowNextScenario();
+                answerButton1.GetComponentInChildren<TextMeshProUGUI>().text = currentScenario.quiz.answer2;
+                answerButton2.GetComponentInChildren<TextMeshProUGUI>().text = currentScenario.quiz.answer1;
+                isAnswer1OnButton1 = false;
+            }
+
+            questionPanel.SetActive(true);
+        }
+
+        public void OnAnswerClicked(int clickedButtonIndex) {
+            questionPanel.SetActive(false);
+            feedbackPanel.SetActive(true);
+        
+            EventSystem.current.SetSelectedGameObject(null);
+
+
+            feedbackContinueButton.onClick.RemoveAllListeners();
+
+            int logicalAnswerIndex;
+            if (isAnswer1OnButton1) {
+                // Ï†ïÎ∞©Ìñ• Î∞∞Ïπò
+                logicalAnswerIndex = clickedButtonIndex;
+            }
+            else {
+                // Ïó≠Î∞©Ìñ• Î∞∞Ïπò
+                logicalAnswerIndex = 1 - clickedButtonIndex;
+            }
+
+            // Ï†ïÎãµ/Ïò§Îãµ ÌôïÏù∏
+            if (logicalAnswerIndex == currentScenario.quiz.correctAnswerIndex) {
+                // Ï†ïÎãµ
+                feedbackText.text = currentScenario.quiz.correctFeedback;
+                feedbackContinueButton.gameObject.SetActive(false); 
+                isQuizActive = false; 
+                isShowingStory = false;
+            }
+            else {
+                // Ïò§Îãµ
+                feedbackText.text = currentScenario.quiz.wrongFeedback;
+                feedbackContinueButton.gameObject.SetActive(true);
+                feedbackContinueButton.onClick.AddListener(RetryQuiz);
+                feedbackContinueButton.GetComponentInChildren<TextMeshProUGUI>().text = "Îã§Ïãú ÏãúÎèÑ";
+                isQuizActive = true; 
+                isShowingStory = false;
             }
         }
-    }
 
-    public void ShowCurrentScenario() {
-        isQuizActive = false;
-        isShowingStory = true;
-        
-        questionPanel.SetActive(false);
-        feedbackPanel.SetActive(false);
-        
-        currentScenario = currentTale.scenarios[currentScenarioIndex];
-
-        if (storyDisplayImage != null)
-            storyDisplayImage.sprite = currentScenario.image;
-        
-        if (dialogueText != null)
-            dialogueText.text = currentScenario.dialogueText;
-    }
-
-    public void ShowQuiz() {
-        isQuizActive = true;
-        isShowingStory = false;
-
-        // ƒ˚¡Ó UI º≥¡§ π◊ «•Ω√
-        questionText.text = currentScenario.quiz.questionText;
-
-        // ƒ˚¡Ó º±≈√¡ˆ ∑£¥˝ πËƒ°
-        if (Random.value < 0.5f) {
-            answerButton1.GetComponentInChildren<TextMeshProUGUI>().text = currentScenario.quiz.answer1;
-            answerButton2.GetComponentInChildren<TextMeshProUGUI>().text = currentScenario.quiz.answer2;
-            isAnswer1OnButton1 = true;
-        }
-        else {
-            answerButton1.GetComponentInChildren<TextMeshProUGUI>().text = currentScenario.quiz.answer2;
-            answerButton2.GetComponentInChildren<TextMeshProUGUI>().text = currentScenario.quiz.answer1;
-            isAnswer1OnButton1 = false;
+        public void RetryQuiz() {
+            feedbackPanel.SetActive(false); 
+            questionPanel.SetActive(true); 
+            isQuizActive = true;
+            isShowingStory = false; 
         }
 
-        questionPanel.SetActive(true);
-    }
-
-    public void OnAnswerClicked(int clickedButtonIndex) {
-        questionPanel.SetActive(false);
-        feedbackPanel.SetActive(true);
-        
-        EventSystem.current.SetSelectedGameObject(null);
-
-
-        feedbackContinueButton.onClick.RemoveAllListeners();
-
-        int logicalAnswerIndex;
-        if (isAnswer1OnButton1) {
-            // ¡§πÊ«‚ πËƒ°
-            logicalAnswerIndex = clickedButtonIndex;
-        }
-        else {
-            // ø™πÊ«‚ πËƒ°
-            logicalAnswerIndex = 1 - clickedButtonIndex;
+        public void ShowNextScenario() {
+            currentScenarioIndex++;
+            if (currentScenarioIndex < currentTale.scenarios.Count) {
+                ShowCurrentScenario();
+            }
+            else {
+                Debug.Log($"[StorySceneUi] '{currentTale.storyTitle}' Ïù¥ÏïºÍ∏∞ ÎÅù");
+                GiveReward();
+                OnClickGoToSelection();
+            }
         }
 
-        // ¡§¥‰/ø¿¥‰ »Æ¿Œ
-        if (logicalAnswerIndex == currentScenario.quiz.correctAnswerIndex) {
-            // ¡§¥‰
-            feedbackText.text = currentScenario.quiz.correctFeedback;
-            feedbackContinueButton.gameObject.SetActive(false); 
-            isQuizActive = false; 
-            isShowingStory = false;
-        }
-        else {
-            // ø¿¥‰
-            feedbackText.text = currentScenario.quiz.wrongFeedback;
-            feedbackContinueButton.gameObject.SetActive(true);
-            feedbackContinueButton.onClick.AddListener(RetryQuiz);
-            feedbackContinueButton.GetComponentInChildren<TextMeshProUGUI>().text = "¥ŸΩ√ Ω√µµ";
-            isQuizActive = true; 
-            isShowingStory = false;
-        }
-    }
-
-    public void RetryQuiz() {
-        feedbackPanel.SetActive(false); 
-        questionPanel.SetActive(true); 
-        isQuizActive = true;
-        isShowingStory = false; 
-    }
-
-    public void ShowNextScenario() {
-        currentScenarioIndex++;
-        if (currentScenarioIndex < currentTale.scenarios.Count) {
-            ShowCurrentScenario();
-        }
-        else {
-            Debug.Log($"[StorySceneUi] '{currentTale.storyTitle}' ¿Ãæﬂ±‚ ≥°");
-            GiveReward();
-            OnClickGoToSelection();
-        }
-    }
-
-    public void GiveReward() {
-        if (currentTale.storyReward != null) {
-            Debug.Log($"[StorySceneUi] ∫∏ªÛ »πµÊ: {currentTale.storyReward.itemName}");
-            // ¿Œ∫•≈‰∏Æ Ω√Ω∫≈€ø° æ∆¿Ã≈€ √ﬂ∞° ±∏«ˆ«œ±‚
-            // DataManager.Instance.Inventory.AddItem(currentTale.storyReward);
+        public void GiveReward() {
+            if (currentTale.storyReward != null) {
+                Debug.Log($"[StorySceneUi] Î≥¥ÏÉÅ ÌöçÎìù: {currentTale.storyReward.itemName}");
+                // Ïù∏Î≤§ÌÜ†Î¶¨ ÏãúÏä§ÌÖúÏóê ÏïÑÏù¥ÌÖú Ï∂îÍ∞Ä Íµ¨ÌòÑÌïòÍ∏∞
+                // DataManager.Instance.Inventory.AddItem(currentTale.storyReward);
+            }
         }
     }
 }

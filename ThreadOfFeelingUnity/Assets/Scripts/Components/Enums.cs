@@ -1,28 +1,29 @@
-using System;
+namespace Components
+{
+    public enum Gender {
+        Male,
+        Female
+    }
 
-public enum Gender {
-    Male,
-    Female
-}
+    public enum AgeBand {
+        Unknown = 0,            // ì•Œ ìˆ˜ ì—†ìŒ (ê¸°ë³¸ê°’)
+        Kindergarten = 1,       // ìœ ì¹˜ì›
+        ElementaryLower = 2,    // ì´ˆë“±í•™êµ ì €í•™ë…„
+        ElementaryUpper = 3     // ì´ˆë“±í•™êµ ê³ í•™ë…„ ì´ìƒ
+    }
 
-public enum AgeBand {
-    Unknown = 0,            // ¾Ë ¼ö ¾øÀ½ (±âº»°ª)
-    Kindergarten = 1,       // À¯Ä¡¿ø
-    ElementaryLower = 2,    // ÃÊµîÇĞ±³ ÀúÇĞ³â
-    ElementaryUpper = 3     // ÃÊµîÇĞ±³ °íÇĞ³â ÀÌ»ó
-}
+    public enum StoryType {
+        TypeA,
+        TypeB,
+        NotSelected
+    }
 
-public enum StoryType {
-    TypeA,
-    TypeB,
-    NotSelected
-}
-
-public enum GameState {
-    Village,    // ¸¶À»
-    Selection,  // µ¿È­ ¼±ÅÃ
-    Story,      // µ¿È­
-    Housing,    // ÇÏ¿ìÂ¡
-    Paused,     // ÀÏ½ÃÁ¤Áö (UI ¸Ş´º µî)
-    Loading,    // ·Îµù Áß
+    public enum GameState {
+        Village,    // ë§ˆì„
+        Selection,  // ë™í™” ì„ íƒ
+        Story,      // ë™í™”
+        Housing,    // í•˜ìš°ì§•
+        Paused,     // ì¼ì‹œì •ì§€ (UI ë©”ë‰´ ë“±)
+        Loading,    // ë¡œë”© ì¤‘
+    }
 }
