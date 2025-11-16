@@ -2214,12 +2214,12 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 2039044470}
-        m_TargetAssemblyTypeName: SelectionSceneUi, Assembly-CSharp
+        m_TargetAssemblyTypeName: UI.SelectionSceneUi, Assembly-CSharp
         m_MethodName: ShowStoryDetails
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 11400000, guid: cf8a82b65ac36af4ba50f9b93a249fb9, type: 2}
-          m_ObjectArgumentAssemblyTypeName: Story, Assembly-CSharp
+          m_ObjectArgumentAssemblyTypeName: Components.Story, Assembly-CSharp
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -2643,7 +2643,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1728785339
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3605,12 +3605,12 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 2039044470}
-        m_TargetAssemblyTypeName: SelectionSceneUi, Assembly-CSharp
+        m_TargetAssemblyTypeName: UI.SelectionSceneUi, Assembly-CSharp
         m_MethodName: ShowStoryDetails
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 11400000, guid: 2162eaa4202c9d74c957bb8552d20c61, type: 2}
-          m_ObjectArgumentAssemblyTypeName: Story, Assembly-CSharp
+          m_ObjectArgumentAssemblyTypeName: Components.Story, Assembly-CSharp
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
