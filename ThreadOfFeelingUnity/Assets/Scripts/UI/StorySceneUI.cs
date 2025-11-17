@@ -29,6 +29,7 @@ namespace UI
 
         private Story currentTale;
         private int currentScenarioIndex = 0;
+        private int currentQuizIndex = 0; // 추가: 현재 퀴즈 인덱스(0-2)
         private Scenario currentScenario; 
     
         private bool isQuizActive = false;
@@ -82,7 +83,7 @@ namespace UI
             if (InputManager.Instance.GetSpaceKeyDown()) {
                 if (isShowingStory) {
                     // 스토리 진행 중 스페이스바 -> 퀴즈 또는 다음 시나리오
-                    bool hasQuiz = currentScenario.quiz != null && !string.IsNullOrEmpty(currentScenario.quiz.questionText);
+                    bool hasQuiz = currentScenario.quizzes != null && currentScenario.quizzes.Count > 0;
                     if (hasQuiz) {
                         ShowQuiz();
                     }
@@ -101,6 +102,7 @@ namespace UI
         public void ShowCurrentScenario() {
             isQuizActive = false;
             isShowingStory = true;
+            currentQuizIndex = 0; // 퀴즈 인덱스 초기화
         
             questionPanel.SetActive(false);
             feedbackPanel.SetActive(false);
@@ -115,21 +117,37 @@ namespace UI
         }
 
         public void ShowQuiz() {
+            //  퀴즈 유효성 검사
+            if (currentScenario.quizzes == null || 
+                currentQuizIndex >= currentScenario.quizzes.Count)
+            {
+                ShowNextScenario();
+                return;
+            }
+
+            Question currentQuiz = currentScenario.quizzes[currentQuizIndex];
+
+            // 퀴즈가 비어있는지 체크
+            if (string.IsNullOrEmpty(currentQuiz.questionText))
+            {
+                ShowNextScenario();
+                return;
+            }
+
             isQuizActive = true;
             isShowingStory = false;
 
             // 퀴즈 UI 설정 및 표시
-            questionText.text = currentScenario.quiz.questionText;
-
+            questionText.text = currentQuiz.questionText;
             // 퀴즈 선택지 랜덤 배치
             if (Random.value < 0.5f) {
-                answerButton1.GetComponentInChildren<TextMeshProUGUI>().text = currentScenario.quiz.answer1;
-                answerButton2.GetComponentInChildren<TextMeshProUGUI>().text = currentScenario.quiz.answer2;
+                answerButton1.GetComponentInChildren<TextMeshProUGUI>().text = currentQuiz.answer1;
+                answerButton2.GetComponentInChildren<TextMeshProUGUI>().text = currentQuiz.answer2;
                 isAnswer1OnButton1 = true;
             }
             else {
-                answerButton1.GetComponentInChildren<TextMeshProUGUI>().text = currentScenario.quiz.answer2;
-                answerButton2.GetComponentInChildren<TextMeshProUGUI>().text = currentScenario.quiz.answer1;
+                answerButton1.GetComponentInChildren<TextMeshProUGUI>().text = currentQuiz.answer2;
+                answerButton2.GetComponentInChildren<TextMeshProUGUI>().text = currentQuiz.answer1;
                 isAnswer1OnButton1 = false;
             }
 
@@ -137,6 +155,7 @@ namespace UI
         }
 
         public void OnAnswerClicked(int clickedButtonIndex) {
+            Question currentQuiz = currentScenario.quizzes[currentQuizIndex]; // 현재 퀴즈 가져오기
             questionPanel.SetActive(false);
             feedbackPanel.SetActive(true);
         
@@ -156,16 +175,18 @@ namespace UI
             }
 
             // 정답/오답 확인
-            if (logicalAnswerIndex == currentScenario.quiz.correctAnswerIndex) {
+            if (logicalAnswerIndex == currentQuiz.correctAnswerIndex) {
                 // 정답
-                feedbackText.text = currentScenario.quiz.correctFeedback;
+                feedbackText.text = currentQuiz.correctFeedback;
                 feedbackContinueButton.gameObject.SetActive(false); 
                 isQuizActive = false; 
                 isShowingStory = false;
+
+                Debug.Log($"[StorySceneUi] 퀴즈 {currentQuizIndex + 1}/3 정답!");
             }
             else {
                 // 오답
-                feedbackText.text = currentScenario.quiz.wrongFeedback;
+                feedbackText.text = currentQuiz.wrongFeedback;
                 feedbackContinueButton.gameObject.SetActive(true);
                 feedbackContinueButton.onClick.AddListener(RetryQuiz);
                 feedbackContinueButton.GetComponentInChildren<TextMeshProUGUI>().text = "다시 시도";
@@ -181,8 +202,30 @@ namespace UI
             isShowingStory = false; 
         }
 
+        public void ShowNextQuizOrScenario() {
+            feedbackPanel.SetActive(false);
+
+            currentQuizIndex++;
+
+            // 현재 시나리오의 퀴즈가 남아있는지 확인
+            if (currentQuizIndex < currentScenario.quizzes.Count)
+            {
+                // 다음 퀴즈 표시
+                Debug.Log($"[StorySceneUi] 다음 퀴즈 ({currentQuizIndex + 1}/3)");
+                ShowQuiz();
+            }
+            else
+            {
+                // 모든 퀴즈 완료 -> 다음 시나리오로
+                Debug.Log($"[StorySceneUi] 시나리오 {currentScenarioIndex + 1} 완료");
+                ShowNextScenario();
+            }
+        }
+
         public void ShowNextScenario() {
             currentScenarioIndex++;
+            currentQuizIndex = 0; //
+
             if (currentScenarioIndex < currentTale.scenarios.Count) {
                 ShowCurrentScenario();
             }
