@@ -9,9 +9,10 @@ namespace Components
         public Gender gender { get; }
         public int fontScale { get; set; }
         public bool isTtsUsed { get; set; }
-        public bool isDyslexiaFontUsed { get; set; }
         public int roomId { get; }
         public DateTime createdAt { get; }
+
+        // inventory ¸¸µé±â
         public ChildProfile(string nickName, AgeBand ageBand, Gender gender) {
             //this.ChildId = numChildId+
             this.nickname = nickName;
@@ -19,7 +20,6 @@ namespace Components
             this.gender = gender;
             this.fontScale = 100;
             this.isTtsUsed = false;
-            this.isDyslexiaFontUsed = false;
             //this.createdAt = DateTime.MinValue;
         }
     }

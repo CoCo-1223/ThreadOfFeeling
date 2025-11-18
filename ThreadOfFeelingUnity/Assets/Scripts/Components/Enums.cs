@@ -26,4 +26,9 @@ namespace Components
         Paused,     // 일시정지 (UI 메뉴 등)
         Loading,    // 로딩 중
     }
+
+    public enum Sfx { 
+        Ding, 
+        Wrong
+    };
 }
