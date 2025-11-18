@@ -197,7 +197,7 @@ namespace UI
             if (currentTale.storyReward != null) {
                 Debug.Log($"[StorySceneUi] 보상 획득: {currentTale.storyReward.itemName}");
                 // 인벤토리 시스템에 아이템 추가 구현하기
-                // DataManager.Instance.Inventory.AddItem(currentTale.storyReward);
+                //DataManager.Instance.Inventory.AddItem(currentTale.storyReward);
             }
         }
     }
