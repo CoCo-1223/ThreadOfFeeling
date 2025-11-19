@@ -18,6 +18,8 @@ namespace Components {
         public Inventory Inventory;
         public List<int> ClearedStoryIds;
 
+        public ChildStats Stats;
+
         public ChildProfile() {
             this.Inventory = new Inventory();
             this.ClearedStoryIds = new List<int>();
@@ -37,6 +39,7 @@ namespace Components {
 
             this.Inventory = new Inventory();
             this.ClearedStoryIds = new List<int>();
+            this.Stats = new ChildStats();
         }
 
         // 문자열로 저장된 날짜를 DateTime으로 변환해서 가져오는 함수
@@ -47,6 +50,29 @@ namespace Components {
         
         public void UpdateTimestamp() {
             this.UpdatedAt = DateTime.Now.ToString();
+        }
+
+        // 나이대 한글 반환 프로퍼티
+        public string AgeBandText {
+            get {
+                switch (AgeBand) {
+                    case AgeBand.Kindergarten:      return "유치원";
+                    case AgeBand.ElementaryLower:   return "초등학교 저학년";
+                    case AgeBand.ElementaryUpper:   return "초등학교 고학년";
+                    default:                        return "알 수 없음";
+                }
+            }
+        }
+
+        // 성별 한글 반환 프로퍼티
+        public string GenderText {
+            get {
+                switch (Gender) {
+                    case Gender.Male:   return "남자";
+                    case Gender.Female: return "여자";
+                    default:            return "-";
+                }
+            }
         }
     }
 }

@@ -98,6 +98,10 @@ namespace UI
             
             if (dialogueText != null)
                 dialogueText.text = currentScenario.dialogueText;
+
+            if (DataManager.Instance.IsTtsUsed()) {
+                // TODO: TTS 재생 로직 실행
+            }
         }
 
         public void ShowNextScenario() {

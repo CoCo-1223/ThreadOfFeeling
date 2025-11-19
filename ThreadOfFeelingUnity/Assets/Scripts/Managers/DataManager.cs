@@ -114,6 +114,10 @@ namespace Managers
             return currentProfile;
         }
 
+        public bool IsTtsUsed() {
+            return currentProfile.IsTtsUsed;
+        }
+
         // Test 유저 생성용
         private void SelectProfile(ChildProfile profile) {
             currentProfile = profile;

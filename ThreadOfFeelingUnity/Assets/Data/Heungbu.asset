@@ -12,10 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f30d55231bae6c44b96dac5ec917bc5, type: 3}
   m_Name: Heungbu
   m_EditorClassIdentifier: 
+  storyId: 0
   storyTitle: "\uD765\uBD80\uC640 \uB180\uBD80"
   storyCoverImage: {fileID: 5422259817500351722, guid: 9faf1856d6f0b47729fbb12658b538a0, type: 3}
   storyDescription: "\uD765\uBD80\uC640 \uB180\uBD80\uAC00 \uC788\uC5C8\uC74C"
-  storyTag: "#\uBC15 #\uAD8C\uC120\uC9D5\uC545"
+  storyTag: "#10\uAC1C\uC52C #30\uBB38\uC81C #\uBC15"
   storyReward: {fileID: 11400000, guid: b75ee65caa1ff0b41bc3fcebf913bac9, type: 2}
   scenarios:
   - image: {fileID: -9062015590762506407, guid: e5dc45d6915b549828bc0132ce8fa5bf, type: 3}
