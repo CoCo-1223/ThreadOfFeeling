@@ -9,6 +9,9 @@ namespace Managers
     public class DataManager : MonoBehaviour {
         public static DataManager Instance { get; private set; }
 
+        // 프로필 리스트 - 프로필 선택화면에서 사용
+        public List<ChildProfile> ChildProfiles = new List<ChildProfile>();
+
         // 현재 선택된 사용자 프로필
         public ChildProfile currentProfile { get; private set; }
     
@@ -45,21 +48,19 @@ namespace Managers
             SceneManager.sceneLoaded -= OnSceneLoaded;
         }
 
-        public void SelectProfile(ChildProfile profile) {
-            currentProfile = profile;
-            Debug.Log($"[DataManager] 프로필 선택됨: {profile.nickname}");
-        }
-
+        // 스토리 데이터 선택
         public void SelectFairyTaleData(Story taleData) {
             selectedTale = taleData;
         }
 
+        // 마을 데이터 생성
         private void LoadViallageData() {
             talkData = new Dictionary<int, string[]>();
             portraitData = new Dictionary<int, Sprite>();
             GenerateObjectData();
         }
 
+        // NPC 데이터들
         private void GenerateObjectData() {
             // NPC별 대화 데이터 "Text:표정"
             talkData.Add(1000, new string[] { 
@@ -92,6 +93,31 @@ namespace Managers
 
         public Sprite GetPortrait(int id, int portraitIndex) {
             return portraitData[id +  portraitIndex];
+        }
+
+        // 현재 프로필에 아이템 추가
+        public ChildProfile AddRewardItem(Item item, int amount=1) {
+            currentProfile.Inventory.AddItem(item, amount);
+            return currentProfile;
+        }
+
+        // 현재 프로필에서 아이템 사용
+        public ChildProfile UseRewardItem(int itemId, int amount=1) {
+            currentProfile.Inventory.UseItem(itemId, amount);
+            return currentProfile;
+        }
+
+        // 프로필 리스트에서 접속할 프로필 선택
+        public ChildProfile SelectProfile(int profileId) {
+            currentProfile = ChildProfiles[profileId];
+            Debug.Log($"[DataManager] 프로필 선택됨: {currentProfile.Nickname}");
+            return currentProfile;
+        }
+
+        // Test 유저 생성용
+        private void SelectProfile(ChildProfile profile) {
+            currentProfile = profile;
+            Debug.Log($"[DataManager] 프로필 선택됨: {profile.Nickname}");
         }
 
         // 프로필 저장/로드 함수 추가

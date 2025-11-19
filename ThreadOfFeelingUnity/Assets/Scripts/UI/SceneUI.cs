@@ -33,7 +33,7 @@ namespace UI
 
         private void FindUserName() {
             if (DataManager.Instance != null && DataManager.Instance.currentProfile != null) {
-                menuUserName.text = DataManager.Instance.currentProfile.nickname;
+                menuUserName.text = DataManager.Instance.currentProfile.Nickname;
             }
             else {
                 Debug.LogError("[SceneUI] DataManager 또는 프로필을 찾을 수 없습니다");

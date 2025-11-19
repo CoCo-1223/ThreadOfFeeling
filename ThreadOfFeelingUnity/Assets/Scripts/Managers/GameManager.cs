@@ -74,7 +74,7 @@ namespace Managers
                 return;
             }
 
-            GameObject prefabToCreate = (userProfile.gender == Gender.Male) ? maleCharacterPrefab : femaleCharacterPrefab;
+            GameObject prefabToCreate = (userProfile.Gender == Gender.Male) ? maleCharacterPrefab : femaleCharacterPrefab;
 
             if (prefabToCreate != null) {
                 playerInstance = Instantiate(prefabToCreate, spawnPosition, Quaternion.identity);
