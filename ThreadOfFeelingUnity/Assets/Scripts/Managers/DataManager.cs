@@ -26,7 +26,7 @@ namespace Managers
                 SceneManager.sceneLoaded += OnSceneLoaded;
 
                 // 테스트용 프로필 생성
-                ChildProfile profile = new ChildProfile("TestUser", 0, Gender.Female);
+                ChildProfile profile = new ChildProfile("TestUser", 0, Gender.Male);
                 SelectProfile(profile);
             
                 // 게임 데이터 로드
