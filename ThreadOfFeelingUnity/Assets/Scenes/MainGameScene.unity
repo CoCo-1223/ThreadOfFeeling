@@ -3809,8 +3809,9 @@ GameObject:
   - component: {fileID: 519420031}
   - component: {fileID: 519420029}
   - component: {fileID: 519420030}
-  - component: {fileID: 519420033}
   - component: {fileID: 519420034}
+  - component: {fileID: 519420035}
+  - component: {fileID: 519420036}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -3905,7 +3906,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 4
+  orthographic size: 2.8125
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -3936,30 +3937,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 25, y: 0, z: 0}
---- !u!114 &519420033
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 519420028}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c88f5cead0c0b2a4eb05b5900433f8d1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_ComponentVersion: 1
-  m_AssetsPPU: 100
-  m_RefResolutionX: 320
-  m_RefResolutionY: 180
-  m_CropFrame: 0
-  m_GridSnapping: 0
-  m_FilterMode: 0
-  m_UpscaleRT: 0
-  m_PixelSnapping: 0
-  m_CropFrameX: 0
-  m_CropFrameY: 0
-  m_StretchFill: 0
 --- !u!114 &519420034
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3974,6 +3951,40 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {fileID: 0}
   offset: {x: 0, y: 15, z: -30}
+--- !u!165 &519420035
+AudioHighPassFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 519420028}
+  m_Enabled: 0
+  m_CutoffFrequency: 5000
+  m_HighpassResonanceQ: 1
+--- !u!114 &519420036
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 519420028}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c88f5cead0c0b2a4eb05b5900433f8d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ComponentVersion: 1
+  m_AssetsPPU: 64
+  m_RefResolutionX: 640
+  m_RefResolutionY: 360
+  m_CropFrame: 0
+  m_GridSnapping: 0
+  m_FilterMode: 0
+  m_UpscaleRT: 0
+  m_PixelSnapping: 0
+  m_CropFrameX: 0
+  m_CropFrameY: 0
+  m_StretchFill: 0
 --- !u!1 &557219180
 GameObject:
   m_ObjectHideFlags: 0
@@ -9017,6 +9028,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: TalkPanel
       objectReference: {fileID: 0}
+    - target: {fileID: 4502611639474665349, guid: eba4a6c70e4565947931ba40f19ae3d7, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4952448967363679959, guid: eba4a6c70e4565947931ba40f19ae3d7, type: 3}
       propertyPath: m_Colors.m_PressedColor.b
       value: 0.8078432
@@ -9163,13 +9178,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 981d043ee3aae9046b1200ac8ea83a43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bgmClip: {fileID: 0}
+  sceneBgms:
+  - sceneName: MainGameScene
+    clip: {fileID: 8300000, guid: 8840475aa631d3949836021a557f7849, type: 3}
+  - sceneName: SelectionScene
+    clip: {fileID: 8300000, guid: c7f8b14c966ff394fa6565ebe298f92e, type: 3}
+  - sceneName: HousingScene
+    clip: {fileID: 8300000, guid: 3ddb7f23c6877fe4686d192a29618e14, type: 3}
   bgmVolume: 0.2
   sfxClips:
   - {fileID: 8300000, guid: 027fd8267ed2d4d479be1a0730ba440c, type: 3}
   - {fileID: 8300000, guid: 083e250c434176746a40b30beccc3664, type: 3}
+  - {fileID: 8300000, guid: 54d0571a994d1c446b500a11bf0fc572, type: 3}
+  - {fileID: 8300000, guid: 85d9199269605014b985eac6ed601bbf, type: 3}
   sfxVolume: 0.5
-  channels: 16
+  channels: 4
 --- !u!114 &1863814849
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -95850,7 +95873,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1888403209062338316, guid: 1d9e1cc8d040273439f6aa8ae5c7f781, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3640837626063475668, guid: 1d9e1cc8d040273439f6aa8ae5c7f781, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode

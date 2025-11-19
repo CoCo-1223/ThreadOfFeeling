@@ -18,8 +18,8 @@ namespace Components
         public int talkIndex = 0;
 
         private MainSceneUI uiManager; 
-
         private static MainSceneUI _cachedUIManager;
+        //private GameState previousState;
 
         void Start() {
             if (_cachedUIManager == null) {
@@ -34,7 +34,7 @@ namespace Components
 
         public void HandleInteraction() {
             if (!isAction) {
-                GameManager.Instance.PauseGame();
+                GameManager.Instance.EnterTalkState();
                 isAction = true;
                 ProceedTalk();
             }
@@ -89,18 +89,7 @@ namespace Components
                 uiManager.HideTalkPanel();
                 uiManager.ShowChoiceButtons(false);
             }
-            GameManager.Instance.ResumeGame();
-        }
-
-        public bool getIsAction() {
-            return isAction;
-        }
-
-        public void Action(GameObject scanObj) 
-        {
-            // PlayerController의 원본 코드가 Action()을 호출하면,
-            // 새 방식인 HandleInteraction()을 대신 호출하도록 연결
-            HandleInteraction();
+            GameManager.Instance.ExitTalkState();
         }
     }
 }

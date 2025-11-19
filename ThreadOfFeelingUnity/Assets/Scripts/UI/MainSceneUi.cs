@@ -1,3 +1,5 @@
+using Components;
+using Managers;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -22,8 +24,8 @@ namespace UI
 
         protected override void Start() {
             base.Start();
-            HideTalkPanel();
             ShowChoiceButtons(false);
+            SoundManager.Instance.PlayBgm(true);
         }
 
         protected override void Update() {
@@ -31,6 +33,7 @@ namespace UI
         }
 
         public void ShowTalkPanel(string text, Sprite portrait, bool isNPC) {
+            SoundManager.Instance.SelectSound(true);
             talkPanel.SetActive(true);
             objectText.text = text;
 
@@ -47,6 +50,7 @@ namespace UI
         }
 
         public void HideTalkPanel() {
+            SoundManager.Instance.SelectSound(false);
             talkPanel.SetActive(false);
         }
 

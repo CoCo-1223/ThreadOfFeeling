@@ -24,11 +24,14 @@ namespace Components
         Story,      // 동화
         Housing,    // 하우징
         Paused,     // 일시정지 (UI 메뉴 등)
+        NPCTalk,    // NPC 대화 상태
         Loading,    // 로딩 중
     }
 
     public enum Sfx { 
         Ding, 
-        Wrong
+        Wrong,
+        Select,
+        Clear   // 스토리 클리어
     };
 }

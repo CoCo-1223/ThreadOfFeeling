@@ -1,6 +1,7 @@
 using Managers;
 using TMPro;
 using UnityEngine;
+using Components;
 
 namespace UI
 {
@@ -30,7 +31,7 @@ namespace UI
             }
         }
 
-        public void FindUserName() {
+        private void FindUserName() {
             if (DataManager.Instance != null && DataManager.Instance.currentProfile != null) {
                 menuUserName.text = DataManager.Instance.currentProfile.nickname;
             }
@@ -41,13 +42,20 @@ namespace UI
 
         private void MenuSet(bool isActive) {
             if (menuSet == null) return;
+            //SoundManager.Instance.SimpleSelect();
             menuSet.SetActive(isActive);
-            if (isActive) GameManager.Instance.PauseGame();
-            else GameManager.Instance.ResumeGame();
+            if (isActive) {
+                GameManager.Instance.PauseGame();
+                SoundManager.Instance.SelectSound(true);
+            }
+            else {
+                GameManager.Instance.ResumeGame();
+                SoundManager.Instance.SelectSound(false);
+            }
         }
 
         // 게임 저장 - 메뉴
-        public void OnClickSave() {
+        protected void OnClickSave() {
             // 플레이어 위치
             // 클리어 한 동화
             // 인벤토리
@@ -58,30 +66,35 @@ namespace UI
         }
 
         // 게임 끝내기 - build시에만 작동
-        public void OnClickExit() {
+        protected void OnClickExit() {
+            SoundManager.Instance.SelectSound();
             Application.Quit();
         }
 
         // 이어하기 - 메뉴
-        public void OnClickResume() {
+        protected void OnClickResume() {
             MenuSet(false);
         }
 
         protected virtual void OnclickGoToBack() { }
 
-        public void OnClickGoToStory() {
+        protected void OnClickGoToStory() {
+            SoundManager.Instance.SelectSound();
             GameManager.Instance.LoadStoryScene();
         }
 
-        public void OnClickGoToHousing() {
+        protected void OnClickGoToHousing() {
+            SoundManager.Instance.SelectSound();
             GameManager.Instance.LoadHousingScene();
         }
 
-        public void OnClickGoToVillage() {
+        protected void OnClickGoToVillage() {
+            SoundManager.Instance.SelectSound();
             GameManager.Instance.LoadVillageScene();
         }
 
-        public void OnClickGoToSelection() {
+        protected void OnClickGoToSelection() {
+            SoundManager.Instance.SelectSound();
             GameManager.Instance.LoadSelectionScene();
         }
     }
