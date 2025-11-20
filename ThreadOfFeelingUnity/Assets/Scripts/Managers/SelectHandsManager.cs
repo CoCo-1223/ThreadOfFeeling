@@ -11,20 +11,20 @@ namespace Managers{
 
     private void Awake(){
       if (Instance != null && Instance != this){
-        Destory(gameObject);
+        Destroy(gameObject);
         return;
       }
 
       Instance = this;
-      DontDestoryOnLoad(gameObject);
+      DontDestroyOnLoad(gameObject);
 
-      StratPython();
+      StartPython();
     }
 
     private void OnDestroy(){
       try {
         if (_proc != null && !_proc.HasExited){
-          _proc.kill();
+          _proc.Kill();
           _proc.Dispose();
         }
       }
