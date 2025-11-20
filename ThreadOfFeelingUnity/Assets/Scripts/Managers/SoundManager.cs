@@ -19,7 +19,6 @@ namespace Managers
         public float bgmVolume;
 
         AudioSource bgmPlayer;
-        //AudioHighPassFilter bgmEffect;
         AudioLowPassFilter bgmEffect;
 
         [Header("#SFX")]
@@ -38,14 +37,6 @@ namespace Managers
             else {
                 Destroy(gameObject);
             }
-        }
-
-        private void OnEnable() {
-            SceneManager.sceneLoaded += OnSceneLoaded;
-        }
-
-        private void OnDisable() {
-            SceneManager.sceneLoaded -= OnSceneLoaded;
         }
 
         void Init() {
@@ -74,12 +65,13 @@ namespace Managers
 
          }
 
-        void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
+        // GamgeManager에서 호출하는 형식
+        public void ChangeBgm(string sceneName) {
             // 현재 씬 이름에 맞는 BGM 찾기
             AudioClip targetClip = null;
             
             foreach (BgmData data in sceneBgms) {
-                if (data.sceneName == scene.name) {
+                if (data.sceneName == sceneName) {
                     targetClip = data.clip;
                     break;
                 }
@@ -100,6 +92,7 @@ namespace Managers
             }
         }
 
+        // 배경음악 재생하기
         public void PlayBgm(bool isPlay) {
             if (isPlay) {
                 bgmPlayer.Play();
@@ -109,10 +102,12 @@ namespace Managers
             }
         }
 
+        // 배경음악 작게
         private void EffectBgm(bool isPlay) {
             bgmEffect.enabled = isPlay;
         }
 
+        // 효과음 재생하기
         private void PlaySfx(Sfx sfx) {
             for (int index = 0; index < sfxPlayers.Length; index++) {
                 int loopIndex = (index + channelIndex) % sfxPlayers.Length;
@@ -127,19 +122,33 @@ namespace Managers
             
         }
 
+        // TTS 재생
+        public void PlayTTS() { }
+        // TTS 멈춤
+        public void StopTTS() { }
+
+        // 단순 선택 효과음 재생
         public void SelectSound() {
             PlaySfx(Sfx.Select);
         }
+
+        // pop up용 선택 효과음 재생 (배경음악 소리를 줄임)
         public void SelectSound(bool effect) {
             PlaySfx(Sfx.Select);
             EffectBgm(effect);
         }
+
+        // 클리어 효과음 재생
         public void ClearSound() {
             PlaySfx(Sfx.Clear);
         }
+
+        // 맞췄을 때 효과음 재생
         public void RightSound() {
             PlaySfx(Sfx.Ding);
         }
+        
+        // 틀렸을 때 효과음 재생
         public void WrongSound() {
             PlaySfx(Sfx.Wrong);
         }

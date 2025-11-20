@@ -3,6 +3,7 @@ using Managers;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using Controller;
 
 namespace UI
 {
@@ -98,6 +99,10 @@ namespace UI
             
             if (dialogueText != null)
                 dialogueText.text = currentScenario.dialogueText;
+
+            if (DataManager.Instance.IsTtsUsed()) {
+                // TODO: TTS 재생 로직 실행
+            }
         }
 
         public void ShowNextScenario() {
@@ -113,6 +118,14 @@ namespace UI
         }
 
         private void HandleStoryEnd() {
+            // 보상 아이템 지급 (자동 저장)
+            if (currentTale.storyReward != null) {
+                DataManager.Instance.AddRewardItem(currentTale.storyReward);
+            }
+    
+            // 클리어 기록 저장 (자동 저장)
+            DataManager.Instance.AddClearedStory(currentTale.storyId);
+
             // UI 표시 위임
             if (currentTale.storyReward != null && rewardPopup != null) {
                 // 대화창 숨기기

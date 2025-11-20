@@ -59,7 +59,7 @@ namespace UI
                 Debug.Log($"[RewardPopupUI] ∫∏ªÛ »πµÊ: {item.itemName}");
                 
                 // ¿Œ∫•≈‰∏Æ √ﬂ∞°
-                // DataManager.Instance.Inventory.AddItem(item);
+                DataManager.Instance.AddRewardItem(item);
             }
         }
 
