@@ -1,7 +1,8 @@
 using Managers;
 using UnityEngine;
+using Components;
 
-namespace Components
+namespace Controller
 {
     public class PlayerController : MonoBehaviour {
 

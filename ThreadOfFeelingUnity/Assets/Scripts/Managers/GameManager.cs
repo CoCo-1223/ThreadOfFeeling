@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Components;
+using Controller;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -38,35 +39,63 @@ namespace Managers
 
         // 씬이 로드될 때마다 호출되는 함수
         private void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
-            if (scene.name == "MainGameScene") {
-                StartGame();
-                SetState(GameState.Village);
-            }
-            else {
-                playerInstance = null;
-                playerController = null;
-                if (scene.name == "SelectionScene") {
+            
+            // BGM 변경 요청
+            SoundManager.Instance.ChangeBgm(scene.name);
+
+            // 씬에 따른 상태 및 플레이어 설정
+            switch (scene.name)
+            {
+                case "VillageScene":
+                    StartVillage(); // 플레이어 생성
+                    SetState(GameState.Village);
+                    break;
+
+                case "StartScene":
+                    ResetPlayerRef();
+                    SetState(GameState.Start);
+                    break;
+
+                case "SelectionScene":
+                    ResetPlayerRef();
                     SetState(GameState.Selection);
-                }
-                else if (scene.name == "StoryScene") {
+                    break;
+
+                case "StoryScene":
+                    ResetPlayerRef();
                     SetState(GameState.Story);
-                }
-                else if (scene.name == "HousingScene") {
+                    break;
+
+                case "HousingScene":
+                    ResetPlayerRef();
                     SetState(GameState.Housing);
-                }
-                else {
-                    Debug.Log("[GameManager] 현재 씬은 " + scene.name + "입니다");
+                    break;
+
+                case "ProfileScene":
+                    ResetPlayerRef();
+                    SetState(GameState.Profile);
+                    break;
+
+                default:
+                    Debug.Log($"[GameManager] 정의되지 않은 씬: {scene.name}");
+                    ResetPlayerRef();
                     SetState(GameState.Loading);
-                }
+                    break;
             }
+
+            // 스택 초기화
             stateStack.Clear();
         }
-    
-        // 마을 씬 시작 시 플레이어 생성
-        public void StartGame() {
-            // 이미 플레이어가 있다면 중복 스폰 방지
-            if (playerInstance != null) return; 
+        
+        // 씬이 바뀔 때 플레이어 참조 초기화 (Village가 아니면 플레이어 없음)
+        private void ResetPlayerRef() {
+            playerInstance = null;
+            playerController = null;
+        }
 
+        // 마을 씬 시작 시 호출
+        private void StartVillage() {
+            if (playerInstance != null) return; 
             ChildProfile userProfile = DataManager.Instance.currentProfile;
 
             if (userProfile == null) {
@@ -87,7 +116,7 @@ namespace Managers
         }
 
         // 게임 상태 제어
-        public void SetState(GameState newState) {
+        private void SetState(GameState newState) {
             if (CurrentState == newState) return;
             CurrentState = newState;
             Debug.Log("[GameManager] 게임 상태 변경: " + CurrentState);
@@ -106,13 +135,15 @@ namespace Managers
                     case GameState.Selection:
                     case GameState.Paused:
                     case GameState.NPCTalk:
+                    case GameState.Profile:
                     case GameState.Loading:
+                    case GameState.Start:
                         playerController.StopMovement();
                         break;
                 }
             }
             else {
-                if (CurrentState == GameState.Village || CurrentState == GameState.Story || CurrentState == GameState.Housing) {
+                if (CurrentState == GameState.Village) {
                     Debug.LogWarning("[GameManager] " + CurrentState + " 상태로 변경하려 하나, PlayerController가 없습니다. (씬에 플레이어 없음)");
                 }
             }
@@ -165,10 +196,12 @@ namespace Managers
         private void RecoverStateByScene() {
             string sceneName = SceneManager.GetActiveScene().name;
             switch (sceneName) {
-                case "MainGameScene": SetState(GameState.Village); break;
+                case "VillageScene": SetState(GameState.Village); break;
                 case "HousingScene": SetState(GameState.Housing); break;
                 case "StoryScene": SetState(GameState.Story); break;
+                case "StartScene": SetState(GameState.Story); break;
                 case "SelectionScene": SetState(GameState.Selection); break;
+                case "ProfileScene": SetState(GameState.Profile); break;
                 default: SetState(GameState.Loading); break;
             }
         }
@@ -186,10 +219,16 @@ namespace Managers
             SceneManager.LoadScene("HousingScene");
         }
         public void LoadVillageScene() {
-            SceneManager.LoadScene("MainGameScene");
+            SceneManager.LoadScene("VillageScene");
         }
         public void LoadSelectionScene() {
             SceneManager.LoadScene("SelectionScene");
+        }
+        public void LoadProfileScene() {
+            SceneManager.LoadScene("ProfileScene");
+        }
+        public void LoadStartScene() {
+            SceneManager.LoadScene("StartScene");
         }
     }
 }

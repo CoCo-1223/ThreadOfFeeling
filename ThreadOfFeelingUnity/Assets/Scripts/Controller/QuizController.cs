@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using Managers;
 using TMPro;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using Components;
+using UnityEngine.EventSystems;
 using Random = UnityEngine.Random;
 
-namespace Components {
+namespace Controller {
     public class QuizController : MonoBehaviour {
         [Header("퀴즈 UI")]
         [Tooltip("퀴즈 UI의 부모 패널")]

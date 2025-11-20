@@ -87,6 +87,7 @@ namespace UI
             }
         }
 
+        // 메뉴창 활성화 or 비활성화
         private void MenuSet(bool isActive) {
             if (menuSet == null) return;
             menuSet.SetActive(isActive);
@@ -104,13 +105,8 @@ namespace UI
 
         // 게임 저장 - 메뉴
         public void OnClickSave() {
-            // 플레이어 위치
-            // 클리어 한 동화
-            // 인벤토리
-            // roomLayout
-            // DataManager 호출해서 저장하기
             DataManager.Instance.SaveProfileData();
-            //Debug.Log("[SceneUI] 게임 저장 완료");
+            Debug.Log("[SceneUI] 게임 저장 완료");
             MenuSet(false);
         }
 
@@ -125,26 +121,30 @@ namespace UI
             MenuSet(false);
         }
 
-        //public virtual void OnclickGoToBack() { }
-
+        // 씬 이동 함수 (버튼과 연결)
         public void OnClickGoToStory() {
             SoundManager.Instance.SelectSound();
             GameManager.Instance.LoadStoryScene();
         }
-
         public void OnClickGoToHousing() {
             SoundManager.Instance.SelectSound();
             GameManager.Instance.LoadHousingScene();
         }
-
         public void OnClickGoToVillage() {
             SoundManager.Instance.SelectSound();
             GameManager.Instance.LoadVillageScene();
         }
-
         public void OnClickGoToSelection() {
             SoundManager.Instance.SelectSound();
             GameManager.Instance.LoadSelectionScene();
+        }
+        public void OnClickGoToProfile() {
+            SoundManager.Instance.SelectSound();
+            GameManager.Instance.LoadProfileScene();
+        }
+        public void OnClickGoToStart() {
+            SoundManager.Instance.SelectSound();
+            GameManager.Instance.LoadStartScene();
         }
     }
 }

@@ -39,14 +39,6 @@ namespace Managers
             }
         }
 
-        private void OnEnable() {
-            SceneManager.sceneLoaded += OnSceneLoaded;
-        }
-
-        private void OnDisable() {
-            SceneManager.sceneLoaded -= OnSceneLoaded;
-        }
-
         void Init() {
             // 배경음 플레이어 초기화
             GameObject bgmObject = new GameObject("BgmPlayer");
@@ -73,12 +65,13 @@ namespace Managers
 
          }
 
-        void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
+        // GamgeManager에서 호출하는 형식
+        public void ChangeBgm(string sceneName) {
             // 현재 씬 이름에 맞는 BGM 찾기
             AudioClip targetClip = null;
             
             foreach (BgmData data in sceneBgms) {
-                if (data.sceneName == scene.name) {
+                if (data.sceneName == sceneName) {
                     targetClip = data.clip;
                     break;
                 }

@@ -1,14 +1,15 @@
 using Components;
 using Managers;
+using System.IO;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace UI
 {
-    public class MainSceneUI : SceneUI {
+    public class VillageSceneUI : SceneUI {
 
-        [Header("Talk UI (From MainSceneUI)")]
+        [Header("Talk UI")]
         [Tooltip("대화창 패널 게임 오브젝트")]
         [SerializeField] private GameObject talkPanel;
         [Tooltip("대화 내용이 표시될 Text")]
@@ -16,7 +17,7 @@ namespace UI
         [Tooltip("NPC 초상화가 표시될 Image")]
         [SerializeField] private Image portraitImg;
 
-        [Header("Choice Buttons (From MainSceneUI)")]
+        [Header("Choice Buttons")]
         [Tooltip("동화 선택 버튼")]
         [SerializeField] private GameObject choiceBttnStory;
         [Tooltip("하우징 선택 버튼")]
@@ -57,6 +58,20 @@ namespace UI
         public void ShowChoiceButtons(bool show) {
             choiceBttnStory.SetActive(show);
             choiceBttnHousing.SetActive(show);
+        }
+
+        // 체크리스트 html로 열기
+        public void OnClickOpenHtmlReport() {
+            SoundManager.Instance.SelectSound();
+            string fileName = "report.html"; 
+            string path = Path.Combine(Application.streamingAssetsPath, fileName);
+            if (File.Exists(path)) {
+                Application.OpenURL("file://" + path);
+                Debug.Log($"[ViallageSceneUI] HTML 파일 열기 시도: {path}");
+            }
+            else {
+                Debug.LogError($"[ViallageSceneUI] 파일을 찾을 수 없습니다: {path}\n'Assets/StreamingAssets' 폴더에 '{fileName}' 파일을 넣어주세요.");
+            }
         }
     }
 }

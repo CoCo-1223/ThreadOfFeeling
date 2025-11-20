@@ -19,12 +19,14 @@ namespace Components
     }
 
     public enum GameState {
-        Village,    // 마을
-        Selection,  // 동화 선택
-        Story,      // 동화
-        Housing,    // 하우징
+        Start,      // 시작 씬
+        Profile,    // 프로필 설정 씬
+        Village,    // 마을 씬
+        Selection,  // 동화 선택 씬
+        Story,      // 동화 씬
+        Housing,    // 하우징 씬
         Paused,     // 일시정지 (UI 메뉴 등)
-        NPCTalk,    // NPC 대화 상태
+        NPCTalk,    // NPC 대화중
         Loading,    // 로딩 중
     }
 
