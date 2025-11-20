@@ -26,7 +26,7 @@ namespace Managers {
             var psi = new ProcessStartInfo()
             {
                 FileName = "python3",
-                Arguments = "../python/main_demo.py",
+                Arguments = "../python/main_rule_based_classifier.py",
                 RedirectStandardOutput = true,
                 UseShellExecute = false,
                 CreateNoWindow = true
