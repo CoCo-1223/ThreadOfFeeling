@@ -6,24 +6,22 @@ namespace Managers {
     public class SelectHandsManager : MonoBehaviour {
         public static SelectHandsManager Instance { get; private set; }
         private Process _proc;
+
+        // 인스펙터에서 값 변화를 보기 위해 SerializeField 유지
+        [SerializeField] 
         private int _currentHand = 0;
 
         private void Awake() {
-            // 싱글톤 패턴은 유지하되, 씬 이동 시 파괴되도록 DontDestroyOnLoad는 삭제합니다.
             if (Instance != null && Instance != this) {
                 Destroy(gameObject);
                 return;
             }
             Instance = this;
-
-            StartPython();
+            StartPython(); // 시작 시 파이썬 가동
         }
 
         private void OnDestroy() {
-            // 씬이 바뀌거나 게임이 꺼질 때 파이썬 종료
             KillPythonProcess();
-            
-            // 인스턴스 참조 해제 (중요: 다음 씬에서 null 체크가 올바르게 동작하도록)
             if (Instance == this) Instance = null;
         }
         
@@ -46,17 +44,27 @@ namespace Managers {
         }
 
         private void StartPython() {
-            string pythonScriptPath = "../python/main_rule_based_hands_filter.py"; 
+            string projectRoot = System.IO.Directory.GetParent(Application.dataPath).FullName;
+            string pythonExePath = System.IO.Path.Combine(projectRoot, "venv", "Scripts", "python.exe");
+            string scriptPath = System.IO.Path.Combine(Application.streamingAssetsPath, "python", "main_rule_based_hands_filter.py");
+
+            UnityEngine.Debug.Log($"[SelectHandsManager] Python Exe: {pythonExePath}");
+            UnityEngine.Debug.Log($"[SelectHandsManager] Script: {scriptPath}");
+
+            if (!System.IO.File.Exists(pythonExePath)) {
+                UnityEngine.Debug.LogError($"[Error] 가상환경 Python 없음: {pythonExePath}");
+                return; 
+            }
+            if (!System.IO.File.Exists(scriptPath)) {
+                UnityEngine.Debug.LogError($"[Error] 스크립트 없음: {scriptPath}");
+                return;
+            }
 
             var psi = new ProcessStartInfo {
-                FileName = "python", // 혹은 "python3" (설치된 환경에 따라 다름)
-                // [중요 1] -u 옵션: 버퍼링 없이 즉시 출력
-                Arguments = $"-u \"{pythonScriptPath}\"", 
+                FileName = pythonExePath,
+                Arguments = $"-u \"{scriptPath}\"",
                 RedirectStandardOutput = true,
-        
-                // [중요 2] 이 줄이 빠져서 에러가 난 것입니다. 꼭 추가해주세요!
-                RedirectStandardError = true, 
-        
+                RedirectStandardError = true,
                 UseShellExecute = false,
                 CreateNoWindow = true
             };
@@ -65,40 +73,59 @@ namespace Managers {
                 _proc = new Process();
                 _proc.StartInfo = psi;
 
-                // 1. 정상 출력 수신 (Hand Code 등)
                 _proc.OutputDataReceived += OnPythonOutput;
-        
-                // 2. 에러 로그 수신 (파이썬 내부 오류 확인용)
                 _proc.ErrorDataReceived += (sender, args) => {
                     if (!string.IsNullOrWhiteSpace(args.Data)) {
-                        // 빨간색 로그로 파이썬 에러를 띄워줍니다.
                         UnityEngine.Debug.LogError($"[Python Error]: {args.Data}");
                     }
                 };
 
                 _proc.Start();
-        
-                // 스트림 읽기 시작
                 _proc.BeginOutputReadLine();
-                _proc.BeginErrorReadLine(); // [중요 2]와 짝꿍입니다.
-        
-                UnityEngine.Debug.Log("Python Process Started for Story Scene.");
+                _proc.BeginErrorReadLine();
+                
+                UnityEngine.Debug.Log("Python Process Started via Virtual Environment (venv).");
             }
             catch (Exception e) {
                 UnityEngine.Debug.LogError($"Python 실행 실패: {e.Message}");
             }
-        }   
+        }
 
+        // [핵심 수정 부분] 문자열(LEFT, RIGHT)을 받아서 숫자(10, 20)로 변환
         private void OnPythonOutput(object sender, DataReceivedEventArgs e) {
             if (string.IsNullOrWhiteSpace(e.Data)) return;
-            var raw = e.Data.Trim();
+            
+            // 공백 제거 및 대문자 변환 (혹시 모를 소문자 입력 방지)
+            var data = e.Data.Trim().ToUpper();
 
-            if (!int.TryParse(raw, out var code)) return;
+            // 로그로 들어오는 값 확인 (디버깅용)
+            // UnityEngine.Debug.Log($"[Python Raw]: {data}");
 
-            if (code == 10 || code == 20) {
-                if (code != _currentHand) {
-                    _currentHand = code;
-                }
+            int newCode = 0;
+
+            // 문자열에 따른 코드 매핑
+            switch (data) {
+                case "LEFT":
+                    newCode = 10;
+                    break;
+                case "RIGHT":
+                    newCode = 20;
+                    break;
+                case "BOTH": // 둘 다 들었을 때는 선택 안 함(0) 혹은 필요한 로직 추가
+                    newCode = 0; 
+                    break;
+                case "NONE": // 손이 없으면 0
+                    newCode = 0;
+                    break;
+                default:
+                    // 이상한 값이 오면 무시하거나 0으로
+                    return; 
+            }
+
+            // 값이 바뀌었을 때만 업데이트하고 로그 출력
+            if (newCode != _currentHand) {
+                _currentHand = newCode;
+                UnityEngine.Debug.Log($"Hand Changed! Input: [{data}] -> Code: {_currentHand}");
             }
         }
 

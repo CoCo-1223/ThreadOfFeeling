@@ -24,7 +24,7 @@ namespace Managers {
         private void StartPython()
         {
             string pyPath = System.IO.Path.Combine(
-                Application.stremingAssetsPath,
+                Application.streamingAssetsPath,
                 "python",
                 "main_rule_based_classifier.py"
             );
