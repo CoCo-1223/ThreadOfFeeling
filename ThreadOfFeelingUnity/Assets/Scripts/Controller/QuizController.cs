@@ -11,59 +11,52 @@ using Random = UnityEngine.Random;
 
 namespace Controller {
     public class QuizController : MonoBehaviour {
-        [Header("ï¿½ï¿½ï¿½ï¿½ UI")]
-        [Tooltip("ï¿½ï¿½ï¿½ï¿½ UIï¿½ï¿½ ï¿½Î¸ï¿½ ï¿½Ğ³ï¿½")]
+        [Header("ÄûÁî UI")]
+        [Tooltip("ÄûÁî UIÀÇ ºÎ¸ğ ÆĞ³Î")]
         [SerializeField] private GameObject questionPanel;
         [SerializeField] private TextMeshProUGUI questionText;
         [SerializeField] private Button answerButton1;
         [SerializeField] private Button answerButton2;
 
-        [Header("ï¿½Çµï¿½ï¿½ UI")]
-        [Tooltip("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½/ï¿½ï¿½ï¿½ï¿½ ï¿½Çµï¿½ï¿½ ï¿½Ğ³ï¿½")]
+        [Header("ÇÇµå¹é UI")]
+        [Tooltip("ÄûÁî Á¤´ä/¿À´ä ÇÇµå¹é ÆĞ³Î")]
         [SerializeField] private GameObject feedbackPanel;
         [SerializeField] private TextMeshProUGUI feedbackText;
         [SerializeField] private Button feedbackContinueButton;
 
-        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+        // ³»ºÎ »óÅÂ º¯¼ö
         private List<Question> currentQuizzes;
         private int currentQuizIndex = 0;
         private bool isAnswer1OnButton1;
         private bool isWaitingForNext = false;
 
-        // ï¿½ÜºÎ·ï¿½ ï¿½Ë¸ï¿½ ï¿½Ìºï¿½Æ® (ï¿½ï¿½ï¿½î°¡ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½)
+        // ¿ÜºÎ·Î ¾Ë¸± ÀÌº¥Æ® (ÄûÁî°¡ ´Ù ³¡³µÀ» ¶§)
         private Action onAllQuizzesCompleted;
 
         public bool IsActive => questionPanel.activeInHierarchy || feedbackPanel.activeInHierarchy;
 
         private void Start() {
-            // ï¿½ï¿½Æ° ï¿½Ìºï¿½Æ® ï¿½ï¿½ï¿½ï¿½
+            // ¹öÆ° ÀÌº¥Æ® ¿¬°á
             answerButton1.onClick.AddListener(() => OnAnswerClicked(0));
             answerButton2.onClick.AddListener(() => OnAnswerClicked(1));
-            
-            // ï¿½Ê±ï¿½È­
+            // ÃÊ±âÈ­            
             questionPanel.SetActive(false);
             feedbackPanel.SetActive(false);
         }
 
-        // StorySceneUiï¿½ï¿½ Update ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È£ï¿½ï¿½
+        // StorySceneUi¿¡¼­ È£ÃâÇØ¼­ ÀÔ·ÂÀ» ³Ñ°ÜÁÜ
         public void HandleInput() {
-            // InputManagerï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Ô·Â°ï¿½ È®ï¿½ï¿½ (HandModeï¿½ï¿½ï¿½ 10 or 20)
             int motionInput = InputManager.Instance.GetMotionInput();
 
-            // 1. ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
             if (questionPanel.activeInHierarchy) {
-                // 1ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½: Å°ï¿½ï¿½ï¿½ï¿½ 1 or ï¿½Ş¼ï¿½(10)
                 if (InputManager.Instance.GetNOneKeyDown() || motionInput == 10) {
                     OnAnswerClicked(0);
                 }
-                // 2ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½: Å°ï¿½ï¿½ï¿½ï¿½ 2 or ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(20)
                 else if (InputManager.Instance.GetNTwoKeyDown() || motionInput == 20) {
                     OnAnswerClicked(1);
                 }
             }
-            // 2. ï¿½ï¿½ï¿½ È®ï¿½ï¿½ ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ ï¿½Ñ¾î°¡ï¿½ï¿½)
             else if (feedbackPanel.activeInHierarchy) {
-                // ï¿½ï¿½ï¿½ï¿½ï¿½Ì½ï¿½ï¿½ï¿½ ï¿½Ô·ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                 if (InputManager.Instance.GetSpaceKeyDown()) {
                     SoundManager.Instance.SelectSound();
                     if (isWaitingForNext) ShowNextQuiz();
@@ -71,8 +64,8 @@ namespace Controller {
                 }
             }
         }
-        
-        // ï¿½ÜºÎ¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã»ï¿½ï¿½ ï¿½ï¿½ È£ï¿½ï¿½
+
+        // ¿ÜºÎ¿¡¼­ ÄûÁî ½ÃÀÛÀ» ¿äÃ»ÇÒ ¶§ È£Ãâ        
         public void StartQuizSequence(List<Question> quizzes, Action onComplete) {
             InputManager.Instance.SetHandMode();
 
@@ -82,16 +75,7 @@ namespace Controller {
             ShowQuiz();
         }
 
-        // ï¿½ï¿½ï¿½ ï¿½Î½ï¿½ï¿½ï¿½ ï¿½Ş¾Æ¿ï¿½ï¿½ï¿½ ï¿½Ô¼ï¿½
-        public int GetMotionInput() {
-            // EmotionManagerï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 0 ï¿½ï¿½ï¿½ï¿½
-            if (EmotionManager.Instance == null) return 0;
-            return EmotionManager.Instance.GetEmotion();
-        }
-
-
         private void ShowQuiz() {
-            // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¿ï¿½ï¿½ ï¿½Ë»ï¿½
             if (currentQuizzes == null || currentQuizIndex >= currentQuizzes.Count) {
                 EndQuizSequence();
                 return;
@@ -102,10 +86,9 @@ namespace Controller {
             questionPanel.SetActive(true);
             feedbackPanel.SetActive(false);
 
-            // í€´ì¦ˆ í…ìŠ¤íŠ¸ (ë²ˆí˜¸ í¬í•¨)
-            questionText.text = $"#í€´ì¦ˆ. {q.questionText}";
+            // ÄûÁî ÅØ½ºÆ® (¹øÈ£ Æ÷ÇÔ)
+            questionText.text = $"#ÄûÁî. {q.questionText}";
 
-            // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡
             if (Random.value < 0.5f) {
                 SetButtonText(answerButton1, q.answer1);
                 SetButtonText(answerButton2, q.answer2);
@@ -123,7 +106,6 @@ namespace Controller {
         }
 
         private void OnAnswerClicked(int clickedButtonIndex) {
-            // ï¿½Ğ³ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ô·ï¿½ ï¿½ï¿½ï¿½ï¿½
             if (!questionPanel.activeInHierarchy) return;
             SoundManager.Instance.SelectSound();
             Question q = currentQuizzes[currentQuizIndex];
@@ -137,18 +119,18 @@ namespace Controller {
             int logicalAnswerIndex = isAnswer1OnButton1 ? clickedButtonIndex : 1 - clickedButtonIndex;
 
             if (logicalAnswerIndex == q.correctAnswerIndex) {
-                // [ï¿½ï¿½ï¿½ï¿½]
+                // [Á¤´ä]
                 SoundManager.Instance.RightSound();
                 feedbackText.text = q.correctFeedback;
-                SetupFeedbackButton("ï¿½ï¿½ï¿½ï¿½", ShowNextQuiz);
+                SetupFeedbackButton("´ÙÀ½", ShowNextQuiz);
                 isWaitingForNext = true;
-                Debug.Log($"[QuizController] ï¿½ï¿½ï¿½ï¿½! ({currentQuizIndex + 1}/{currentQuizzes.Count})");
+                Debug.Log($"[QuizController] Á¤´ä! ({currentQuizIndex + 1}/{currentQuizzes.Count})");
             }
             else {
-                // [ï¿½ï¿½ï¿½ï¿½]
+                // [¿À´ä]
                 SoundManager.Instance.WrongSound();
                 feedbackText.text = q.wrongFeedback;
-                SetupFeedbackButton("ï¿½Ù½ï¿½ ï¿½Ãµï¿½", RetryQuiz);
+                SetupFeedbackButton("´Ù½Ã ½Ãµµ", RetryQuiz);
                 isWaitingForNext = false;
             }
         }
@@ -173,7 +155,7 @@ namespace Controller {
         private void EndQuizSequence() {
             questionPanel.SetActive(false);
             feedbackPanel.SetActive(false);
-            Debug.Log("[QuizController] ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ï·ï¿½");
+            Debug.Log("[QuizController] ¸ğµç ÄûÁî ¿Ï·á");
             onAllQuizzesCompleted?.Invoke(); // StorySceneUiï¿½ï¿½ ï¿½Ë¸ï¿½
         }
     }
