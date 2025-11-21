@@ -641,14 +641,14 @@ let globalTotal = 0;
 
       let finalName = userFileName.trim();
       if(finalName === ""){
-        finalName = defaultName
+        finalName = defaultName;
       }
       if(!finalName.toLowerCase().endsWith(".json")){
         finalName += ".json";
       }
 
       const url = URL.createObjectURL(blob);
-      const a = document.createElemnt("a");
+      const a = document.createElement("a");
       a.href = url;
       a.download = finalName;
       document.body.appendChild(a);
@@ -678,8 +678,10 @@ let globalTotal = 0;
       // 섹션 메모
       if (data.sectionMemos) {
         Object.entries(data.sectionMemos).forEach(([secId, text]) => {
+          const textarea = document.querySelector(
            `textarea.memo[data-section-id="${secId}"], textarea.memo[data-sectionid="${secId}"], textarea.memo[data-section-id="${secId}"]`
-          if (textarea) {
+        );
+        if (textarea) {
             textarea.value = text;
           }
         });

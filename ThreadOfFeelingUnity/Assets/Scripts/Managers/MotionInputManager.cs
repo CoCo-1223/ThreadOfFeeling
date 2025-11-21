@@ -19,7 +19,6 @@ namespace Managers{
 
       Instance =  this;
       DontDestroyOnLoad(gameObject);
-
     }
 
     public int GetMotionInput() {
@@ -42,11 +41,11 @@ namespace Managers{
       return EmotionManager.Instance.GetEmotion();
     }
 
-    public int GetHandInput() {
-      if (SelectHandsManager.Instance == null)
-          return 0;
-
-      return SelectHandsManager.Instance.GetHandCode();
+    private int GetHandInput() {
+        if (SelectHandsManager.Instance == null) {
+            return 0;
+        }
+        return SelectHandsManager.Instance.GetHandCode();
     }
 
     public MotionInputType UseEmotionMode() {
@@ -56,6 +55,7 @@ namespace Managers{
     public MotionInputType UseHandMode() {
       return inputMode =  MotionInputType.Hand;
     }
+
   }
 }
 

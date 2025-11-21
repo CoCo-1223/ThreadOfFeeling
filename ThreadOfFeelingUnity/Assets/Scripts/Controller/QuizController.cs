@@ -44,35 +44,41 @@ namespace Controller {
             feedbackPanel.SetActive(false);
         }
 
-        // StorySceneUi에서 호출해서 입력을 넘겨줌
+        // StorySceneUi의 Update 문에서 호출
         public void HandleInput() {
-            // 모션 입력 값 가져오기 (0: 없음)
-            int motionInput = GetMotionInput();
+            // InputManager를 통해 현재 모션 입력값 확인 (HandMode라면 10 or 20)
+            int motionInput = InputManager.Instance.GetMotionInput();
 
-            // 1. 퀴즈 패널 활성화
+            // 1. 퀴즈 진행 중 (정답 고르기)
             if (questionPanel.activeInHierarchy) {
-                // 키보드 1번 OR 모션인식 값이 1일 때
-                //if (InputManager.Instance.GetNOneKeyDown() || InputManager.Instance.GetMotionInput() == 10) 
-                //    OnAnswerClicked(0);
-                if (InputManager.Instance.GetMotionInput() == 10)
+                // 1번 선택: 키보드 1 or 왼손(10)
+                if (InputManager.Instance.GetNOneKeyDown() || motionInput == 10) {
                     OnAnswerClicked(0);
-                // 키보드 2번 OR 모션인식 값이 2일 때
-                //else if (InputManager.Instance.GetNTwoKeyDown() || InputManager.Instance.GetMotionInput() == 20) 
-                //    OnAnswerClicked(1);
-                else if (InputManager.Instance.GetMotionInput() == 20) 
+                }
+                // 2번 선택: 키보드 2 or 오른손(20)
+                else if (InputManager.Instance.GetNTwoKeyDown() || motionInput == 20) {
                     OnAnswerClicked(1);
-            }
-            // 2. 피드백 패널 활성화
-            else if (feedbackPanel.activeInHierarchy) {
-                // 피드백 화면 넘기기 (스페이스바)
-                if (InputManager.Instance.GetSpaceKeyDown()) {
-                    SoundManager.Instance.SelectSound();
-                    if (isWaitingForNext)
-                        ShowNextQuiz(); // 정답 -> 다음 퀴즈로
-                    else
-                        RetryQuiz(); // 오답 -> 다시 시도
                 }
             }
+            // 2. 결과 확인 중 (다음 넘어가기)
+            else if (feedbackPanel.activeInHierarchy) {
+                // 스페이스바 입력 시 다음으로
+                if (InputManager.Instance.GetSpaceKeyDown()) {
+                    SoundManager.Instance.SelectSound();
+                    if (isWaitingForNext) ShowNextQuiz();
+                    else RetryQuiz();
+                }
+            }
+        }
+        
+        // 외부에서 퀴즈 시작을 요청할 때 호출
+        public void StartQuizSequence(List<Question> quizzes, Action onComplete) {
+            InputManager.Instance.SetHandMode();
+
+            currentQuizzes = quizzes;
+            onAllQuizzesCompleted = onComplete;
+            currentQuizIndex = 0;
+            ShowQuiz();
         }
 
         // 모션 인식을 받아오는 함수
@@ -82,13 +88,6 @@ namespace Controller {
             return EmotionManager.Instance.GetEmotion();
         }
 
-        // 외부에서 퀴즈 시작을 요청할 때 호출
-        public void StartQuizSequence(List<Question> quizzes, Action onComplete) {
-            currentQuizzes = quizzes;
-            onAllQuizzesCompleted = onComplete;
-            currentQuizIndex = 0;
-            ShowQuiz();
-        }
 
         private void ShowQuiz() {
             // 퀴즈 유효성 검사
