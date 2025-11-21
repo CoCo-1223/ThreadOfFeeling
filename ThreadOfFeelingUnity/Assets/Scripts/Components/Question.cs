@@ -18,5 +18,11 @@ namespace Components
         public string correctFeedback;
         [TextArea(2, 5)]
         public string wrongFeedback;
+
+        [Header("스토리 타입 설정")]
+        [Tooltip("이 퀴즈가 등장할 스토리 타입")]
+        public StoryType targetType; 
+        [Tooltip("체크하면 모든 타입에서 등장합니다.")]
+        public bool isCommon = false; 
     }
 }

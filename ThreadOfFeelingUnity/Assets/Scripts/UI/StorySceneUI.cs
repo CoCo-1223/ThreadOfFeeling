@@ -1,9 +1,11 @@
 using Components;
+using Controller;
 using Managers;
+using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using Controller;
 
 namespace UI
 {
@@ -22,6 +24,7 @@ namespace UI
         [SerializeField] private RewardUI rewardPopup;
 
         private Story currentTale;
+        private StoryType currentType; 
         private int currentScenarioIndex = 0;
         private Scenario currentScenario; 
      
@@ -45,7 +48,7 @@ namespace UI
                 GameManager.Instance.LoadSelectionScene();
                 return;
             }
-
+            currentScenarioIndex = 0;
             ShowCurrentScenario();
         }
 
@@ -66,20 +69,28 @@ namespace UI
         }
 
         private void CheckAndStartQuizOrNext() {
-            // 현재 시나리오에 퀴즈가 있는지 확인
-            bool hasQuiz = currentScenario.quizzes != null && currentScenario.quizzes.Count > 0;
+            List<Question> validQuestions = new List<Question>();
+
+            // 시나리오는 그대로 두고, "퀴즈"만 현재 타입에 맞는 걸 뽑아냅니다.
+            if (currentScenario.quizzes != null)
+            {
+                validQuestions = currentScenario.quizzes
+                    .Where(q => q.isCommon || q.targetType == currentType)
+                    .ToList();
+            }
             
-            if (hasQuiz) {
-                StartQuizMode();
+            if (validQuestions.Count > 0) {
+                // 필터링된 퀴즈가 있다면 퀴즈 모드 시작
+                StartQuizMode(validQuestions);
             }
             else {
+                // 퀴즈가 없거나, 내 타입에 맞는 퀴즈가 없다면 바로 다음 장면으로
                 ShowNextScenario();
             }
         }
 
-        private void StartQuizMode() {
-            // 퀴즈 시작 (퀴즈가 다 끝나면 ShowNextScenario를 실행하도록 콜백 전달)
-            quizController.StartQuizSequence(currentScenario.quizzes, OnQuizSequenceFinished);
+        private void StartQuizMode(List<Question> questions) {
+            quizController.StartQuizSequence(questions, OnQuizSequenceFinished);
         }
 
         // 퀴즈 컨트롤러가 모든 퀴즈를 끝내면 호출됨
@@ -107,12 +118,10 @@ namespace UI
 
         public void ShowNextScenario() {
             currentScenarioIndex++;
-
             if (currentScenarioIndex < currentTale.scenarios.Count) {
                 ShowCurrentScenario();
             }
             else {
-                Debug.Log($"[StorySceneUi] '{currentTale.storyTitle}' 이야기 끝");
                 HandleStoryEnd();
             }
         }
@@ -124,7 +133,7 @@ namespace UI
             }
     
             // 클리어 기록 저장 (자동 저장)
-            DataManager.Instance.AddClearedStory(currentTale.storyId);
+            DataManager.Instance.AddClearedStory(currentTale.storyId, currentType);
 
             // UI 표시 위임
             if (currentTale.storyReward != null && rewardPopup != null) {

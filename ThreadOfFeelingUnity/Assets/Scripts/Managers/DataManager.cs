@@ -19,7 +19,7 @@ namespace Managers
         public List<ChildProfile> profileList = new List<ChildProfile>();
         public ChildProfile currentProfile { get; private set; }
         public Story selectedTale { get; private set; }
-
+        public StoryType selectedStoryType { get; private set; }
         private string ProfileListPath => Path.Combine(Application.persistentDataPath, "profiles.json");
 
         Dictionary<int, string[]> talkData;
@@ -121,8 +121,9 @@ namespace Managers
         //              게임 데이터 관리
         // ==========================================
 
-        public void SelectFairyTaleData(Story taleData) {
+        public void SelectFairyTaleData(Story taleData, StoryType type) {
             selectedTale = taleData;
+            selectedStoryType = type;
         }
 
         private void LoadVillageData() {
@@ -163,6 +164,35 @@ namespace Managers
         // [추가/수정] 인벤토리 및 스토리 클리어 관리
         // ==========================================
 
+        // 스토리 클리어 처리: ID와 타입을 함께 저장
+        public void AddClearedStory(int storyId, StoryType type) {
+            if (currentProfile == null) return;
+
+            if (currentProfile.ClearedHistories == null) 
+                currentProfile.ClearedHistories = new List<StoryClearRecord>();
+
+            // 이미 해당 타입으로 깬 기록이 있는지 확인
+            bool alreadyCleared = currentProfile.ClearedHistories.Exists(r => r.storyId == storyId && r.clearedType == type);
+
+            if (!alreadyCleared) {
+                currentProfile.ClearedHistories.Add(new StoryClearRecord(storyId, type));
+                SaveProfileData(); 
+                Debug.Log($"[DataManager] 스토리 클리어 저장 완료: ID {storyId}, Type {type}");
+            }
+        }
+
+        // 특정 스토리의 특정 타입 클리어 여부 확인
+        public bool IsStoryTypeCleared(int storyId, StoryType type) {
+            if (currentProfile == null || currentProfile.ClearedHistories == null) return false;
+            return currentProfile.ClearedHistories.Exists(r => r.storyId == storyId && r.clearedType == type);
+        }
+
+        // 스토리의 아무 타입이나 하나라도 깼는지 확인 (UI 표시용 등)
+        public bool IsStoryAnyTypeCleared(int storyId) {
+            if (currentProfile == null || currentProfile.ClearedHistories == null) return false;
+            return currentProfile.ClearedHistories.Exists(r => r.storyId == storyId);
+        }
+
         // 아이템 획득 (저장 기능 추가)
         public void AddRewardItem(Item item, int amount = 1) {
             if (currentProfile != null) {
@@ -182,27 +212,6 @@ namespace Managers
                 }
             }
             return false;
-        }
-
-        // 스토리 클리어 처리
-        public void AddClearedStory(int storyId) {
-            if (currentProfile == null) return;
-
-            if (currentProfile.ClearedStoryIds == null) 
-                currentProfile.ClearedStoryIds = new List<int>();
-
-            // 이미 깬 스토리가 아니라면 추가
-            if (!currentProfile.ClearedStoryIds.Contains(storyId)) {
-                currentProfile.ClearedStoryIds.Add(storyId);
-                SaveProfileData(); // 클리어 기록 저장
-                Debug.Log($"[DataManager] 스토리 클리어 저장 완료: ID {storyId}");
-            }
-        }
-
-        // 스토리 클리어 여부 확인 (UI 표시용)
-        public bool IsStoryCleared(int storyId) {
-            if (currentProfile == null || currentProfile.ClearedStoryIds == null) return false;
-            return currentProfile.ClearedStoryIds.Contains(storyId);
         }
 
         // ==========================================

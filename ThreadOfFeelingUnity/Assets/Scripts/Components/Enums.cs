@@ -15,7 +15,7 @@ namespace Components
     public enum StoryType {
         TypeA,
         TypeB,
-        NotSelected
+        TypeC
     }
 
     public enum GameState {
@@ -40,5 +40,19 @@ namespace Components
     public enum MotionInputType {
         Emotion,
         Hand
+    }
+
+    // 클리어 기록 저장을 위한 데이터 구조
+    [System.Serializable]
+    public struct StoryClearRecord
+    {
+        public int storyId;
+        public StoryType clearedType;
+
+        public StoryClearRecord(int id, StoryType type)
+        {
+            storyId = id;
+            clearedType = type;
+        }
     }
 }

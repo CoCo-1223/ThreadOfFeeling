@@ -16,13 +16,13 @@ namespace Components {
         public string UpdatedAt;
         
         public Inventory Inventory;
-        public List<int> ClearedStoryIds;
+        public List<StoryClearRecord> ClearedHistories;
 
         public ChildStats Stats;
 
         public ChildProfile() {
             this.Inventory = new Inventory();
-            this.ClearedStoryIds = new List<int>();
+            this.ClearedHistories = new List<StoryClearRecord>();
             this.CreatedAt = DateTime.Now.ToString();
             this.UpdatedAt = DateTime.Now.ToString();
         }
@@ -38,7 +38,7 @@ namespace Components {
             this.UpdatedAt = DateTime.Now.ToString();
 
             this.Inventory = new Inventory();
-            this.ClearedStoryIds = new List<int>();
+            this.ClearedHistories = new List<StoryClearRecord>();
             this.Stats = new ChildStats();
         }
 

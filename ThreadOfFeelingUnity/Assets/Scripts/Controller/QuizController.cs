@@ -103,7 +103,7 @@ namespace Controller {
             feedbackPanel.SetActive(false);
 
             // 퀴즈 텍스트 (번호 포함)
-            questionText.text = $"퀴즈 #{currentQuizIndex + 1}. {q.questionText}";
+            questionText.text = $"#퀴즈. {q.questionText}";
 
             // 선택지 랜덤 배치
             if (Random.value < 0.5f) {
