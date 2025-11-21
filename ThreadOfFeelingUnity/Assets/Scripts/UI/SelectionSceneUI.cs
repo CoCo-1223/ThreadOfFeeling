@@ -35,51 +35,67 @@ namespace UI
 
         protected override void Start(){
             base.Start();
-            storyDetailsPanel.SetActive(false);
+            if(storyDetailsPanel != null)
+                storyDetailsPanel.SetActive(false);
 
             // 토글 이벤트 연결
-            for (int i = 0; i < typeToggles.Length; i++) {
-                int index = i; // 람다식 캡처 문제 방지
-                typeToggles[i].onValueChanged.AddListener((isOn) => {
-                    if (isOn) {
-                        OnTypeChanged((StoryType)index);
+            if (typeToggles != null) {
+                for (int i = 0; i < typeToggles.Length; i++) {
+                    int index = i; 
+                    if(typeToggles[i] != null) {
+                        typeToggles[i].onValueChanged.AddListener((isOn) => {
+                            if (isOn) {
+                                OnTypeChanged((StoryType)index);
+                            }
+                        });
                     }
-                });
+                }
             }
         }
 
-        protected override void Update() {
-            base.Update();
-        }
-
         public void ShowStoryDetails(Story data) {
-            if (data == null) return;
+            if (data == null) {
+                Debug.LogError("[SelectionSceneUi] 전달받은 Story 데이터가 null입니다.");
+                return;
+            }
+            
             SoundManager.Instance.SelectSound();
             pendingStory = data;
 
             if (detailTitle != null) detailTitle.text = data.storyTitle;
 
+            // [수정] 이미지 표시 로직 강화 및 디버그 로그 추가
             if (detailCoverImage != null) {
-                detailCoverImage.sprite = data.storyCoverImage;
-                detailCoverImage.gameObject.SetActive(data.storyCoverImage != null);
+                if (data.storyCoverImage != null) {
+                    detailCoverImage.sprite = data.storyCoverImage;
+                    detailCoverImage.color = Color.white; // 혹시 투명해졌을 경우를 대비해 색상 초기화
+                    detailCoverImage.gameObject.SetActive(true);
+                    // 이미지가 잘 설정되었다면 이 로그가 뜹니다.
+                    //Debug.Log($"[SelectionSceneUi] 커버 이미지 설정 완료: {data.storyCoverImage.name}");
+                }
+                else {
+                    // 데이터(ScriptableObject)에 이미지가 비어있으면 이 경고가 뜹니다.
+                    Debug.LogWarning($"[SelectionSceneUi] '{data.storyTitle}' 데이터에 커버 이미지가 없습니다 (storyCoverImage is null). Asset을 확인하세요.");
+                    detailCoverImage.gameObject.SetActive(false); 
+                }
+            }
+            else {
+                Debug.LogError("[SelectionSceneUi] detailCoverImage가 Inspector에 연결되지 않았습니다.");
             }
 
             if (detailDescription != null) detailDescription.text = data.storyDescription;
             if (detailTag != null) detailTag.text = data.storyTag;
 
-            // 팝업이 열릴 때 항상 첫 번째(Type A)가 선택된 상태로 초기화
-            if (typeToggles.Length > 0) {
-                // 이벤트가 발생하여 OnTypeChanged도 자동으로 호출됨
+            if (typeToggles != null && typeToggles.Length > 0 && typeToggles[0] != null) {
                 typeToggles[0].isOn = true; 
             }
 
-            storyDetailsPanel.SetActive(true);
+            if(storyDetailsPanel != null)
+                storyDetailsPanel.SetActive(true);
         }
 
-        // 토글 상태가 변경되었을 때 호출됨
         private void OnTypeChanged(StoryType type) {
             currentSelectedType = type;
-            Debug.Log($"[SelectionSceneUi] 스토리 타입 변경됨: {currentSelectedType}");
         }
 
         public void OnClickStartStory() {
@@ -89,13 +105,17 @@ namespace UI
                 return;
             }
             DataManager.Instance.SelectFairyTaleData(pendingStory, currentSelectedType);
-            storyDetailsPanel.SetActive(false);
+            
+            if(storyDetailsPanel != null)
+                storyDetailsPanel.SetActive(false);
+                
             GameManager.Instance.LoadStoryScene();
         }
 
         public void OnClickClosePopup() {
             SoundManager.Instance.SelectSound();
-            storyDetailsPanel.SetActive(false);
+            if(storyDetailsPanel != null)
+                storyDetailsPanel.SetActive(false);
             pendingStory = null;
         }
     }
