@@ -135,7 +135,12 @@ namespace Managers
         private void GenerateObjectData() {
             talkData.Add(1000, new string[] { 
                 "안녕? 난 다비드야:3", 
-                "우리 뭐하고 놀까?:0:CHOICE",
+                "우리 뭐하고 놀래?:0:CHOICE",
+            });
+
+            talkData.Add(2000, new string[] { 
+                "새 친구를 찾아볼까?:0",
+                "너랑 유미랑! 우리 함께 잘 해보자고!:1",
             });
 
             if (portraitArr != null && portraitArr.Length >= 5) {
@@ -144,6 +149,8 @@ namespace Managers
                 portraitData.Add(1000 + 2, portraitArr[2]);
                 portraitData.Add(1000 + 3, portraitArr[3]);
                 portraitData.Add(1000 + 4, portraitArr[4]);
+                portraitData.Add(2000 + 0, portraitArr[5]);
+                portraitData.Add(2000 + 1, portraitArr[6]);
             }
         }
 
