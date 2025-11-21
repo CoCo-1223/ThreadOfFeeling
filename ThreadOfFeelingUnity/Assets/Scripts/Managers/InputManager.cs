@@ -47,12 +47,12 @@ namespace Managers
             return Input.GetButtonDown("Cancel");
         }
 
-        // ¼Õ ¸ð¾çÀ¸·Î °¨Á¤À» Ç¥Çö (emotion mode)
+        // ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ç¥ï¿½ï¿½ (emotion mode)
         public MotionInputType SetEmotionMode() {
             return MotionInputManager.Instance.UseEmotionMode();
         }
         
-        // ¼ÕÀ¸·Î ´Ü¼ø ÁÂ¿ì ¼±ÅÃ (hand mode)
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ü¼ï¿½ ï¿½Â¿ï¿½ ï¿½ï¿½ï¿½ï¿½ (hand mode)
         public MotionInputType SetHandMode() {
             return MotionInputManager.Instance.UseHandMode();
         }
