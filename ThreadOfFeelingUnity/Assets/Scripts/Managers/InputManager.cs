@@ -47,6 +47,16 @@ namespace Managers
             return Input.GetButtonDown("Cancel");
         }
 
+        // �� ������� ������ ǥ�� (emotion mode)
+        public MotionInputType SetEmotionMode() {
+            return MotionInputManager.Instance.UseEmotionMode();
+        }
+        
+        // ������ �ܼ� �¿� ���� (hand mode)
+        public MotionInputType SetHandMode() {
+            return MotionInputManager.Instance.UseHandMode();
+        }
+
         public int GetMotionInput() {
             return MotionInputManager.Instance != null
                 ? MotionInputManager.Instance.GetMotionInput()
