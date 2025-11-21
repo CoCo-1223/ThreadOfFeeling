@@ -46,20 +46,8 @@ namespace Managers
             return Input.GetButtonDown("Cancel");
         }
 
-        // 손 모양으로 감정을 표현 (emotion mode)
-        public MotionInputType SetEmotionMode() {
-            return MotionInputManager.Instance.UseEmotionMode();
-        }
-        
-        // 손으로 단순 좌우 선택 (hand mode)
-        public MotionInputType SetHandMode() {
-            return MotionInputManager.Instance.UseHandMode();
-        }
-
         public int GetMotionInput() {
-            return Managers.MotionInputManager.Instance != null
-                ? Managers.MotionInputManager.Instance.GetMotionInput()
-                : 0;
+            return EmotionManager.Instance.GetEmotion();
         }
     }
 }

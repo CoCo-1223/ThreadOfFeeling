@@ -34,17 +34,9 @@ namespace Managers{
     }
 
     private void StartPython(){
-
-      
-      string pyPath = System.IO.Path.Combine(
-          Application.stremingAssetsPath,
-          "python",
-          "main_rule_based_hands_filter.py"
-      );
-      
       var psi = new ProcessStartInfo{
-        FileName = "python",
-        Arguments = $"\"{pyPath}\"",
+        FileName = "python3",
+        Arguments = "../python/main_rule_based_hands_filter.py",
         RedirectStandardOutput = true,
         UseShellExecute = false,
         CreateNoWindow = true

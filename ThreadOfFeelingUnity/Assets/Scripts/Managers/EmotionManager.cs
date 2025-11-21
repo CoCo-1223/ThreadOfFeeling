@@ -23,15 +23,10 @@ namespace Managers {
 
         private void StartPython()
         {
-            string pyPath = System.IO.Path.Combine(
-                Application.stremingAssetsPath,
-                "python",
-                "main_rule_based_classifier.py"
-            );
             var psi = new ProcessStartInfo()
             {
-                FileName = "python",
-                Arguments = $"\"{pyPath}\"",
+                FileName = "python3",
+                Arguments = "../python/main_rule_based_classifier.py",
                 RedirectStandardOutput = true,
                 UseShellExecute = false,
                 CreateNoWindow = true
