@@ -59,6 +59,7 @@ namespace Controller {
                 // 2�� ����: Ű���� 2 or ������(20)
                 else if (InputManager.Instance.GetNTwoKeyDown() || motionInput == 20) {
                     OnAnswerClicked(1);
+                }
             }
             // 2. ��� Ȯ�� �� (���� �Ѿ��)
             else if (feedbackPanel.activeInHierarchy) {
