@@ -3732,6 +3732,10 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
       value: UI.SelectionSceneUi, Assembly-CSharp
       objectReference: {fileID: 0}
+    - target: {fileID: 5584851615427998326, guid: f70cb15e6604ba94c97f3e11a129a587, type: 3}
+      propertyPath: radius
+      value: 200
+      objectReference: {fileID: 0}
     - target: {fileID: 6418446913069190169, guid: f70cb15e6604ba94c97f3e11a129a587, type: 3}
       propertyPath: m_Name
       value: MenuSet 1

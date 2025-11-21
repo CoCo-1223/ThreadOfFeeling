@@ -210,10 +210,8 @@ namespace Managers
         // ==========================================
 
         // 체크리스트 불러오기 함수
-        public void LoadChecklistFile(string filePath)
-        {
-            if (!File.Exists(filePath))
-            {
+        public void LoadChecklistFile(string filePath) {
+            if (!File.Exists(filePath)) {
                 Debug.LogError($"[DataManager] 파일을 찾을 수 없습니다: {filePath}");
                 return;
             }
@@ -221,29 +219,24 @@ namespace Managers
             string jsonString = File.ReadAllText(filePath);
             ChildStats newStats = ChecklistParser.ParseJsonToStats(jsonString);
 
-            if (currentProfile != null)
-            {
+            if (currentProfile != null) {
                 currentProfile.Stats = newStats;
                 SaveProfileData();
                 Debug.Log("[DataManager] 체크리스트 데이터가 프로필에 반영되었습니다.");
             }
         }
         
-        public void LoadChecklistFromResources(string fileName)
-        {
+        public void LoadChecklistFromResources(string fileName) {
             TextAsset textAsset = Resources.Load<TextAsset>(fileName);
-            if (textAsset != null)
-            {
+            if (textAsset != null) {
                 ChildStats newStats = ChecklistParser.ParseJsonToStats(textAsset.text);
-                if (currentProfile != null)
-                {
+                if (currentProfile != null) {
                     currentProfile.Stats = newStats;
                     SaveProfileData();
                     Debug.Log("[DataManager] Resources 데이터 로드 완료");
                 }
             }
-            else
-            {
+            else {
                 Debug.LogError($"Resources 폴더에서 {fileName}을 찾을 수 없습니다.");
             }
         }

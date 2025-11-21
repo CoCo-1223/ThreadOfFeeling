@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections.Generic;
 using TMPro; // 텍스트 사용을 위해 필수
 
 namespace UI
@@ -19,11 +18,9 @@ namespace UI
         [Tooltip("꼭짓점에 표시할 숫자 텍스트 프리팹 (TMP)")]
         [SerializeField] private TextMeshProUGUI labelPrefab;
         [Tooltip("숫자 라벨이 그래프 끝(100%)에서 얼마나 더 떨어져 있을지")]
-        //[SerializeField] private float labelDistance = 20f;
 
         // 0.0 ~ 1.0 사이로 정규화된 데이터 배열
         private float[] statValues;
-        private List<TextMeshProUGUI> labels = new List<TextMeshProUGUI>();
 
         protected override void Awake() {
             base.Awake();
@@ -47,14 +44,6 @@ namespace UI
             } else {
                 this.statValues = normalizedValues;
             }
-
-            // [테스트용] 데이터가 0일 때 최대 크기로 표시
-            //bool allZero = true;
-            //foreach(float v in this.statValues) if(v > 0.01f) allZero = false;
-            
-            //if(allZero) {
-            //     for(int i=0; i<statCount; i++) this.statValues[i] = 0.99f; 
-            //}
 
             SetVerticesDirty();
         }

@@ -2,7 +2,8 @@ using Managers;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using Components;
+using SimpleFileBrowser;
+using System.Collections;
 
 namespace UI
 {
@@ -31,6 +32,10 @@ namespace UI
             else {
                 Debug.LogError("[SceneUI] 'MenuSet' 게임 오브젝트가 인스펙터에 연결되지 않았습니다");
             }
+            // 파일 브라우저 초기 설정 (가로/세로 모드 등)
+            FileBrowser.SetFilters(true, new FileBrowser.Filter("JSON Files", ".json"));
+            FileBrowser.SetDefaultFilter(".json");
+            FileBrowser.SetExcludedExtensions(".lnk", ".tmp", ".zip", ".rar", ".exe");
         }
 
         protected virtual void Update() {
@@ -38,6 +43,36 @@ namespace UI
                 if (menuSet != null) {
                     MenuSet(!menuSet.activeSelf);
                 }
+            }
+        }
+
+        public void OnClickLoadExternalData() {
+            SoundManager.Instance.SelectSound();
+
+            // 코루틴으로 파일 브라우저 열기 실행
+            StartCoroutine(ShowLoadDialogCoroutine());
+        }
+
+        IEnumerator ShowLoadDialogCoroutine() {
+            // 1. 파일 열기 다이얼로그 표시
+            // 매개변수: (성공콜백, 취소콜백, 선택모드, 다중선택여부, 초기경로, 초기파일, 제목, 버튼이름)
+            yield return FileBrowser.WaitForLoadDialog(FileBrowser.PickMode.Files, false, null, null, "체크리스트 불러오기", "선택");
+
+            // 2. 결과 확인
+            if (FileBrowser.Success) {
+                // 선택된 파일 경로 가져오기 (배열 형태)
+                string path = FileBrowser.Result[0];
+                Debug.Log($"선택된 파일 경로: {path}");
+
+                // 3. DataManager를 통해 데이터 로드 및 적용
+                DataManager.Instance.LoadChecklistFile(path);
+
+                // 4. UI 갱신 (그래프 등 즉시 반영)
+                UpdateProfileUI();
+            }
+            else {
+                // 취소했을 때
+                Debug.Log("파일 선택이 취소되었습니다.");
             }
         }
 
