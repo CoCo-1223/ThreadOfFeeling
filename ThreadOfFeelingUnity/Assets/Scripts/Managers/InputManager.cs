@@ -47,7 +47,9 @@ namespace Managers
         }
 
         public int GetMotionInput() {
-            return EmotionManager.Instance.GetEmotion();
+            return Managers.MotionInputManager.Instance != null
+                ? Managers.MotionInputManager.Instance.GetMotionInput()
+                : 0;
         }
     }
 }
