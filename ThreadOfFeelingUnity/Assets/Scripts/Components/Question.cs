@@ -8,6 +8,9 @@ namespace Components
         [TextArea(2, 5)]
         public string questionText;
 
+        // 퀴즈(질문)용 TTS 클립
+        public AudioClip questionVoice;
+
         public string answer1;
         public string answer2;
         [Range(0, 1)]

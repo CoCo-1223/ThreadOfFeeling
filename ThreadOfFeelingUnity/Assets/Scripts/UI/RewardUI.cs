@@ -66,21 +66,18 @@ namespace UI
         private void Update() {
             // 패널이 켜져 있을 때만 입력 감지
             if (!isActive) return;
-
             if (Time.unscaledTime - openTime < INPUT_DELAY) return;
 
             if (InputManager.Instance.GetSpaceKeyDown()) {
-                Close();
+                MoveToNextScene();
             }
         }
 
         // 팝업 닫기 및 콜백 실행
-        private void Close() {
-            SoundManager.Instance.SelectSound();
+        private void MoveToNextScene() {
+            //SoundManager.Instance.SelectSound();
+            //SoundManager.Instance.StopTTS();
             isActive = false;
-            if (rewardPanel != null) rewardPanel.SetActive(false);
-            
-            // 등록된 콜백(씬 이동) 실행
             onCloseCallback?.Invoke();
         }
     }

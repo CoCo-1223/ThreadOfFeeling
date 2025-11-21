@@ -89,6 +89,12 @@ namespace Controller {
             // 퀴즈 텍스트 (번호 포함)
             questionText.text = $"#퀴즈. {q.questionText}";
 
+            // 퀴즈 나올 때 이전 TTS 끄고 질문 TTS 재생
+            SoundManager.Instance.StopTTS();
+            if (q.questionVoice != null) {
+                SoundManager.Instance.PlayTTS(q.questionVoice);
+            }
+
             if (Random.value < 0.5f) {
                 SetButtonText(answerButton1, q.answer1);
                 SetButtonText(answerButton2, q.answer2);
@@ -110,6 +116,8 @@ namespace Controller {
             SoundManager.Instance.SelectSound();
             Question q = currentQuizzes[currentQuizIndex];
             
+            SoundManager.Instance.StopTTS();
+
             questionPanel.SetActive(false);
             feedbackPanel.SetActive(true);
             

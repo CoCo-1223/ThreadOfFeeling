@@ -36,6 +36,11 @@ namespace UI
             FileBrowser.SetFilters(true, new FileBrowser.Filter("JSON Files", ".json"));
             FileBrowser.SetDefaultFilter(".json");
             FileBrowser.SetExcludedExtensions(".lnk", ".tmp", ".zip", ".rar", ".exe");
+
+            if (ttsToggle != null) {
+                ttsToggle.onValueChanged.RemoveAllListeners(); // 중복 방지
+                ttsToggle.onValueChanged.AddListener(OnTtsToggleChanged);
+            }
         }
 
         protected virtual void Update() {
@@ -107,18 +112,13 @@ namespace UI
         public void OnTtsToggleChanged(bool isOn) {
             if (DataManager.Instance != null && DataManager.Instance.currentProfile != null) {
                 SoundManager.Instance.SelectSound();
-                // 데이터 저장
+                
+                // 1. 데이터 저장
                 DataManager.Instance.currentProfile.IsTtsUsed = isOn;
                 Debug.Log($"[SceneUI] TTS 설정 변경됨: {isOn}");
                 
-                // 꼬임 방지 로직
-                if (isOn == false) {
-                    // TTS를 껐다면, 현재 나오고 있는 목소리를 즉시 끄기
-                    SoundManager.Instance.StopTTS(); 
-                }
-                else {
-                    // TTS를 켰다면 다음 문장부터 읽음
-                }
+                // 2. 사운드 매니저에 알림 (꺼졌으면 즉시 멈춤)
+                SoundManager.Instance.OnTtsToggleChanged(isOn);
             }
         }
 
@@ -148,6 +148,7 @@ namespace UI
         // 게임 끝내기 - build시에만 작동
         public void OnClickExit() {
             SoundManager.Instance.SelectSound();
+            SoundManager.Instance.StopTTS();
             Application.Quit();
         }
 
@@ -159,26 +160,32 @@ namespace UI
         // 씬 이동 함수 (버튼과 연결)
         public void OnClickGoToStory() {
             SoundManager.Instance.SelectSound();
+            SoundManager.Instance.StopTTS();
             GameManager.Instance.LoadStoryScene();
         }
         public void OnClickGoToHousing() {
             SoundManager.Instance.SelectSound();
+            SoundManager.Instance.StopTTS();
             GameManager.Instance.LoadHousingScene();
         }
         public void OnClickGoToVillage() {
             SoundManager.Instance.SelectSound();
+            SoundManager.Instance.StopTTS();
             GameManager.Instance.LoadVillageScene();
         }
         public void OnClickGoToSelection() {
             SoundManager.Instance.SelectSound();
+            SoundManager.Instance.StopTTS();
             GameManager.Instance.LoadSelectionScene();
         }
         public void OnClickGoToProfile() {
             SoundManager.Instance.SelectSound();
+            SoundManager.Instance.StopTTS();
             GameManager.Instance.LoadProfileScene();
         }
         public void OnClickGoToStart() {
             SoundManager.Instance.SelectSound();
+            SoundManager.Instance.StopTTS();
             GameManager.Instance.LoadStartScene();
         }
     }

@@ -171,6 +171,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 85d9199269605014b985eac6ed601bbf, type: 3}
   sfxVolume: 0.5
   channels: 4
+  ttsVolume: 1
 --- !u!114 &105252983
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -202,6 +203,8 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 88da17846718f20458c68e29266e7c07, type: 3}
   - {fileID: 21300000, guid: eb9cd9df487e27b4596e291c9e5b576b, type: 3}
   - {fileID: 21300000, guid: a95ad7d88c785524587ad894c28527a4, type: 3}
+  - {fileID: 8158057874106813050, guid: 344c1ac464956324f88c71632725c24c, type: 3}
+  - {fileID: 1762182162882450857, guid: 6aeb2271f4440344eb0b61debd8224b6, type: 3}
 --- !u!114 &105252985
 MonoBehaviour:
   m_ObjectHideFlags: 0

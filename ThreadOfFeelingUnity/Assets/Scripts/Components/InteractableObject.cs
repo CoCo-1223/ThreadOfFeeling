@@ -21,7 +21,7 @@ namespace Components
         private static VillageSceneUI _cachedUIManager;
         //private GameState previousState;
 
-        void Start() {
+        protected virtual void Start() {
             if (_cachedUIManager == null) {
                 _cachedUIManager = GameObject.FindFirstObjectByType<VillageSceneUI>();
                 if (_cachedUIManager == null) {
@@ -82,7 +82,7 @@ namespace Components
             uiManager.ShowChoiceButtons(showChoices);
         }
 
-        private void EndInteraction() {
+        protected virtual void EndInteraction() {
             isAction = false;
             talkIndex = 0;
             if (uiManager != null) {

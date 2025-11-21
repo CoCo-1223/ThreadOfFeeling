@@ -71,7 +71,6 @@ namespace UI
         private void CheckAndStartQuizOrNext() {
             List<Question> validQuestions = new List<Question>();
 
-            // 시나리오는 그대로 두고, "퀴즈"만 현재 타입에 맞는 걸 뽑아냅니다.
             if (currentScenario.quizzes != null)
             {
                 validQuestions = currentScenario.quizzes
@@ -111,8 +110,10 @@ namespace UI
             if (dialogueText != null)
                 dialogueText.text = currentScenario.dialogueText;
 
-            if (DataManager.Instance.IsTtsUsed()) {
-                // TODO: TTS 재생 로직 실행
+            // 기존 소리 끄고 현재 시나리오 TTS 재생
+            SoundManager.Instance.StopTTS();
+            if (currentScenario.ttsClip != null) {
+                SoundManager.Instance.PlayTTS(currentScenario.ttsClip);
             }
         }
 
@@ -127,6 +128,7 @@ namespace UI
         }
 
         private void HandleStoryEnd() {
+            SoundManager.Instance.StopTTS();
             // 보상 아이템 지급 (자동 저장)
             if (currentTale.storyReward != null) {
                 DataManager.Instance.AddRewardItem(currentTale.storyReward);

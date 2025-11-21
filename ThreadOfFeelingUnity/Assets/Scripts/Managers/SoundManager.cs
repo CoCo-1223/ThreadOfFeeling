@@ -28,6 +28,11 @@ namespace Managers
         AudioSource[] sfxPlayers;
         int channelIndex;
 
+        // TTS 전용 플레이어와 볼륨
+        [Header("#TTS")]
+        AudioSource ttsPlayer; 
+        public float ttsVolume = 1.0f;
+
         private void Awake() {
             if (Instance == null) {
                 Instance = this;
@@ -62,7 +67,14 @@ namespace Managers
                 sfxPlayers[index].bypassListenerEffects = true;
                 sfxPlayers[index].volume = sfxVolume;
             }
-
+            
+            // TTS 플레이어 초기화
+            GameObject ttsObject = new GameObject("TtsPlayer");
+            ttsObject.transform.parent = transform;
+            ttsPlayer = ttsObject.AddComponent<AudioSource>();
+            ttsPlayer.playOnAwake = false;
+            ttsPlayer.volume = ttsVolume;
+            ttsPlayer.loop = false; // TTS는 반복하지 않음
          }
 
         // GamgeManager에서 호출하는 형식
@@ -123,9 +135,28 @@ namespace Managers
         }
 
         // TTS 재생
-        public void PlayTTS() { }
-        // TTS 멈춤
-        public void StopTTS() { }
+        public void PlayTTS(AudioClip clip) { 
+            if (clip == null) return;
+            // DataManager의 설정 확인 (토글이 켜져있는지)
+            if (DataManager.Instance.IsTtsUsed()) {
+                ttsPlayer.clip = clip;
+                ttsPlayer.Play();
+            }
+        }
+
+        // TTS 멈춤 (토글을 끄거나 화면 전환 시 호출)
+        public void StopTTS() { 
+            if(ttsPlayer.isPlaying) {
+                ttsPlayer.Stop();
+            }
+        }
+
+        // 토글 UI에서 호출할 메서드 (실시간 제어용)
+        public void OnTtsToggleChanged(bool isOn) {
+            if (!isOn) {
+                StopTTS();
+            }
+        }
 
         // 단순 선택 효과음 재생
         public void SelectSound() {
