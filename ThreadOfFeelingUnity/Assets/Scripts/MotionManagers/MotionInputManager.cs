@@ -1,10 +1,7 @@
 using UnityEngine;
+using Components;
 
-namespace Managers{
-  public enum MotionInputType {
-    Emotion,
-    Hand
-  }
+namespace PythonManagers{
 
   public class MotionInputManager : MonoBehaviour{
     public static MotionInputManager Instance {get; private set; }

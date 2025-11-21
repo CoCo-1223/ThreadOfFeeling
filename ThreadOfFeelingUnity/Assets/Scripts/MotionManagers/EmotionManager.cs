@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Threading;
 using UnityEngine;
 
-namespace Managers {
+namespace PythonManagers {
     public class EmotionManager : MonoBehaviour {
         public static EmotionManager Instance {get; private set; }
 

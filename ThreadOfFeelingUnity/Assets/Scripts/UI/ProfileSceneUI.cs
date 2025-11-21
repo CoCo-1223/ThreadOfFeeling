@@ -107,7 +107,7 @@ namespace UI
         private void OnDeleteProfile(ChildProfile profile) {
             DataManager.Instance.DeleteProfile(profile);
             RefreshSlots();
-            SoundManager.Instance.WrongSound(); 
+            SoundManager.Instance.SelectSound();
         }
 
         private void OnProfileSettingClick(ChildProfile profile) {

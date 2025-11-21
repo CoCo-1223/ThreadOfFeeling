@@ -1,5 +1,6 @@
 using UnityEngine;
-//using EmotionManager;
+using PythonManagers;
+using Components;
 
 namespace Managers
 {
@@ -57,8 +58,8 @@ namespace Managers
         }
 
         public int GetMotionInput() {
-            return Managers.MotionInputManager.Instance != null
-                ? Managers.MotionInputManager.Instance.GetMotionInput()
+            return MotionInputManager.Instance != null
+                ? MotionInputManager.Instance.GetMotionInput()
                 : 0;
         }
     }

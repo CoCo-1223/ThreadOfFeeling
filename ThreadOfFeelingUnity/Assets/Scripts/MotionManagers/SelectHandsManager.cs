@@ -2,7 +2,7 @@ using System;
 using System.Diagnostics;
 using UnityEngine;
 
-namespace Managers {
+namespace PythonManagers {
     public class SelectHandsManager : MonoBehaviour {
         public static SelectHandsManager Instance { get; private set; }
         private Process _proc;
@@ -76,7 +76,7 @@ namespace Managers {
                 _proc.OutputDataReceived += OnPythonOutput;
                 _proc.ErrorDataReceived += (sender, args) => {
                     if (!string.IsNullOrWhiteSpace(args.Data)) {
-                        UnityEngine.Debug.LogError($"[Python Error]: {args.Data}");
+                        //UnityEngine.Debug.LogError($"[Python Error]: {args.Data}");
                     }
                 };
 
@@ -91,16 +91,11 @@ namespace Managers {
             }
         }
 
-        // [핵심 수정 부분] 문자열(LEFT, RIGHT)을 받아서 숫자(10, 20)로 변환
         private void OnPythonOutput(object sender, DataReceivedEventArgs e) {
             if (string.IsNullOrWhiteSpace(e.Data)) return;
             
             // 공백 제거 및 대문자 변환 (혹시 모를 소문자 입력 방지)
             var data = e.Data.Trim().ToUpper();
-
-            // 로그로 들어오는 값 확인 (디버깅용)
-            // UnityEngine.Debug.Log($"[Python Raw]: {data}");
-
             int newCode = 0;
 
             // 문자열에 따른 코드 매핑

@@ -36,4 +36,9 @@ namespace Components
         Select,
         Clear   // 스토리 클리어
     };
+
+    public enum MotionInputType {
+        Emotion,
+        Hand
+    }
 }
