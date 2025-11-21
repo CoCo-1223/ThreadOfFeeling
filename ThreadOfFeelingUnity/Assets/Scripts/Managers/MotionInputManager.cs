@@ -1,4 +1,4 @@
-unsing UnityEngine;
+using UnityEngine;
 
 namespace Managers{
   public enum MotionInputType {
@@ -9,16 +9,16 @@ namespace Managers{
   public class MotionInputManager : MonoBehaviour{
     public static MotionInputManager Instance {get; private set; }
 
-    public MotionInputType inputMode = MotionInputType.EMotion;
+    public MotionInputType inputMode = MotionInputType.Emotion;
 
     private void Awake() {
       if (Instance != null && Instance != this) {
-        Destory(gameObject);
+        Destroy(gameObject);
         return;
       }
 
       Instance =  this;
-      DontDestoryOnLoad(gameObject);
+      DontDestroyOnLoad(gameObject);
 
     }
 
@@ -28,7 +28,7 @@ namespace Managers{
           return GetEmotionInput();
 
         case MotionInputType.Hand:
-          return GetHandInput;
+          return GetHandInput();
 
         default:
           return 0;
@@ -49,12 +49,12 @@ namespace Managers{
       return SelectHandsManager.Instance.GetHandCode();
     }
 
-    public void UseEmotionMode() {
-      inputMode =  MotionInputType.Emotion;
+    public MotionInputType UseEmotionMode() {
+      return inputMode =  MotionInputType.Emotion;
     }
 
-    public void UseHandMode() {
-      inputMode =  MotionInputType.Hand;
+    public MotionInputType UseHandMode() {
+      return inputMode =  MotionInputType.Hand;
     }
   }
 }

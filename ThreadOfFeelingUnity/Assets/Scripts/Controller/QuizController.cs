@@ -52,10 +52,14 @@ namespace Controller {
             // 1. 퀴즈 패널 활성화
             if (questionPanel.activeInHierarchy) {
                 // 키보드 1번 OR 모션인식 값이 1일 때
-                if (InputManager.Instance.GetNOneKeyDown() || motionInput == 1) 
+                //if (InputManager.Instance.GetNOneKeyDown() || InputManager.Instance.GetMotionInput() == 10) 
+                //    OnAnswerClicked(0);
+                if (InputManager.Instance.GetMotionInput() == 10)
                     OnAnswerClicked(0);
                 // 키보드 2번 OR 모션인식 값이 2일 때
-                else if (InputManager.Instance.GetNTwoKeyDown() || motionInput == 2) 
+                //else if (InputManager.Instance.GetNTwoKeyDown() || InputManager.Instance.GetMotionInput() == 20) 
+                //    OnAnswerClicked(1);
+                else if (InputManager.Instance.GetMotionInput() == 20) 
                     OnAnswerClicked(1);
             }
             // 2. 피드백 패널 활성화
