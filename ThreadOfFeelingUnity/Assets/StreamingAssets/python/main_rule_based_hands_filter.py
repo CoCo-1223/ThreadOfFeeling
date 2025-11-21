@@ -46,6 +46,7 @@ def main():
             h, w = image.shape[:2]
             ff: FrameFeatures = extractor.from_mediapipe(results, w, h)
             label = hands_filter.infer(ff)
+            print(label, flush = True)
 
             # 상단에 라벨 표시
             cv2.putText(image, label, (28, 58),
