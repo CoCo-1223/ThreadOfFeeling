@@ -75,8 +75,6 @@ namespace UI
 
         // ÆË¾÷ ´Ý±â ¹× ÄÝ¹é ½ÇÇà
         private void MoveToNextScene() {
-            //SoundManager.Instance.SelectSound();
-            //SoundManager.Instance.StopTTS();
             isActive = false;
             onCloseCallback?.Invoke();
         }

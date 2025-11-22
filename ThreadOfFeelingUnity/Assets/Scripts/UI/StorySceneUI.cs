@@ -129,10 +129,6 @@ namespace UI
 
         private void HandleStoryEnd() {
             SoundManager.Instance.StopTTS();
-            // 보상 아이템 지급 (자동 저장)
-            if (currentTale.storyReward != null) {
-                DataManager.Instance.AddRewardItem(currentTale.storyReward);
-            }
     
             // 클리어 기록 저장 (자동 저장)
             DataManager.Instance.AddClearedStory(currentTale.storyId, currentType);

@@ -204,7 +204,7 @@ namespace Managers
         public void AddRewardItem(Item item, int amount = 1) {
             if (currentProfile != null) {
                 currentProfile.Inventory.AddItem(item, amount);
-                SaveProfileData(); // [중요] 획득 즉시 저장
+                SaveProfileData();
                 Debug.Log($"[DataManager] 아이템 저장 완료: {item.itemName}");
             }
         }
@@ -214,7 +214,7 @@ namespace Managers
             if (currentProfile != null) {
                 bool success = currentProfile.Inventory.UseItem(itemId, amount);
                 if (success) {
-                    SaveProfileData(); // [중요] 사용 즉시 저장
+                    SaveProfileData();
                     return true;
                 }
             }
