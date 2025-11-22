@@ -1,6 +1,7 @@
+using Components;
 using System.Collections.Generic;
 using System.IO;
-using Components;
+using UI;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Utils;
@@ -219,6 +220,28 @@ namespace Managers
                 }
             }
             return false;
+        }
+
+        // ==========================================
+        //         하우징 데이터 관리
+        // ==========================================
+        
+        public HousingLayout GetCurrentHousingLayout() {
+            if (currentProfile == null) return new HousingLayout();
+            
+            // 데이터가 없으면 새로 생성
+            if (currentProfile.HousingLayoutData == null)
+                currentProfile.HousingLayoutData = new HousingLayout();
+
+            return currentProfile.HousingLayoutData;
+        }
+
+        public void SaveHousingLayout(HousingLayout newLayout) {
+            if (currentProfile != null) {
+                currentProfile.HousingLayoutData = newLayout;
+                SaveProfileData(); // JSON 파일로 저장
+                Debug.Log("[DataManager] 하우징 레이아웃 저장 완료");
+            }
         }
 
         // ==========================================

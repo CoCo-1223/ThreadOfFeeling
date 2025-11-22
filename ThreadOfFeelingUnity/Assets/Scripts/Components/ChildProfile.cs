@@ -18,6 +18,7 @@ namespace Components {
         public Inventory Inventory;
         public List<StoryClearRecord> ClearedHistories;
 
+        public UI.HousingLayout HousingLayoutData = new UI.HousingLayout();
         public ChildStats Stats;
 
         public ChildProfile() {

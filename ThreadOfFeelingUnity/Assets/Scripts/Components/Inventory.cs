@@ -10,7 +10,7 @@ namespace Components {
         public List<InventorySlot> Slots { get; set; } = new List<InventorySlot>();
 
         // 슬롯당 최대 개수 제한
-        private const int MAX_SLOT_CAPACITY = 10;
+        private const int MAX_SLOT_CAPACITY = 3;
 
         public Inventory() {
             Slots = new List<InventorySlot>();
