@@ -3,7 +3,9 @@ using Managers;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using System.Collections; 
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 namespace UI
 {
@@ -20,52 +22,54 @@ namespace UI
 
         private GameObject currentPicture;
         private Item currentItem;
+        
         private bool isPlacing = false;
         private int placingFrameCount = 0;
-        
-        private const string HOUSING_SAVE_KEY = "HousingLayout";
 
-        protected override void Start() 
+        // [핵심 변수] 방에 있던 가구를 옮기는 중인가?
+        private bool isMovingExistingItem = false;
+
+        protected void Awake()
         {
-            base.Start();
-            
-            if (saveLayoutButton != null)
-                saveLayoutButton.onClick.AddListener(OnSaveLayout);
-            
-            if (exitButton != null)
-                exitButton.onClick.AddListener(OnClickGoToVillage);
-
-            if (mainCamera == null)
-                mainCamera = Camera.main;
-            
-            if (mainCamera != null)
-            {
-                if (mainCamera.GetComponent<Physics2DRaycaster>() == null)
-                {
-                    mainCamera.gameObject.AddComponent<Physics2DRaycaster>();
-                    Debug.Log("[HousingSceneUI] Physics2DRaycaster 추가됨!");
-                }
-            }
-
-            if (inventoryPanel != null)
-                inventoryPanel.SetActive(true);
-
             if (itemsContainer == null)
             {
                 GameObject room = GameObject.Find("Room");
-                if (room != null)
+                if (room != null) 
                 {
-                    Transform container = room.transform.Find("ItemsContainer");
-                    if (container != null)
+                    itemsContainer = room.transform.Find("ItemsContainer");
+                    if (itemsContainer == null)
                     {
-                        itemsContainer = container;
-                        Debug.Log($"[HousingSceneUI] ItemsContainer 자동으로 찾음!");
+                        GameObject container = new GameObject("ItemsContainer");
+                        container.transform.SetParent(room.transform);
+                        itemsContainer = container.transform;
                     }
                 }
             }
+        }
+
+        protected override void Start() 
+        {
+            if (saveLayoutButton != null) 
+            {
+                saveLayoutButton.onClick.RemoveAllListeners();
+                saveLayoutButton.onClick.AddListener(OnSaveLayout);
+            }
+            
+            if (exitButton != null) 
+            {
+                exitButton.onClick.RemoveAllListeners();
+                exitButton.onClick.AddListener(OnExitAndSave);
+            }
+
+            if (mainCamera == null) mainCamera = Camera.main;
+            
+            if (inventoryPanel != null) inventoryPanel.SetActive(true);
             
             LoadLayout();
         }
+
+        private void OnApplicationQuit() { SaveLayout(); }
+        private void OnDestroy() { SaveLayout(); }
 
         protected override void Update() 
         {   
@@ -75,13 +79,13 @@ namespace UI
             {
                 Vector3 mousePos = Input.mousePosition;
                 mousePos.z = 10f;
-                Vector3 worldPos = mainCamera.ScreenToWorldPoint(mousePos);
-                currentPicture.transform.position = worldPos;
+                currentPicture.transform.position = mainCamera.ScreenToWorldPoint(mousePos);
                 
                 placingFrameCount++;
 
-                if (placingFrameCount >= 2)
+                if (placingFrameCount >= 2) 
                 {
+                    // 클릭 -> 배치
                     if (Input.GetMouseButtonDown(0))
                     {
                         if (!EventSystem.current.IsPointerOverGameObject())
@@ -90,360 +94,275 @@ namespace UI
                         }
                     }
                     
-                    if (Input.GetKeyDown(KeyCode.Escape))
+                    // ESC -> 취소
+                    if (Input.GetKeyDown(KeyCode.Escape)) 
                     {
                         CancelPlacement();
                     }
                 }
             }
+            else
+            {
+                if (Input.GetMouseButtonDown(0))
+                {
+                    if (!EventSystem.current.IsPointerOverGameObject())
+                    {
+                        DetectFurnitureClick();
+                    }
+                }
+            }
         }
 
+        private void DetectFurnitureClick()
+        {
+            if (mainCamera == null) return;
+            Vector2 mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+            RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero);
+
+            if (hit.collider != null)
+            {
+                PlacedPicture clickedPic = hit.collider.GetComponent<PlacedPicture>();
+                if (clickedPic != null)
+                {
+                    StartMovingPicture(clickedPic);
+                }
+            }
+        }
+
+        private void OnExitAndSave()
+        {
+            SaveLayout();
+            SceneManager.LoadScene("VillageScene"); 
+        }
+
+        // [상황 A] 인벤토리에서 꺼낼 때
         public void StartPlacement(Item item) 
         {
-            if (item == null || item.itemPrefab == null)
-                return;
-            
-            // 이미 배치된 아이템인지 확인
-            if (IsItemAlreadyPlaced(item.itemName))
-            {
-                Debug.Log($"[StartPlacement] {item.itemName}은(는) 이미 배치되어 있습니다!");
-                
-                // 인벤토리에 아이템 반환
-                InventoryUI inventory = FindFirstObjectByType<InventoryUI>();
-                if (inventory != null)
-                    inventory.ReturnItem(item);
-                
-                return;
-            }
-            
-            if (isPlacing)
-                CancelPlacement();
+            if (item == null || item.itemPrefab == null) return;
+            if (isPlacing) CancelPlacement();
+
+            isMovingExistingItem = false; // "새 아이템"임
 
             currentItem = item;
             currentPicture = Instantiate(item.itemPrefab);
+            if (itemsContainer != null) currentPicture.transform.SetParent(itemsContainer, false);
             
-            if (itemsContainer != null)
-            {
-                currentPicture.transform.SetParent(itemsContainer, false);
-            }
-            
-            if (mainCamera == null)
-                mainCamera = Camera.main;
-            
-            if (mainCamera != null)
-            {
-                Vector3 mousePos = Input.mousePosition;
-                mousePos.z = 10f;
-                currentPicture.transform.position = mainCamera.ScreenToWorldPoint(mousePos);
-            }
-            else
-            {
-                currentPicture.transform.position = Vector3.zero;
-            }
+            Vector3 mousePos = Input.mousePosition;
+            mousePos.z = 10f;
+            if(mainCamera != null) currentPicture.transform.position = mainCamera.ScreenToWorldPoint(mousePos);
             
             SpriteRenderer sr = currentPicture.GetComponent<SpriteRenderer>();
-            if (sr != null)
-                sr.sortingOrder = 2000;
+            if (sr != null) sr.sortingOrder = 2000;
             
+            Collider2D col = currentPicture.GetComponent<Collider2D>();
+            if (col != null) col.enabled = false;
+
             MakeTransparent();
-            
             isPlacing = true;
             placingFrameCount = 0;
-            
-            Debug.Log($"[StartPlacement] {item.itemName} 배치 모드 시작!");
         }
 
-        private void PlacePicture() 
+        // [상황 B] 방에 있는 거 집을 때
+        public void StartMovingPicture(PlacedPicture picture)
         {
-            if (currentPicture == null)
-            {
-                CancelPlacement();
-                return;
-            }
+            isMovingExistingItem = true; // "기존 아이템"임
+
+            currentItem = picture.item;
             
-            Debug.Log("[PlacePicture] 배치 시작!");
+            // 1. 부모 끊고 삭제 (방에서 사라짐)
+            picture.transform.SetParent(null);
+            Destroy(picture.gameObject);
             
-            Vector3 worldPosition = currentPicture.transform.position;
-            worldPosition.z = 0;
+            // 2. ★★★ 중요: 인벤토리에 추가 안 함 (환불 X) ★★★
+            // 아직 배치 중이니까 인벤토리에 넣지 않음.
             
-            if (itemsContainer != null)
-            {
-                currentPicture.transform.SetParent(itemsContainer, true);
-            }
+            // 3. 레이아웃 저장 (방 데이터에서는 빠짐)
+            SaveLayout();
+
+            // 4. ★★★ 중요: 인벤토리 UI 갱신 안 함 ★★★
+            // 그래야 사용자는 "아직 인벤토리에 안 들어갔구나"라고 느낌
+
+            // 마우스에 새 가구 붙이기
+            StartPlacementInternal(currentItem);
+        }
+
+        // StartMovingPicture용 내부 함수 (플래그 초기화 안 함)
+        private void StartPlacementInternal(Item item)
+        {
+            currentPicture = Instantiate(item.itemPrefab);
+            if (itemsContainer != null) currentPicture.transform.SetParent(itemsContainer, false);
             
-            currentPicture.transform.position = worldPosition;
+            Vector3 mousePos = Input.mousePosition;
+            mousePos.z = 10f;
+            if(mainCamera != null) currentPicture.transform.position = mainCamera.ScreenToWorldPoint(mousePos);
             
             SpriteRenderer sr = currentPicture.GetComponent<SpriteRenderer>();
-            if (sr != null)
-            {
-                Color color = sr.color;
-                color.a = 1f;
-                sr.color = color;
-            }
+            if (sr != null) sr.sortingOrder = 2000;
+            
+            Collider2D col = currentPicture.GetComponent<Collider2D>();
+            if (col != null) col.enabled = false;
+
+            MakeTransparent();
+            isPlacing = true;
+            placingFrameCount = 0;
+        }
+
+        // [배치 확정]
+        private void PlacePicture() 
+        {
+            if (currentPicture == null) { CancelPlacement(); return; }
+            
+            Vector3 pos = currentPicture.transform.position;
+            pos.z = 0;
+            currentPicture.transform.position = pos;
+            
+            SpriteRenderer sr = currentPicture.GetComponent<SpriteRenderer>();
+            if (sr != null) { Color c = sr.color; c.a = 1f; sr.color = c; }
 
             PlacedPicture placed = currentPicture.AddComponent<PlacedPicture>();
             placed.Initialize(currentItem, this);
             
-            // DataManager에서 제거
-            if (DataManager.Instance != null && currentItem != null)
+            // ★ [로직 분기]
+            if (isMovingExistingItem)
             {
-                DataManager.Instance.UseRewardItem(currentItem.itemId, 1);
-                Debug.Log($"[PlacePicture] DataManager에서 제거: {currentItem.itemName}");
+                // 기존 거 옮긴 거면 -> 개수 변동 없음 (아무것도 안 함)
+                // (집을 때 환불 안 받았으니, 놓을 때 차감 안 해도 됨)
+            }
+            else
+            {
+                // 인벤에서 꺼낸 새 거면 -> 개수 차감 (-1)
+                if (DataManager.Instance != null && currentItem != null)
+                {
+                    DataManager.Instance.UseRewardItem(currentItem.itemId, 1);
+                }
             }
             
-            Debug.Log($"[PlacePicture] {currentItem.itemName} 배치 완료!");
-            
-            // 자동 저장
             SaveLayout();
+
+            // UI 갱신
+            InventoryUI inventory = FindFirstObjectByType<InventoryUI>();
+            if (inventory != null) inventory.UpdateInventoryUI();
 
             currentPicture = null;
             currentItem = null;
             isPlacing = false;
         }
 
+        // [취소 - ESC]
         private void CancelPlacement()
         {
-            if (currentPicture != null)
-                Destroy(currentPicture);
-
-            if (currentItem != null)
+            if (currentPicture != null) Destroy(currentPicture);
+            
+            // ★ [핵심 로직]
+            if (isMovingExistingItem)
             {
-                // 취소 시 인벤토리에 반환
-                InventoryUI inventory = FindFirstObjectByType<InventoryUI>();
-                if (inventory != null)
+                // 방에 있던 걸 들고 있다가 취소함 -> 이제 인벤토리에 넣어야 함 (환불)
+                if (DataManager.Instance != null && currentItem != null)
                 {
-                    inventory.ReturnItem(currentItem);
-                    Debug.Log($"[CancelPlacement] {currentItem.itemName} 인벤토리 반환");
+                    DataManager.Instance.AddRewardItem(currentItem, 1);
+                    Debug.Log($"[Housing] 배치 취소(ESC): {currentItem.itemName} 인벤토리로 돌아감");
                 }
             }
+            else
+            {
+                // 인벤토리에서 꺼내다가 취소함 -> 아직 차감 안 됐으니 그냥 놔두면 됨 (원상복구)
+            }
 
+            // UI 갱신 (이제 인벤토리에 뜸!)
+            InventoryUI inventory = FindFirstObjectByType<InventoryUI>();
+            if (inventory != null) inventory.UpdateInventoryUI(); 
+            
             currentPicture = null;
             currentItem = null;
             isPlacing = false;
         }
 
-        public void StartMovingPicture(PlacedPicture picture)
-        {
-            if (isPlacing)
-                CancelPlacement();
-
-            currentItem = picture.item;
-            currentPicture = picture.gameObject;
-            
-            // PlacedPicture 컴포넌트 제거 (이동 중에는 클릭 불가)
-            Destroy(picture);
-
-            SpriteRenderer sr = currentPicture.GetComponent<SpriteRenderer>();
-            if (sr != null)
-                sr.sortingOrder = 2000;
-
-            MakeTransparent();
-            isPlacing = true;
-            placingFrameCount = 0;
-            
-            Debug.Log($"[StartMovingPicture] {currentItem.itemName} 이동 모드");
-        }
-
+        // (휴지통 삭제 시)
         public void RemovePicture(PlacedPicture picture)
         {
-            InventoryUI inventory = FindFirstObjectByType<InventoryUI>();
-            if (inventory != null)
-            {
-                inventory.ReturnItem(picture.item);
-            }
-            
-            // DataManager에 다시 추가
             if (DataManager.Instance != null && picture.item != null)
-            {
-                if (!DataManager.Instance.currentProfile.Inventory.HasItem(picture.item.itemId))
-                {
-                    DataManager.Instance.AddRewardItem(picture.item, 1);
-                    Debug.Log($"[RemovePicture] DataManager에 반환: {picture.item.itemName}");
-                }
-            }
-            
+                DataManager.Instance.AddRewardItem(picture.item, 1);
+
+            picture.transform.SetParent(null);
             Destroy(picture.gameObject);
             
-            // 자동 저장
             SaveLayout();
+            InventoryUI inventory = FindFirstObjectByType<InventoryUI>();
+            if (inventory != null) inventory.UpdateInventoryUI();
         }
 
         private void MakeTransparent()
         {
             if (currentPicture == null) return;
-
             SpriteRenderer sr = currentPicture.GetComponent<SpriteRenderer>();
-            if (sr != null)
-            {
-                Color color = sr.color;
-                color.a = 0.5f;
-                sr.color = color;
-            }
+            if (sr != null) { Color c = sr.color; c.a = 0.5f; sr.color = c; }
         }
 
-        private bool IsItemAlreadyPlaced(string itemName)
-        {
-            if (itemsContainer == null) return false;
-            
-            foreach (Transform child in itemsContainer)
-            {
-                PlacedPicture placed = child.GetComponent<PlacedPicture>();
-                if (placed != null && placed.item != null && placed.item.itemName == itemName)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        private void OnSaveLayout()
-        {
-            SaveLayout();
-            Debug.Log("[HousingSceneUI] 레이아웃 저장 완료!");
-        }
+        private void OnSaveLayout() { SaveLayout(); }
         
         private void SaveLayout()
         {
-            HousingLayout layout = new HousingLayout();
+            if (itemsContainer == null || DataManager.Instance == null) return;
             
-            if (itemsContainer != null)
+            HousingLayout layout = new HousingLayout();
+
+            foreach (Transform child in itemsContainer)
             {
-                foreach (Transform child in itemsContainer)
+                PlacedPicture placed = child.GetComponent<PlacedPicture>();
+                if (placed != null && placed.item != null)
                 {
-                    PlacedPicture placed = child.GetComponent<PlacedPicture>();
-                    if (placed != null && placed.item != null)
+                    FurnitureData data = new FurnitureData
                     {
-                        FurnitureData data = new FurnitureData
-                        {
-                            itemName = placed.item.itemName,
-                            position = child.position,
-                            sortingOrder = child.GetComponent<SpriteRenderer>()?.sortingOrder ?? 0
-                        };
-                        layout.furnitures.Add(data);
-                    }
+                        itemName = placed.item.itemName,
+                        position = child.position,
+                        sortingOrder = child.GetComponent<SpriteRenderer>()?.sortingOrder ?? 0
+                    };
+                    layout.furnitures.Add(data);
                 }
             }
-            
-            string json = JsonUtility.ToJson(layout);
-            PlayerPrefs.SetString(HOUSING_SAVE_KEY, json);
-            PlayerPrefs.Save();
-            
-            Debug.Log($"[HousingSceneUI] {layout.furnitures.Count}개 가구 저장됨");
+            DataManager.Instance.SaveHousingLayout(layout);
         }
         
         private void LoadLayout()
         {
-            if (!PlayerPrefs.HasKey(HOUSING_SAVE_KEY))
-            {
-                Debug.Log("[HousingSceneUI] 저장된 레이아웃 없음");
-                return;
-            }
+            if (DataManager.Instance == null) return;
             
-            string json = PlayerPrefs.GetString(HOUSING_SAVE_KEY);
-            HousingLayout layout = JsonUtility.FromJson<HousingLayout>(json);
+            HousingLayout layout = DataManager.Instance.GetCurrentHousingLayout();
+            if (layout == null || layout.furnitures == null) return;
             
-            if (layout == null || layout.furnitures == null)
-                return;
-            
-            // 기존 배치 아이템 제거 (DataManager 반환 없이)
             ClearAllFurnitureWithoutReturn();
-            
-            HashSet<string> placedItems = new HashSet<string>();
             
             foreach (FurnitureData data in layout.furnitures)
             {
-                if (placedItems.Contains(data.itemName))
-                {
-                    Debug.Log($"[LoadLayout] {data.itemName} 중복 스킵");
-                    continue;
-                }
-                
                 Item item = FindItemByName(data.itemName);
                 if (item != null && item.itemPrefab != null)
                 {
                     GameObject obj = Instantiate(item.itemPrefab, itemsContainer);
                     obj.transform.position = data.position;
-                    
                     SpriteRenderer sr = obj.GetComponent<SpriteRenderer>();
-                    if (sr != null)
-                    {
-                        sr.sortingOrder = data.sortingOrder;
-                    }
-                    
+                    if (sr != null) sr.sortingOrder = data.sortingOrder;
                     PlacedPicture placed = obj.AddComponent<PlacedPicture>();
                     placed.Initialize(item, this);
-                    
-                    placedItems.Add(data.itemName);
                 }
             }
-            
-            Debug.Log($"[HousingSceneUI] {placedItems.Count}개 가구 불러옴");
         }
         
         private void ClearAllFurnitureWithoutReturn()
         {
             if (itemsContainer == null) return;
-            
             List<GameObject> toDestroy = new List<GameObject>();
-            
             foreach (Transform child in itemsContainer)
             {
-                PlacedPicture placed = child.GetComponent<PlacedPicture>();
-                if (placed != null)
-                {
-                    toDestroy.Add(child.gameObject);
-                }
+                if (child.GetComponent<PlacedPicture>() != null) toDestroy.Add(child.gameObject);
             }
-            
-            foreach (GameObject obj in toDestroy)
-            {
-                Destroy(obj);
-            }
+            foreach (GameObject obj in toDestroy) Destroy(obj);
         }
         
         private Item FindItemByName(string itemName)
         {
             Item[] allItems = Resources.LoadAll<Item>("Items");
-            foreach (Item item in allItems)
-            {
-                if (item.itemName == itemName)
-                    return item;
-            }
+            foreach (Item item in allItems) if (item.itemName == itemName) return item;
             return null;
-        }
-    }
-
-    public class PlacedPicture : MonoBehaviour
-    {
-        public Item item;
-        private HousingSceneUi housingUI;
-        private SpriteRenderer spriteRenderer;
-
-        public void Initialize(Item pictureItem, HousingSceneUi ui)
-        {
-            item = pictureItem;
-            housingUI = ui;
-            spriteRenderer = GetComponent<SpriteRenderer>();
-
-            BoxCollider2D collider = GetComponent<BoxCollider2D>();
-            if (collider == null)
-            {
-                collider = gameObject.AddComponent<BoxCollider2D>();
-            }
-        }
-
-        void Update()
-        {
-            if (spriteRenderer != null)
-            {
-                spriteRenderer.sortingOrder = 1000 + Mathf.RoundToInt(-transform.position.y * 10);
-            }
-        }
-
-        private void OnMouseDown()
-        {
-            Debug.Log($"[PlacedPicture] {item.itemName} 클릭됨!");
-            housingUI.StartMovingPicture(this);
         }
     }
     
@@ -459,5 +378,29 @@ namespace UI
     public class HousingLayout
     {
         public List<FurnitureData> furnitures = new List<FurnitureData>();
+    }
+
+    public class PlacedPicture : MonoBehaviour
+    {
+        public Item item;
+        private HousingSceneUi housingUI;
+        private SpriteRenderer spriteRenderer;
+
+        public void Initialize(Item pictureItem, HousingSceneUi ui)
+        {
+            item = pictureItem;
+            housingUI = ui;
+            spriteRenderer = GetComponent<SpriteRenderer>();
+            
+            BoxCollider2D col = GetComponent<BoxCollider2D>();
+            if (col == null) col = gameObject.AddComponent<BoxCollider2D>();
+            col.enabled = true; 
+        }
+        
+        void Update()
+        {
+            if (spriteRenderer != null)
+                spriteRenderer.sortingOrder = 1000 + Mathf.RoundToInt(-transform.position.y * 10);
+        }
     }
 }
