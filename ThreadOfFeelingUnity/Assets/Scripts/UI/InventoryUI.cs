@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using TMPro;
 using Components;
+using Managers;
 
 namespace UI
 {
@@ -69,7 +70,10 @@ namespace UI
             }
             
             InitializeInventory();
-            LoadAvailableItems();
+            
+            // 중복 제거 후 로드
+            CleanupDuplicateItems();
+            LoadFromDataManager();
         }
 
         private void Update()
@@ -117,46 +121,192 @@ namespace UI
             maxSlots = slotUIList.Count;
         }
 
-        private void LoadAvailableItems()
+        // 중복 아이템 제거
+        private void CleanupDuplicateItems()
+        {
+            if (DataManager.Instance == null || DataManager.Instance.currentProfile == null)
+                return;
+            
+            var inventory = DataManager.Instance.currentProfile.Inventory;
+            
+            if (inventory == null || inventory.Slots == null || inventory.Slots.Count == 0)
+            {
+                // 최초 실행 시 테스트 아이템 추가
+                AddTestItems();
+                return;
+            }
+            
+            // 중복된 itemId를 하나로 합치기
+            Dictionary<int, int> itemTotals = new Dictionary<int, int>();
+            
+            foreach (var slot in inventory.Slots)
+            {
+                if (itemTotals.ContainsKey(slot.itemId))
+                {
+                    // 이미 있으면 개수만 증가 (하우징은 1개로 제한)
+                    itemTotals[slot.itemId] = 1;
+                }
+                else
+                {
+                    itemTotals[slot.itemId] = 1; // 하우징 아이템은 무조건 1개
+                }
+            }
+            
+            // 인벤토리 클리어하고 다시 추가
+            inventory.Slots.Clear();
+            
+            foreach (var kvp in itemTotals)
+            {
+                inventory.Slots.Add(new InventorySlot(kvp.Key, kvp.Value));
+            }
+            
+            DataManager.Instance.SaveProfileData();
+            Debug.Log($"[CleanupDuplicateItems] {itemTotals.Count}개 아이템으로 정리 완료!");
+        }
+
+        // 최초 1회만 테스트 아이템 추가
+        private void AddTestItems()
         {
             Item[] allItems = Resources.LoadAll<Item>("Items");
             
-            Debug.Log($"[InventoryUI] 전체 아이템: {allItems.Length}개");
-
-            HashSet<string> placedItemNames = new HashSet<string>();
-            
-            if (itemsContainer != null)
-            {
-                foreach (Transform child in itemsContainer)
-                {
-                    string itemName = child.name.Replace("(Clone)", "").Replace("_0", "").Trim();
-                    placedItemNames.Add(itemName);
-                }
-            }
-
-            int addedCount = 0;
             foreach (Item item in allItems)
             {
-                if (item.itemType != Item.ItemType.Reward)
-                    continue;
-
-                string prefabName = item.itemPrefab != null ? item.itemPrefab.name : "";
-                
-                if (!placedItemNames.Contains(prefabName) && !placedItemNames.Contains(item.itemName))
+                if (item.itemType == Item.ItemType.Reward)
                 {
-                    if (AddItem(item))
+                    if (DataManager.Instance != null && DataManager.Instance.currentProfile != null)
                     {
-                        addedCount++;
-                        Debug.Log($"[InventoryUI] 인벤토리에 추가: {item.itemName}");
+                        DataManager.Instance.AddRewardItem(item, 1);
+                        Debug.Log($"[AddTestItems] {item.itemName} 추가");
                     }
                 }
             }
+        }
+
+        // DataManager에서 인벤토리 불러오기
+        private void LoadFromDataManager()
+        {
+            if (DataManager.Instance == null || DataManager.Instance.currentProfile == null)
+            {
+                Debug.LogWarning("[InventoryUI] DataManager 또는 currentProfile이 없습니다!");
+                return;
+            }
+
+            if (DataManager.Instance.currentProfile.Inventory == null)
+            {
+                Debug.LogWarning("[InventoryUI] Inventory가 초기화되지 않았습니다!");
+                return;
+            }
+
+            // 기존 슬롯 클리어
+            for (int i = 0; i < inventorySlots.Count; i++)
+            {
+                inventorySlots[i].Clear();
+            }
+
+            // 배치된 아이템 목록 가져오기
+            HashSet<string> placedItemNames = GetPlacedItemNames();
+
+            Item[] allItems = Resources.LoadAll<Item>("Items");
+            HashSet<int> addedItemIds = new HashSet<int>(); // itemId로 중복 방지
             
-            Debug.Log($"[InventoryUI] 인벤토리에 {addedCount}개 아이템 추가됨");
+            int slotIndex = 0;
+            
+            // 모든 Reward 타입 아이템 체크
+            foreach (Item item in allItems)
+            {
+                if (slotIndex >= inventorySlots.Count)
+                    break;
+                    
+                if (item.itemType == Item.ItemType.Reward)
+                {
+                    // 이미 슬롯에 추가된 itemId는 스킵 (중복 방지)
+                    if (addedItemIds.Contains(item.itemId))
+                    {
+                        Debug.Log($"[LoadFromDataManager] {item.itemName} (ID:{item.itemId}) 중복 스킵");
+                        continue;
+                    }
+                    
+                    // 이미 배치된 아이템은 스킵
+                    if (placedItemNames.Contains(item.itemName))
+                    {
+                        Debug.Log($"[LoadFromDataManager] {item.itemName}은(는) 이미 배치되어 있어 스킵");
+                        continue;
+                    }
+                    
+                    // Inventory에서 해당 아이템 수량 확인
+                    int amount = DataManager.Instance.currentProfile.Inventory.GetItemCount(item.itemId);
+                    
+                    if (amount > 0)
+                    {
+                        inventorySlots[slotIndex].item = item;
+                        inventorySlots[slotIndex].quantity = 1; // 하우징은 항상 1개만 표시
+                        addedItemIds.Add(item.itemId); // 중복 방지를 위해 추가
+                        slotIndex++;
+                        
+                        Debug.Log($"[LoadFromDataManager] 로드: {item.itemName} (ID: {item.itemId}, DataManager 수량: {amount})");
+                    }
+                }
+            }
+
+            // UI 업데이트
+            for (int i = 0; i < slotUIList.Count; i++)
+            {
+                UpdateSlotUI(i);
+            }
+
+            Debug.Log($"[LoadFromDataManager] {slotIndex}개 아이템 로드됨 (중복 제거됨)");
+        }
+        
+        // 배치된 아이템 목록 가져오기
+        private HashSet<string> GetPlacedItemNames()
+        {
+            HashSet<string> placedItems = new HashSet<string>();
+            
+            string saveKey = "HousingLayout";
+            
+            if (!PlayerPrefs.HasKey(saveKey))
+            {
+                Debug.Log("[GetPlacedItemNames] 저장된 레이아웃 없음");
+                return placedItems;
+            }
+            
+            string json = PlayerPrefs.GetString(saveKey);
+            Debug.Log($"[GetPlacedItemNames] JSON: {json}");
+            
+            // UI. 접두사 추가!
+            UI.HousingLayout layout = JsonUtility.FromJson<UI.HousingLayout>(json);
+            
+            if (layout != null && layout.furnitures != null)
+            {
+                Debug.Log($"[GetPlacedItemNames] {layout.furnitures.Count}개 배치된 가구 발견");
+                
+                foreach (var furniture in layout.furnitures)
+                {
+                    placedItems.Add(furniture.itemName);
+                    Debug.Log($"[GetPlacedItemNames] 배치됨: {furniture.itemName}");
+                }
+            }
+            else
+            {
+                Debug.LogWarning("[GetPlacedItemNames] layout 파싱 실패!");
+            }
+            
+            return placedItems;
         }
 
         public bool AddItem(Item item)
         {
+            // 이미 인벤토리에 있는지 확인 (중복 방지)
+            for (int i = 0; i < inventorySlots.Count; i++)
+            {
+                if (!inventorySlots[i].IsEmpty && inventorySlots[i].item.itemId == item.itemId)
+                {
+                    Debug.Log($"[AddItem] {item.itemName}은(는) 이미 인벤토리에 있습니다!");
+                    return false;
+                }
+            }
+
+            // 빈 슬롯에 추가
             for (int i = 0; i < inventorySlots.Count; i++)
             {
                 if (inventorySlots[i].IsEmpty)
@@ -164,11 +314,22 @@ namespace UI
                     inventorySlots[i].item = item;
                     inventorySlots[i].quantity = 1;
                     
+                    // DataManager에 저장 (이미 있으면 추가 안 됨)
+                    if (DataManager.Instance != null)
+                    {
+                        if (!DataManager.Instance.currentProfile.Inventory.HasItem(item.itemId))
+                        {
+                            DataManager.Instance.AddRewardItem(item, 1);
+                        }
+                    }
+                    
                     UpdateSlotUI(i);
+                    Debug.Log($"[AddItem] {item.itemName} 추가 성공 (슬롯 {i})");
                     return true;
                 }
             }
             
+            Debug.LogWarning($"[AddItem] 인벤토리가 가득 찼습니다! (아이템: {item.itemName})");
             return false;
         }
 
@@ -176,13 +337,20 @@ namespace UI
         {
             for (int i = 0; i < inventorySlots.Count; i++)
             {
-                if (!inventorySlots[i].IsEmpty && inventorySlots[i].item == item)
+                if (!inventorySlots[i].IsEmpty && inventorySlots[i].item.itemId == item.itemId)
                 {
                     inventorySlots[i].Clear();
+                    
+                    // DataManager에서 제거는 배치 완료 시에만
+                    // 여기서는 UI만 업데이트
                     UpdateSlotUI(i);
+                    
+                    Debug.Log($"[RemoveItem] 슬롯 {i}에서 {item.itemName} 제거됨");
                     return true;
                 }
             }
+            
+            Debug.LogWarning($"[RemoveItem] {item.itemName}을 찾을 수 없습니다!");
             return false;
         }
 
@@ -203,15 +371,35 @@ namespace UI
 
         public void StartItemPlacement(int slotIndex)
         {
-            if (inventorySlots[slotIndex].IsEmpty)
+            if (slotIndex < 0 || slotIndex >= inventorySlots.Count)
+            {
+                Debug.LogError($"[StartItemPlacement] 잘못된 슬롯 인덱스: {slotIndex}");
                 return;
+            }
+                
+            if (inventorySlots[slotIndex].IsEmpty)
+            {
+                Debug.LogWarning($"[StartItemPlacement] 슬롯 {slotIndex}가 비어있습니다!");
+                return;
+            }
 
             Item selectedItem = inventorySlots[slotIndex].item;
+            
+            Debug.Log($"[StartItemPlacement] 배치 시작: {selectedItem.itemName} (슬롯 {slotIndex})");
 
             if (housingSceneUI != null)
             {
+                // UI 슬롯에서 먼저 제거
+                inventorySlots[slotIndex].Clear();
+                UpdateSlotUI(slotIndex);
+                Debug.Log($"[StartItemPlacement] UI 슬롯 {slotIndex} 비움");
+                
+                // 배치 시작
                 housingSceneUI.StartPlacement(selectedItem);
-                RemoveItem(selectedItem);
+            }
+            else
+            {
+                Debug.LogError("[StartItemPlacement] HousingSceneUI를 찾을 수 없습니다!");
             }
         }
 
@@ -234,7 +422,32 @@ namespace UI
 
         public void ReturnItem(Item item)
         {
-            AddItem(item);
+            bool added = AddItem(item);
+            if (!added)
+            {
+                // 슬롯이 가득 찬 경우, DataManager에만 반환
+                if (DataManager.Instance != null && !DataManager.Instance.currentProfile.Inventory.HasItem(item.itemId))
+                {
+                    DataManager.Instance.AddRewardItem(item, 1);
+                    Debug.Log($"[ReturnItem] {item.itemName} DataManager에만 반환 (슬롯 가득 참)");
+                }
+            }
+        }
+        
+        public void RemoveItemByName(string itemName)
+        {
+            for (int i = 0; i < inventorySlots.Count; i++)
+            {
+                if (!inventorySlots[i].IsEmpty && inventorySlots[i].item.itemName == itemName)
+                {
+                    Item item = inventorySlots[i].item;
+                    inventorySlots[i].Clear();
+                    
+                    UpdateSlotUI(i);
+                    Debug.Log($"[RemoveItemByName] 인벤토리에서 제거: {itemName}");
+                    return;
+                }
+            }
         }
     }
 
@@ -393,10 +606,18 @@ namespace UI
                 Destroy(dragPreview);
 
             InventorySlotData slotData = inventoryUI.GetSlotData(slotIndex);
+            
+            Debug.Log($"[OnEndDrag] 슬롯 {slotIndex}, IsEmpty: {slotData?.IsEmpty}, 아이템: {slotData?.item?.itemName}");
+            
             if (slotData != null && !slotData.IsEmpty)
             {
                 inventoryUI.StartItemPlacement(slotIndex);
             }
+            else
+            {
+                Debug.LogWarning($"[OnEndDrag] 슬롯 {slotIndex}가 비어있습니다!");
+            }
         }
     }
+
 }
