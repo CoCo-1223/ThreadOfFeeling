@@ -66,19 +66,19 @@
 ```mermaid
 graph TD
     subgraph 입력_및_인식_레이어
-        A[웹캠/입력장치] --> B(OpenCV)
-        B --> C{MediaPipe-Pose<br/>키포인트 추출}
-        C --> D[특징 추출/정규화<br/>(관절/각도/속도)]
+        A["웹캠/입력장치"] --> B(OpenCV)
+        B --> C{"MediaPipe-Pose<br/>키포인트 추출"}
+        C --> D["특징 추출/정규화<br/>(관절/각도/속도)"]
         D --> E[제스처 분류기]
     end
 
     subgraph 애플리케이션_레이어
-        E --> F[Unity 2D 클라이언트]
+        E --> F["Unity 2D 클라이언트"]
     end
 
     subgraph 데이터_레이어
         F --> G[SQLite-net]
-        G --> H[(SQLite: app.db)]
+        G --> H[("SQLite: app.db")]
         H -.-> I[학습로그/보상/인벤토리]
     end
 
@@ -105,7 +105,7 @@ graph TD
 
 **1. 프로젝트 클론**
 ```bash
-git clone [https://github.com/YOUR_GITHUB_USER/YOUR_REPO_NAME.git](https://github.com/YOUR_GITHUB_USER/YOUR_REPO_NAME.git)
+git clone https://github.com/zxxxv/ThreadOfFeeling.git
 ```
 
 **2. Unity 프로젝트 열기**
@@ -114,7 +114,7 @@ git clone [https://github.com/YOUR_GITHUB_USER/YOUR_REPO_NAME.git](https://githu
 **3. Python 환경 설정 (MediaPipe)**
 * Assets/Python 경로의 requirements.txt를 통해 필요한 라이브러리를 설치합니다.
 ```Bash
-pip install -r Assets/Python/requirements.txt
+pip install -r /ThreadOfFeelingUnity/requirements.txt
 ```
 
 **4. 실행**
