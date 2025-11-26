@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f7b2fefa0ce13f4bb8e78d8d19175c4, type: 3}
+  m_Name: SleepLignt
+  m_EditorClassIdentifier: 
+  itemId: 1
+  itemName: "\uC218\uBA74\uB4F1"
+  itemExplain: "\uD765\uBD80\uC640 \uB180\uBD80\uC5D0 \uB098\uC624\uB294 \uC218\uBA74"
+  itemIcon: {fileID: 21300000, guid: 43a8de4f100b0a94398b65903de1f9bf, type: 3}
+  itemType: 0
+  itemPrefab: {fileID: 32555497372800821, guid: ba9a486a8b16b404da681b96926767cf, type: 3}

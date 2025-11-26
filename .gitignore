@@ -13,3 +13,6 @@ ThreadOfFeelingUnity/*.unityproj
 ThreadOfFeelingUnity/*.suo
 ThreadOfFeelingUnity/*.user
 ThreadOfFeelingUnity/*.userprefs
+ThreadOfFeelingUnity/.idea
+
+ThreadOfFeelingUnity/venv
