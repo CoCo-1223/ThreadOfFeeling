@@ -105,7 +105,7 @@ pip install -r /ThreadOfFeelingUnity/requirements.txt
 ```
 
 **4. 실행**
-* Unity 에디터의 Scenes/Main 씬을 열고 플레이 버튼을 누릅니다.
+* Unity 에디터의 Scenes/StartScene 씬을 열고 플레이 버튼을 누릅니다.
 * 초기 실행 시 카메라 권한 허용이 필요합니다.
 
 
